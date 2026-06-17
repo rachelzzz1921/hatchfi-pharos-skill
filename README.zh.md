@@ -66,6 +66,8 @@ HatchFi（母 Skill）
 
 这已经被实证，不是设想：发行 **MPF** 自动产出了 [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md)——一个带权限清单、私有、即可运营的 Skill，*你*今天就能跑，并且只在你愿意时才对外开放。
 
+**而当你*选择*开放时，它对生态是真有用的。** 一个 spawn 出的 Skill 是经过验证、合规就绪的运营单元——合约写死、尽调/发行/派息 playbook 齐全。Opt-in 的分享，正是 HatchFi 为 Pharos 培育一张「可复用、带权限」的 RealFi Skill 网络的方式：每个愿意开放的发行人就贡献一个即用的资产 Skill，合规 RealFi 的边际成本持续下降——**但一切以每位发行人自己的意愿为准、附带清晰权限清单、绝不默认开放。** 飞轮照样转，只是开关握在发行人手里。
+
 ## 它是 live 的——60 秒可验证
 
 这不是 PPT。HatchFi **已在 Pharos Atlantic 部署并通过 smoke 测试**。
@@ -98,7 +100,26 @@ transfer / mint / forcedTransfer
 - **mint** → 身份 **+** 合规上限（一级发行同样受持有人/额度约束）
 - **forcedTransfer** → 监管路径；仅校验收款方已验证，绕过全局规则
 
-背后是 **24 项 Foundry 测试**（含 fuzz 不变量）+ [`SECURITY.md`](./docs/SECURITY.md) 审计记录，已修复 burn 下溢、派息余数、冻结份额等边界问题。
+## 像生产基础设施一样被审查，而非黑客松 demo
+
+HatchFi 的强，不只在代码本身，更在**代码扛过的流程**。提交前它走完了一整套合规 + 安全 + 生产就绪的审查闭环，每个问题都**配回归测试修复**或被显式记录。
+
+| 审查关卡 | 结果 |
+|---|---|
+| **TDD 测试套件** | **24 项 Foundry 测试，0 失败**，含一个**fuzz 不变量**——证明派息绝不超发（`可领 + dust ≤ 存入`） |
+| **独立安全审计**（[`docs/SECURITY.md`](./docs/SECURITY.md)） | **暴露 8 项发现，全部修复或记录**——每个修复都钉上一个具名回归测试 |
+| **合规性审查** | 抓出一个**合规关键**缺口（`mint` 绕过持有人/额度上限）并堵上——发行现在与转账强制同一套 `canTransfer` 规则 |
+| **生产就绪审计** | 评分 **Strong（88/100）**——无提交 blocker |
+| **对抗式（红队）评审** | Skeptic 一轮指出文档/打包风险，提交前**全部解决** |
+| **链上验证** | Atlantic 上 `preflight → deploy → smoke`，每张 receipt 断言 `status == 1` |
+
+审计中的代表性修复（均有测试覆盖）：
+
+- **D2 · 合规关键** —— `mint` 现强制 `maxHolders` + `maxBalancePerInvestor`，一级发行不能突破合规边界。
+- **F1 · burn 下溢** —— `burn` 重新平衡 `_frozenTokens`，避免部分冻结的持有人账户被锁死。
+- **D3 / D4 · 派息完整性** —— 整除 dust 可经 `sweepUndistributedDividend` 回收；钱包恢复会迁移未领分红。
+
+再加一张最小权限**权限矩阵**（`onlyOwner` 治理 vs `onlyAgent` 运营）与 12 个事件的审计留痕——完整表格见 [`docs/SECURITY.md`](./docs/SECURITY.md)。
 
 ## 为 Agent 运营而设计
 

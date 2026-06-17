@@ -194,6 +194,10 @@
       <span class="en"><strong>Sharing a Skill ≠ sharing your data.</strong> Already proven: issuing MPF produced <a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a> — private, with a permission manifest, yours to run today and open only by choice.</span>
       <span class="zh"><strong>分享一个 Skill ≠ 分享你的数据。</strong> 已实证：发行 MPF 产出了 <a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a>——带权限清单、私有、你今天就能跑，只在你愿意时才对外开放。</span>
     </p>
+    <p class="lead" style="margin-top:0.7rem;">
+      <span class="en"><strong>And opt-in sharing still seeds the ecosystem.</strong> When an issuer chooses to open a Skill, it's a vetted, compliance-ready operating unit — so the marginal cost of compliant RealFi on Pharos keeps falling, the flywheel still turns, but the owner holds the switch.</span>
+      <span class="zh"><strong>而 opt-in 的分享照样滋养生态。</strong> 当发行人选择开放一个 Skill，它是经过验证、合规就绪的运营单元——Pharos 上合规 RealFi 的边际成本持续下降，飞轮照样转，但开关握在发行人手里。</span>
+    </p>
   </section>
 
   <!-- LIVE PROOF -->
@@ -270,14 +274,16 @@
 
   <!-- VALIDATION -->
   <section>
-    <div class="kicker"><span class="en">Completed validation</span><span class="zh">已完成验证</span></div>
-    <h2><span class="en">What's verified</span><span class="zh">验证结果</span></h2>
+    <div class="kicker"><span class="en">Reviewed like production infrastructure</span><span class="zh">像生产基础设施一样被审查</span></div>
+    <h2><span class="en">What's verified — and what it survived</span><span class="zh">验证结果——以及它扛过的审查</span></h2>
     <table>
       <tbody>
-        <tr><td class="k">forge build</td><td><span style="color:var(--ok)"><span class="en">compiled successfully</span><span class="zh">编译成功</span></span></td></tr>
-        <tr><td class="k">forge test</td><td><span style="color:var(--ok)">24 passed · 0 failed</span> <span class="en">(incl. fuzz)</span><span class="zh">（含 fuzz）</span></td></tr>
-        <tr><td class="k"><span class="en">On-chain deploy</span><span class="zh">链上部署</span></td><td><a class="ref" href="https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de" target="_blank">0xfef7…Aa3DE</a></td></tr>
-        <tr><td class="k"><span class="en">On-chain smoke</span><span class="zh">链上 smoke</span></td><td><span style="color:var(--ok)">mint 1e18 · isVerified · holderCount=1</span></td></tr>
+        <tr><td class="k">forge build / test</td><td><span style="color:var(--ok)">24 passed · 0 failed</span> <span class="en">(incl. fuzz invariant: dividends never over-distribute)</span><span class="zh">（含 fuzz 不变量：派息绝不超发）</span></td></tr>
+        <tr><td class="k"><span class="en">Security audit</span><span class="zh">安全审计</span></td><td><span style="color:var(--ok)"><span class="en">8 findings — all fixed/documented</span><span class="zh">8 项发现——全部修复/记录</span></span> · <a class="ref" href="docs/SECURITY.md">SECURITY.md</a></td></tr>
+        <tr><td class="k"><span class="en">Compliance review</span><span class="zh">合规性审查</span></td><td><span style="color:var(--ok)"><span class="en">closed mint cap-bypass (compliance-critical)</span><span class="zh">堵上 mint 绕过上限（合规关键）</span></span></td></tr>
+        <tr><td class="k"><span class="en">Production-readiness audit</span><span class="zh">生产就绪审计</span></td><td><span style="color:var(--gold)">Strong · 88/100</span></td></tr>
+        <tr><td class="k"><span class="en">Adversarial (red-team) review</span><span class="zh">对抗式（红队）评审</span></td><td><span style="color:var(--ok)"><span class="en">issues resolved pre-submission</span><span class="zh">提交前问题全解决</span></span></td></tr>
+        <tr><td class="k"><span class="en">On-chain deploy + smoke</span><span class="zh">链上部署 + smoke</span></td><td><a class="ref" href="https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de" target="_blank">0xfef7…Aa3DE</a> · <span style="color:var(--ok)">mint 1e18 · receipt status=1</span></td></tr>
         <tr><td class="k"><span class="en">Hatched Skill</span><span class="zh">孵化 Skill</span></td><td><a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a> <span class="en">spawned · private</span><span class="zh">已生成 · 私有</span></td></tr>
         <tr><td class="k"><span class="en">Key safety</span><span class="zh">私钥安全</span></td><td class="mono">.env · state.json <span class="en">gitignored</span><span class="zh">已忽略</span></td></tr>
       </tbody>

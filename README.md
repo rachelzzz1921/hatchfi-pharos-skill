@@ -66,6 +66,8 @@ The Skill and everything it accumulates — investor identities, diligence evide
 
 It is already proven, not theoretical: issuing **MPF** automatically produced [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) — a private, ready-to-operate Skill, with a permission manifest, that *you* can run today and open to others only by choice.
 
+**And when you *do* choose to share, it's genuinely useful to the ecosystem.** A spawned Skill is a vetted, compliance-ready operating unit — contract baked in, diligence/issuance/dividend playbooks included. Opt-in sharing is how HatchFi can seed a network of reusable, *permissioned* RealFi Skills on Pharos: every issuer who opts in contributes one more ready-to-operate asset Skill, so the marginal cost of compliant RealFi keeps falling — **on each owner's terms, with a clear manifest, never by default.** The flywheel still turns; the owner just holds the switch.
+
 ## It's live — verify in 60 seconds
 
 This is not a slide deck. HatchFi is **deployed and smoke-tested on Pharos Atlantic**.
@@ -98,7 +100,26 @@ transfer / mint / forcedTransfer
 - **mint** → identity **and** compliance caps (primary issuance respects holder/balance limits)
 - **forcedTransfer** → regulatory path; verified recipient only, bypasses global rules
 
-Backed by **24 Foundry tests** (including a fuzz invariant) and a [`SECURITY.md`](./docs/SECURITY.md) audit trail with fixes for burn underflow, dividend dust, and frozen-token edge cases.
+## Reviewed like production infrastructure, not a hackathon demo
+
+The strength of HatchFi isn't just the code — it's the **process the code survived**. Before submission it went through a full compliance + security + production-readiness review loop, and every issue was fixed *with a regression test* or explicitly documented.
+
+| Review gate | Outcome |
+|---|---|
+| **TDD test suite** | **24 Foundry tests, 0 failed**, including a **fuzz invariant** proving dividends can never over-distribute (`claimable + dust ≤ deposit`) |
+| **Independent security audit** ([`docs/SECURITY.md`](./docs/SECURITY.md)) | **8 findings surfaced, all fixed or documented** — each fix pinned by a named regression test |
+| **Compliance review** | Caught a **compliance-critical** gap (`mint` bypassing holder/balance caps) and closed it — issuance now enforces the same `canTransfer` rules as transfers |
+| **Production-readiness audit** | Scored **Strong (88/100)** — no submission blockers |
+| **Adversarial (red-team) review** | A skeptic pass flagged doc/packaging risks; **all resolved** before submission |
+| **On-chain verification** | `preflight → deploy → smoke` on Atlantic, every receipt asserted `status == 1` |
+
+Highlighted fixes from the audit (all test-covered):
+
+- **D2 · compliance-critical** — `mint` now enforces `maxHolders` + `maxBalancePerInvestor`, so primary issuance can't breach the compliance envelope.
+- **F1 · burn underflow** — `burn` rebalances `_frozenTokens` so a partially-frozen holder can't get their account locked.
+- **D3 / D4 · dividend integrity** — integer-division dust is recoverable via `sweepUndistributedDividend`; wallet recovery migrates unclaimed dividends.
+
+A least-privilege **permission matrix** (`onlyOwner` governance vs `onlyAgent` operations) and a 12-event audit trail back it up — full table in [`docs/SECURITY.md`](./docs/SECURITY.md).
 
 ## Built to be operated by an agent
 
