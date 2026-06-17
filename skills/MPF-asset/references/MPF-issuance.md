@@ -100,7 +100,7 @@ cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "burn(address,uint256)" <fr
 cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "canTransfer(address,address,uint256)(bool,string)" <from> <to> <amt> --rpc-url $RPC
 ```
 返回 `(false,"exceeds max holder count")` 之类 → 直接告知用户原因，不发交易。
-两道检查口径：`isVerified` 看收款方够不够格持有；`canTransfer` 看全局规则（持有人上限 / 单人额度）。mint 与 forcedTransfer 仅需 isVerified，绕过 canTransfer。
+两道检查口径：`isVerified` 看收款方够不够格持有；`canTransfer` 看全局规则（持有人上限 / 单人额度）。**普通 transfer** 两道都过才放行；**mint** 同样强制 `canTransfer(0, to, amount)`；**forcedTransfer** 为监管场景，仅需收款方 `isVerified`，绕过 `canTransfer` 全局规则。
 
 ---
 

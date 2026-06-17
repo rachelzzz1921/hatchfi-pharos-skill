@@ -1,23 +1,25 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Compliant RWA Issuance Agent · Pharos Skill</title>
+  <title>HatchFi · 链孵 — Compliant RWA Issuance Agent on Pharos</title>
   <style>
     :root {
-      --bg: #0a0b0e;
-      --surface: #131620;
-      --surface-2: #1a1e2a;
-      --border: #262b38;
-      --border-soft: #1e2230;
-      --text: #f2f4f8;
-      --text-2: #c4c9d4;
-      --muted: #7c8696;
-      --accent: #5b9bff;
-      --accent-hover: #8fbcff;
-      --accent-soft: rgba(91, 155, 255, 0.10);
-      --accent-line: rgba(91, 155, 255, 0.28);
+      --bg: #0a0f0d;
+      --surface: #131a16;
+      --surface-2: #1a231e;
+      --border: #25322b;
+      --border-soft: #1d2822;
+      --text: #e8ede9;
+      --text-2: #b7c2bb;
+      --muted: #7c8a82;
+      --green: #0b3d2e;
+      --gold: #c9a227;
+      --teal: #2dd4bf;
+      --teal-soft: rgba(45, 212, 191, 0.10);
+      --teal-line: rgba(45, 212, 191, 0.30);
+      --ok: #3dd68c;
       --mono: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
       --sans: "SF Pro Display", "SF Pro Text", "PingFang SC", system-ui, sans-serif;
     }
@@ -26,490 +28,276 @@
     body {
       font-family: var(--sans);
       background:
-        radial-gradient(1200px 600px at 80% -10%, rgba(91,155,255,0.06), transparent 60%),
+        radial-gradient(1100px 560px at 82% -8%, rgba(201,162,39,0.07), transparent 60%),
+        radial-gradient(900px 500px at 12% 8%, rgba(45,212,191,0.05), transparent 55%),
         var(--bg);
       color: var(--text);
       line-height: 1.65;
-      padding: 3.5rem 1.75rem 5rem;
-      max-width: 1040px;
+      padding: 3rem 1.75rem 5rem;
+      max-width: 1020px;
       margin: 0 auto;
     }
     a { color: inherit; text-decoration: none; }
 
-    /* ---------- Hero ---------- */
-    .eyebrow {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--accent);
-    }
-    .hero { padding-bottom: 2rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
-    h1 {
-      font-size: 2.4rem;
-      font-weight: 600;
-      letter-spacing: -0.035em;
-      line-height: 1.12;
-      margin: 0.9rem 0 0;
-    }
-    .hero-sub {
-      margin-top: 1rem;
-      font-size: 1.08rem;
-      line-height: 1.6;
-      color: var(--text-2);
-      max-width: 40rem;
-      font-weight: 350;
-    }
-    .hero-sub strong { color: var(--text); font-weight: 550; }
-
-    /* ---------- Metrics ---------- */
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0;
-      margin-top: 2.5rem;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    @media (max-width: 720px) { .metrics { grid-template-columns: repeat(2, 1fr); } }
-    .metric { padding: 1.15rem 1.3rem; border-right: 1px solid var(--border-soft); }
-    .metric:last-child { border-right: none; }
-    @media (max-width: 720px) {
-      .metric:nth-child(2) { border-right: none; }
-      .metric:nth-child(-n+2) { border-bottom: 1px solid var(--border-soft); }
-    }
-    .metric-val { font-size: 1.7rem; font-weight: 600; letter-spacing: -0.02em; }
-    .metric-val.mono { font-family: var(--mono); font-size: 1.35rem; }
-    .metric-lbl { font-size: 0.76rem; color: var(--muted); margin-top: 0.15rem; letter-spacing: 0.01em; }
-
-    /* ---------- Section nav ---------- */
-    .nav {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      padding: 0.85rem 0;
-      margin-bottom: 1.75rem;
-      background: rgba(10, 11, 14, 0.82);
+    /* language toggle */
+    .lang-en .zh, .lang-en .only-zh { display: none; }
+    .lang-zh .en, .lang-zh .only-en { display: none; }
+    .langbar {
+      position: fixed; top: 1rem; right: 1rem; z-index: 50;
+      display: flex; gap: 0; border: 1px solid var(--border);
+      border-radius: 999px; overflow: hidden; background: rgba(10,15,13,0.85);
       backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border-soft);
     }
-    .nav a {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.03em;
-      color: var(--muted);
-      padding: 0.3rem 0.65rem;
-      border: 1px solid transparent;
-      border-radius: 999px;
-      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    .langbar button {
+      font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.03em;
+      padding: 0.4rem 0.85rem; background: transparent; color: var(--muted);
+      border: none; cursor: pointer; transition: color 0.15s, background 0.15s;
     }
-    .nav a:hover { color: var(--accent); border-color: var(--accent-line); background: var(--accent-soft); }
-    .nav .num { color: var(--accent); margin-right: 0.3rem; }
+    .langbar button.active { background: var(--teal-soft); color: var(--teal); }
+    .langbar button:hover { color: var(--text); }
 
-    /* ---------- Section ---------- */
-    section { margin-bottom: 3rem; scroll-margin-top: 4.5rem; }
-    .sec-head { display: flex; align-items: baseline; gap: 0.7rem; margin-bottom: 1.25rem; }
-    .sec-num { font-family: var(--mono); font-size: 0.78rem; color: var(--accent); }
-    .sec-title { font-size: 1.18rem; font-weight: 600; letter-spacing: -0.01em; }
-    .sec-note { font-size: 0.85rem; color: var(--muted); margin-left: auto; }
+    .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
 
-    .lead {
-      font-size: 1.02rem;
-      line-height: 1.7;
-      color: var(--text-2);
-      max-width: 46rem;
-    }
+    /* hero */
+    .hero { text-align: center; padding: 1rem 0 2.4rem; border-bottom: 1px solid var(--border); margin-bottom: 2.2rem; }
+    .hero img { width: 96px; height: 96px; border-radius: 22px; margin-bottom: 1.1rem; box-shadow: 0 8px 40px rgba(0,0,0,0.4); }
+    h1 { font-size: 2.5rem; font-weight: 650; letter-spacing: -0.035em; line-height: 1.1; }
+    .hero .cn-name { color: var(--gold); }
+    .tagline { margin-top: 0.7rem; font-size: 1.18rem; font-weight: 450; color: var(--text); }
+    .subline { margin-top: 0.5rem; font-size: 0.98rem; color: var(--text-2); font-weight: 350; max-width: 38rem; margin-left: auto; margin-right: auto; }
+    .badges { margin-top: 1.4rem; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+    .badge { font-family: var(--mono); font-size: 0.7rem; padding: 0.28rem 0.7rem; border-radius: 999px; border: 1px solid var(--border); color: var(--text-2); }
+    .badge.live { color: var(--teal); border-color: var(--teal-line); background: var(--teal-soft); }
+    .badge.gold { color: var(--gold); border-color: rgba(201,162,39,0.3); background: rgba(201,162,39,0.08); }
+    .badge.ok { color: var(--ok); border-color: rgba(61,214,140,0.3); background: rgba(61,214,140,0.08); }
+
+    section { margin-bottom: 2.8rem; scroll-margin-top: 2rem; }
+    .kicker { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); margin-bottom: 0.5rem; }
+    h2 { font-size: 1.5rem; font-weight: 620; letter-spacing: -0.02em; margin-bottom: 0.9rem; }
+    .lead { font-size: 1.04rem; line-height: 1.72; color: var(--text-2); max-width: 47rem; }
     .lead strong { color: var(--text); font-weight: 550; }
-    .lead .term { font-family: var(--mono); font-size: 0.92em; color: var(--accent); }
+    .lead .term { font-family: var(--mono); font-size: 0.92em; color: var(--teal); }
+    .quote { border-left: 2px solid var(--gold); padding: 0.4rem 0 0.4rem 1.1rem; margin: 1.1rem 0; color: var(--text); font-size: 1.06rem; font-style: italic; }
 
-    /* ---------- Pipeline ---------- */
-    .pipeline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.85rem; }
-    @media (max-width: 720px) { .pipeline { grid-template-columns: 1fr; } }
-    .stage {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.4rem;
-      position: relative;
+    .flywheel-banner {
+      margin-top: 1.3rem; padding: 1.4rem 1.6rem; border-radius: 12px;
+      background: linear-gradient(135deg, rgba(11,61,46,0.55), rgba(45,212,191,0.06));
+      border: 1px solid var(--teal-line);
     }
-    .stage-idx {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      color: var(--muted);
-      letter-spacing: 0.08em;
-    }
-    .stage h3 { font-size: 1.02rem; font-weight: 600; margin: 0.5rem 0 0.55rem; letter-spacing: -0.01em; }
-    .stage p { font-size: 0.87rem; color: var(--text-2); line-height: 1.6; font-weight: 350; }
-    .stage code { font-family: var(--mono); font-size: 0.82em; color: var(--accent); background: var(--accent-soft); padding: 0.05rem 0.3rem; border-radius: 4px; }
-    .stage-arrow {
-      position: absolute; right: -0.62rem; top: 2.1rem;
-      width: 1.1rem; height: 1.1rem;
-      display: none; align-items: center; justify-content: center;
-      color: var(--muted); z-index: 2;
-    }
-    @media (min-width: 721px) { .stage:not(:last-child) .stage-arrow { display: flex; } }
+    .flywheel-banner .big { font-size: 1.18rem; font-weight: 600; color: var(--text); line-height: 1.5; }
+    .flywheel-banner .big .hl { color: var(--teal); }
 
-    /* ---------- Two-column cards ---------- */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
-    @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.4rem 1.5rem; }
-    .card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; letter-spacing: -0.01em; }
-    .feat { list-style: none; }
-    .feat li {
-      display: grid;
-      grid-template-columns: max-content 1fr;
-      gap: 0.6rem;
-      font-size: 0.875rem;
-      color: var(--text-2);
-      padding: 0.4rem 0;
-      line-height: 1.55;
-      font-weight: 350;
-    }
-    .feat li + li { border-top: 1px solid var(--border-soft); }
-    .feat .k { color: var(--text); font-weight: 500; }
-    .feat .m { font-family: var(--mono); font-size: 0.82em; color: var(--accent); }
+    pre.ascii { font-family: var(--mono); font-size: 0.8rem; line-height: 1.5; color: var(--text-2); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.3rem; overflow-x: auto; margin-top: 1.1rem; }
+    pre.ascii .hl { color: var(--teal); }
+    pre.ascii .gd { color: var(--gold); }
 
-    /* ---------- Table ---------- */
-    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 0.5rem; }
     th, td { text-align: left; padding: 0.78rem 1.1rem; border-bottom: 1px solid var(--border-soft); }
     tr:last-child td { border-bottom: none; }
-    th { background: var(--surface-2); color: var(--muted); font-weight: 500; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    th { background: var(--surface-2); color: var(--muted); font-weight: 500; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; }
     td { color: var(--text-2); font-weight: 350; }
     td.k { color: var(--text); font-weight: 450; }
+    .mono { font-family: var(--mono); }
 
-    /* ---------- File-reference hyperlink ---------- */
-    a.ref {
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      color: var(--accent);
-      border-bottom: 1px dashed var(--accent-line);
-      padding-bottom: 1px;
-      transition: color 0.15s, border-color 0.15s;
-    }
+    a.ref { font-family: var(--mono); font-size: 0.84rem; color: var(--teal); border-bottom: 1px dashed var(--teal-line); padding-bottom: 1px; transition: color 0.15s, border-color 0.15s; }
     a.ref::after { content: " ↗"; font-size: 0.78em; opacity: 0.55; }
-    a.ref:hover { color: var(--accent-hover); border-bottom-color: var(--accent-hover); border-bottom-style: solid; }
+    a.ref:hover { color: #6ee7d8; border-bottom-color: #6ee7d8; border-bottom-style: solid; }
 
-    .tag {
-      display: inline-block; font-family: var(--mono); font-size: 0.68rem;
-      padding: 0.12rem 0.5rem; border-radius: 999px; letter-spacing: 0.02em;
-    }
-    .tag.read { background: rgba(91,155,255,0.12); color: var(--accent); }
-    .tag.write { background: rgba(124,134,150,0.14); color: var(--text-2); }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.85rem; margin-top: 1.1rem; }
+    @media (max-width: 720px) { .grid-3 { grid-template-columns: 1fr; } }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 1.3rem 1.4rem; }
+    .card .step { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; }
+    .card h3 { font-size: 1.02rem; font-weight: 600; margin: 0.45rem 0 0.5rem; }
+    .card p { font-size: 0.86rem; color: var(--text-2); line-height: 1.6; font-weight: 350; }
+    .card code { font-family: var(--mono); font-size: 0.82em; color: var(--teal); background: var(--teal-soft); padding: 0.05rem 0.3rem; border-radius: 4px; }
 
-    /* ---------- Footer ---------- */
-    footer {
-      margin-top: 3.5rem; padding-top: 1.4rem; border-top: 1px solid var(--border);
-      font-family: var(--mono); font-size: 0.76rem; color: var(--muted);
-      display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; align-items: center;
-    }
-    footer span { color: var(--text-2); }
-    footer a.ref { font-size: 0.76rem; }
+    ul.disc { list-style: none; margin-top: 1rem; }
+    ul.disc li { display: grid; grid-template-columns: max-content 1fr; gap: 0.7rem; font-size: 0.92rem; color: var(--text-2); padding: 0.5rem 0; line-height: 1.55; font-weight: 350; border-top: 1px solid var(--border-soft); }
+    ul.disc li:first-child { border-top: none; }
+    ul.disc .k { color: var(--text); font-weight: 500; }
+
+    footer { margin-top: 3.5rem; padding-top: 1.4rem; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 0.76rem; color: var(--muted); text-align: center; line-height: 1.9; }
+    footer .gd { color: var(--gold); }
   </style>
 </head>
-<body>
+<body class="lang-en">
+  <div class="langbar">
+    <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
+    <button id="btn-zh" onclick="setLang('zh')">中文</button>
+  </div>
+
   <header class="hero">
-    <div class="eyebrow">Pharos Skill-to-Agent · Compliant RWA</div>
-    <h1>Compliant RWA Issuance Agent</h1>
-    <p class="hero-sub">
-      一个面向 Pharos RealFi 的合规资产发行 Agent Skill。<strong>已在 Atlantic 完成部署与 smoke，并 spawn 出 <code>skills/MPF-asset/</code> 子 Skill</strong>——从尽调、ERC-3643 合规发行，到生命周期治理与收益分配，全流程可审计，成果可被生态直接复用（Skill 产 Skill 飞轮）。
+    <img src="./assets/brand/logo.png" alt="HatchFi logo" />
+    <h1>HatchFi <span class="cn-name">链孵</span></h1>
+    <p class="tagline">
+      <span class="en">Where compliant RWAs hatch into Agent Skills.</span>
+      <span class="zh">把合规 RWA 孵化成可复用 Agent Skill。</span>
     </p>
-    <div class="metrics">
-      <div class="metric"><div class="metric-val">24</div><div class="metric-lbl">Foundry 测试</div></div>
-      <div class="metric"><div class="metric-val mono">Live</div><div class="metric-lbl">Atlantic 已部署</div></div>
-      <div class="metric"><div class="metric-val">7+</div><div class="metric-lbl">Reference 指令集</div></div>
-      <div class="metric"><div class="metric-val mono">688689</div><div class="metric-lbl">Atlantic Testnet</div></div>
+    <p class="subline">
+      <span class="en">An agent-native issuance layer for compliant RealFi on Pharos. Every RWA you hatch leaves a reusable Skill behind.</span>
+      <span class="zh">面向 Pharos 合规 RealFi 的 Agent 原生发行层。每孵化一支 RWA，就留下一个可复用 Skill。</span>
+    </p>
+    <div class="badges">
+      <span class="badge ok">24 Foundry tests</span>
+      <span class="badge live"><span class="en">LIVE on Atlantic</span><span class="zh">Atlantic 已部署</span></span>
+      <span class="badge gold"><span class="en">Skill→Skill flywheel</span><span class="zh">Skill 产 Skill 飞轮</span></span>
+      <span class="badge">ERC-3643 · chainId 688689</span>
     </div>
   </header>
 
-  <nav class="nav">
-    <a href="#sec01"><span class="num">01</span>它解决什么</a>
-    <a href="#sec02"><span class="num">02</span>流水线</a>
-    <a href="#sec03"><span class="num">03</span>合约架构</a>
-    <a href="#sec04"><span class="num">04</span>核心能力</a>
-    <a href="#sec05"><span class="num">05</span>Pharos 集成</a>
-    <a href="#sec06"><span class="num">06</span>能力索引</a>
-    <a href="#sec07"><span class="num">07</span>提交包</a>
-    <a href="#sec08"><span class="num">08</span>已完成验证</a>
-  </nav>
-
-  <section id="sec01">
-    <div class="sec-head">
-      <span class="sec-num">01</span>
-      <span class="sec-title">它解决什么</span>
-    </div>
+  <!-- PROBLEM -->
+  <section>
+    <div class="kicker"><span class="en">The problem</span><span class="zh">难题</span></div>
+    <h2><span class="en">The part nobody wants to touch</span><span class="zh">没人愿意碰的部分</span></h2>
     <p class="lead">
-      RWA 上链的真正门槛不在「发币」，而在<strong>合规</strong>：谁能持有、能转给谁、如何处置违规地址、收益如何分配——这些规则必须写进代币本身并可被审计。本 Skill 把这套合规发行流程封装为一个 Agent 可端到端执行的工具包：发行前以只读尽调建立<span class="term">可验证的风险评级</span>，发行时由 <span class="term">ERC-3643</span> 风格的身份与转账约束保证合规，发行后将该资产沉淀为可复用的能力单元。
+      <span class="en">Issuing a real-world asset on-chain is <strong>not</strong> "deploy a token." A regulated RWA must answer hard questions inside the token itself.</span>
+      <span class="zh">把现实世界资产搬上链 <strong>不是</strong>「发个代币」。一支受监管的 RWA，必须在代币内部回答几个硬问题。</span>
+    </p>
+    <p class="quote">
+      <span class="en">Who can hold it? Who can they transfer to? What happens to a sanctioned wallet? How is yield distributed and audited?</span>
+      <span class="zh">谁能持有？能转给谁？违规钱包怎么处置？收益怎么分配、怎么审计？</span>
+    </p>
+    <p class="lead">
+      <span class="en">Standard ERC-20 answers none of these. Most "RWA" projects stop at a mint button — and skip the part where an <strong>agent</strong> actually operates the asset over time.</span>
+      <span class="zh">标准 ERC-20 一个都答不了。大多数「RWA」项目停在一个 mint 按钮，跳过了最关键的——一个 <strong>Agent</strong> 如何长期运营这支资产。</span>
     </p>
   </section>
 
-  <section id="sec02">
-    <div class="sec-head">
-      <span class="sec-num">02</span>
-      <span class="sec-title">端到端流水线</span>
-      <span class="sec-note">尽调 → 发行 → 复用</span>
-    </div>
-    <div class="pipeline">
-      <div class="stage">
-        <div class="stage-idx">STEP 01</div>
-        <h3>链上尽调闸门</h3>
-        <p>对发行方与托管地址执行只读链上分析，输出带 evidence 的 GREEN / YELLOW / RED 评级。未通过即拒绝后续一切发行操作。</p>
-        <span class="stage-arrow">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </span>
-      </div>
-      <div class="stage">
-        <div class="stage-idx">STEP 02</div>
-        <h3>合规 RWA 发行</h3>
-        <p>部署 CompliantRWAToken，统一治理投资者准入、受限转账、份额增发与销毁、冻结与恢复，以及链上派息。</p>
-        <span class="stage-arrow">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </span>
-      </div>
-      <div class="stage">
-        <div class="stage-idx">STEP 03</div>
-        <h3>资产 Skill 输出</h3>
-        <p>发行完成后自动生成 <code>skills/&lt;SYMBOL&gt;-asset/</code>，固化合约地址与操作指令，成为可被其他 Agent 调用的能力单元。</p>
+  <!-- FLYWHEEL (hero advantage) -->
+  <section>
+    <div class="kicker"><span class="en">Why it compounds</span><span class="zh">为什么会复利</span></div>
+    <h2><span class="en">The flywheel: every issuance leaves a Skill</span><span class="zh">飞轮：每次发行都留下一个 Skill</span></h2>
+    <p class="lead">
+      <span class="en">Most issuance tools produce <strong>one</strong> deployed token and stop. HatchFi produces a deployed token <strong>plus a reusable agent Skill</strong> for that exact asset — contract address and command set already baked in.</span>
+      <span class="zh">大多数发行工具只产出<strong>一支</strong>代币就结束。HatchFi 产出代币的同时，还产出<strong>一个针对该资产的可复用 Agent Skill</strong>——合约地址和操作命令都已写死。</span>
+    </p>
+    <pre class="ascii"><span class="gd">HatchFi</span> (parent skill)
+  └── issues <span class="hl">MPF</span> on Atlantic   ──spawn──►  <span class="hl">skills/MPF-asset/</span>   ◄── any agent imports
+        └── issues next RWA   ──spawn──►  skills/&lt;NEXT&gt;-asset/      and operates the asset
+                                                                   (whitelist · mint · dividends)
+                                                                   <span class="gd">WITHOUT redeploying</span></pre>
+    <div class="flywheel-banner">
+      <div class="big">
+        <span class="en">More RWAs hatched → more reusable Skills → <span class="hl">the marginal cost of compliant RealFi on Pharos trends toward zero.</span></span>
+        <span class="zh">孵化越多 RWA → 沉淀越多 Skill → <span class="hl">Pharos 上合规 RealFi 的边际成本趋近于零。</span></span>
       </div>
     </div>
+    <p class="lead" style="margin-top:1.1rem;">
+      <span class="en">Already proven, not theoretical: issuing MPF automatically produced <a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a>, a standalone Skill another agent can run today.</span>
+      <span class="zh">已实证，非设想：发行 MPF 自动产出了 <a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a>——其他 Agent 今天就能直接运行的独立 Skill。</span>
+    </p>
   </section>
 
-  <section id="sec03">
-    <div class="sec-head">
-      <span class="sec-num">03</span>
-      <span class="sec-title">合约架构与合规闸门</span>
-      <span class="sec-note">单合约内聚 · 命名对齐 ERC-3643</span>
-    </div>
-    <div class="grid-2">
-      <div class="card">
-        <h3>身份注册模块 <span class="m">IdentityRegistry</span></h3>
-        <ul class="feat">
-          <li><span class="k">准入</span><span><span class="m">registerIdentity</span> / <span class="m">batchRegisterIdentity</span> / <span class="m">removeIdentity</span></span></li>
-          <li><span class="k">查询</span><span><span class="m">isVerified</span> / <span class="m">investorCountry</span></span></li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>合规模块 <span class="m">ModularCompliance</span></h3>
-        <ul class="feat">
-          <li><span class="k">规则</span><span><span class="m">canTransfer</span> / <span class="m">setComplianceRules</span></span></li>
-          <li><span class="k">约束</span><span>持有人上限、单人额度上限、<span class="m">holderCount</span></span></li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>生命周期模块</h3>
-        <ul class="feat">
-          <li><span class="k">份额</span><span><span class="m">mint</span> / <span class="m">burn</span> / <span class="m">forcedTransfer</span></span></li>
-          <li><span class="k">风控</span><span>地址冻结、部分冻结、钱包恢复、全局 <span class="m">pause</span></span></li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>派息模块</h3>
-        <ul class="feat">
-          <li><span class="k">分配</span><span><span class="m">depositDividend</span> / <span class="m">claimDividend</span> / <span class="m">dividendOf</span></span></li>
-          <li><span class="k">模型</span><span>累计每股派息，免遍历持有人、gas 安全</span></li>
-        </ul>
-      </div>
-    </div>
+  <!-- LIVE PROOF -->
+  <section>
+    <div class="kicker"><span class="en">Verify in 60 seconds</span><span class="zh">60 秒可验证</span></div>
+    <h2><span class="en">It's live on Pharos Atlantic</span><span class="zh">已在 Pharos Atlantic 上线</span></h2>
+    <p class="lead">
+      <span class="en">This is not a slide deck. HatchFi is deployed and smoke-tested on-chain.</span>
+      <span class="zh">这不是 PPT。HatchFi 已在链上部署并通过 smoke 测试。</span>
+    </p>
+    <table>
+      <tbody>
+        <tr><td class="k"><span class="en">Contract (MPF)</span><span class="zh">合约（MPF）</span></td><td><a class="ref" href="https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de" target="_blank">0xfef7519bebda6c47af49583dbc9e60801f8aa3de</a></td></tr>
+        <tr><td class="k">Deploy tx</td><td><a class="ref" href="https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d" target="_blank">0x71ebe5…17e4d</a></td></tr>
+        <tr><td class="k">Smoke mint tx</td><td><a class="ref" href="https://atlantic.pharosscan.xyz/tx/0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541" target="_blank">0x7ece3b…b5541</a></td></tr>
+        <tr><td class="k"><span class="en">Network</span><span class="zh">网络</span></td><td>Pharos Atlantic Testnet · chainId 688689</td></tr>
+      </tbody>
+    </table>
+  </section>
 
-    <svg viewBox="0 0 760 392" role="img" aria-label="合规转账闸门数据流" style="width:100%;height:auto;margin-top:1.5rem;font-family:var(--mono);">
-      <defs>
-        <marker id="ah" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto">
-          <path d="M0 0 L7 3 L0 6 Z" fill="#5b9bff"></path>
-        </marker>
-      </defs>
-      <!-- inputs -->
-      <g font-size="13" fill="#c4c9d4">
-        <rect x="20"  y="14" width="210" height="42" rx="8" fill="#1a1e2a" stroke="#262b38"></rect>
-        <text x="125" y="40" text-anchor="middle" fill="#f2f4f8">transfer()</text>
-        <rect x="275" y="14" width="210" height="42" rx="8" fill="#1a1e2a" stroke="#262b38"></rect>
-        <text x="380" y="40" text-anchor="middle" fill="#f2f4f8">mint()</text>
-        <rect x="530" y="14" width="210" height="42" rx="8" fill="#1a1e2a" stroke="#262b38"></rect>
-        <text x="635" y="40" text-anchor="middle" fill="#f2f4f8">forcedTransfer()</text>
+  <!-- COMPLIANCE -->
+  <section>
+    <div class="kicker"><span class="en">Compliance is the feature</span><span class="zh">合规是特性</span></div>
+    <h2><span class="en">A triple gate on every transfer</span><span class="zh">每笔转账的三层闸门</span></h2>
+    <p class="lead">
+      <span class="en">The contract is <span class="term">ERC-3643</span>-style (T-REX). Every transfer is forced through three checks in the <span class="term">_update()</span> hook.</span>
+      <span class="zh">合约采用 <span class="term">ERC-3643</span>（T-REX）风格。每笔转账都被强制经过 <span class="term">_update()</span> 钩子的三层检查。</span>
+    </p>
+    <svg viewBox="0 0 760 300" role="img" style="width:100%;height:auto;margin-top:1.1rem;font-family:var(--mono);">
+      <defs><marker id="ah" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 Z" fill="#2dd4bf"></path></marker></defs>
+      <rect x="240" y="12" width="280" height="42" rx="9" fill="rgba(45,212,191,0.10)" stroke="#2dd4bf"></rect>
+      <text x="380" y="38" text-anchor="middle" font-size="13" fill="#6ee7d8">transfer / mint / forcedTransfer</text>
+      <line x1="380" y1="54" x2="380" y2="78" stroke="#2dd4bf" stroke-width="1.4" marker-end="url(#ah)"></line>
+      <rect x="250" y="80" width="260" height="40" rx="9" fill="rgba(201,162,39,0.10)" stroke="#c9a227"></rect>
+      <text x="380" y="105" text-anchor="middle" font-size="12.5" fill="#d8b94a">_update() hook</text>
+      <g stroke="#2dd4bf" stroke-width="1.4" fill="none" marker-end="url(#ah)" opacity="0.85">
+        <path d="M380 120 L150 168"></path><path d="M380 120 L380 168"></path><path d="M380 120 L610 168"></path>
       </g>
-      <!-- inputs -> hook -->
-      <g stroke="#5b9bff" stroke-width="1.4" fill="none" marker-end="url(#ah)" opacity="0.85">
-        <path d="M125 56 L300 100"></path>
-        <path d="M380 56 L380 100"></path>
-        <path d="M635 56 L460 100"></path>
+      <g font-size="12">
+        <rect x="34" y="170" width="232" height="62" rx="8" fill="#131a16" stroke="#25322b"></rect>
+        <text x="150" y="195" text-anchor="middle" fill="#7c8a82">Identity</text>
+        <text x="150" y="216" text-anchor="middle" fill="#e8ede9">isVerified(to)</text>
+        <rect x="278" y="170" width="204" height="62" rx="8" fill="#131a16" stroke="#25322b"></rect>
+        <text x="380" y="195" text-anchor="middle" fill="#7c8a82">Compliance</text>
+        <text x="380" y="216" text-anchor="middle" fill="#e8ede9">canTransfer · caps</text>
+        <rect x="494" y="170" width="232" height="62" rx="8" fill="#131a16" stroke="#25322b"></rect>
+        <text x="610" y="195" text-anchor="middle" fill="#7c8a82">Freeze</text>
+        <text x="610" y="216" text-anchor="middle" fill="#e8ede9">unfrozen ≥ amount</text>
       </g>
-      <!-- hook -->
-      <rect x="230" y="102" width="300" height="48" rx="9" fill="rgba(91,155,255,0.10)" stroke="#5b9bff"></rect>
-      <text x="380" y="131" text-anchor="middle" font-size="13.5" fill="#8fbcff">_update() · 合规转账钩子</text>
-      <!-- hook -> checks -->
-      <g stroke="#5b9bff" stroke-width="1.4" fill="none" marker-end="url(#ah)" opacity="0.85">
-        <path d="M380 150 L132 206"></path>
-        <path d="M380 150 L380 206"></path>
-        <path d="M380 150 L628 206"></path>
-      </g>
-      <!-- checks -->
-      <g font-size="12.5">
-        <rect x="20"  y="208" width="224" height="66" rx="8" fill="#131620" stroke="#262b38"></rect>
-        <text x="132" y="234" text-anchor="middle" fill="#7c8696">身份层</text>
-        <text x="132" y="256" text-anchor="middle" fill="#f2f4f8">isVerified(to)</text>
-        <rect x="268" y="208" width="224" height="66" rx="8" fill="#131620" stroke="#262b38"></rect>
-        <text x="380" y="234" text-anchor="middle" fill="#7c8696">合规层</text>
-        <text x="380" y="256" text-anchor="middle" fill="#f2f4f8">canTransfer · 持有/额度上限</text>
-        <rect x="516" y="208" width="224" height="66" rx="8" fill="#131620" stroke="#262b38"></rect>
-        <text x="628" y="234" text-anchor="middle" fill="#7c8696">冻结层</text>
-        <text x="628" y="256" text-anchor="middle" fill="#f2f4f8">未冻结 &amp; 可用 ≥ amount</text>
-      </g>
-      <!-- checks -> connector -->
-      <g stroke="#3a4252" stroke-width="1.4" fill="none">
-        <path d="M132 274 L132 300"></path>
-        <path d="M380 274 L380 300"></path>
-        <path d="M628 274 L628 300"></path>
-        <path d="M132 300 L628 300"></path>
-      </g>
-      <!-- outcomes -->
-      <g stroke="#5b9bff" stroke-width="1.4" fill="none" marker-end="url(#ah)" opacity="0.85">
-        <path d="M250 300 L210 332"></path>
-        <path d="M510 300 L560 332"></path>
-      </g>
-      <text x="300" y="318" font-size="11.5" fill="#7c8696">全部通过</text>
-      <text x="520" y="318" font-size="11.5" fill="#7c8696">任一失败</text>
-      <rect x="40"  y="334" width="320" height="46" rx="9" fill="rgba(61,214,140,0.10)" stroke="#3dd68c"></rect>
-      <text x="200" y="362" text-anchor="middle" font-size="12.5" fill="#3dd68c">转账执行 + 派息自动结算</text>
-      <rect x="400" y="334" width="340" height="46" rx="9" fill="#1a1e2a" stroke="#7c8696"></rect>
-      <text x="570" y="356" text-anchor="middle" font-size="11.5" fill="#c4c9d4">revert: NotVerified / ComplianceFailure</text>
-      <text x="570" y="372" text-anchor="middle" font-size="11.5" fill="#c4c9d4">WalletFrozen / InsufficientUnfrozen</text>
+      <rect x="60" y="252" width="300" height="38" rx="9" fill="rgba(61,214,140,0.10)" stroke="#3dd68c"></rect>
+      <text x="210" y="276" text-anchor="middle" font-size="12" fill="#3dd68c">all pass → transfer + dividend settle</text>
+      <rect x="400" y="252" width="300" height="38" rx="9" fill="#1a231e" stroke="#7c8a82"></rect>
+      <text x="550" y="276" text-anchor="middle" font-size="11.5" fill="#b7c2bb">any fail → revert</text>
     </svg>
-    <p style="font-size:0.82rem;color:var(--muted);margin-top:0.9rem;line-height:1.6;">
-      每一笔转移都经由 <span class="m">_update()</span> 钩子的三层检查；<span class="m">mint</span> 与 <span class="m">forcedTransfer</span> 为监管场景仅校验身份层，绕过合规层全局规则但仍要求收款方已验证。
+    <p class="lead" style="font-size:0.9rem;margin-top:0.9rem;">
+      <span class="en"><strong>mint</strong> enforces identity + compliance caps; <strong>forcedTransfer</strong> is a regulatory path (verified recipient only). Backed by 24 Foundry tests and a <a class="ref" href="SECURITY.md">SECURITY.md</a> audit trail.</span>
+      <span class="zh"><strong>mint</strong> 强制身份 + 合规上限；<strong>forcedTransfer</strong> 为监管路径（仅需收款方已验证）。背后是 24 项 Foundry 测试 + <a class="ref" href="SECURITY.md">SECURITY.md</a> 审计记录。</span>
     </p>
   </section>
 
-  <section id="sec04">
-    <div class="sec-head">
-      <span class="sec-num">04</span>
-      <span class="sec-title">核心能力</span>
-    </div>
-    <div class="grid-2">
-      <div class="card">
-        <h3>合规与准入</h3>
-        <ul class="feat">
-          <li><span class="k">双重转账检查</span><span><span class="m">isVerified</span> + <span class="m">canTransfer</span> 同时通过方可转移</span></li>
-          <li><span class="k">投资者准入</span><span>单个与批量身份注册，按国别记录</span></li>
-          <li><span class="k">转账前预检</span><span>只读校验合规结果，规避无效交易与 gas 浪费</span></li>
-          <li><span class="k">规则治理</span><span>持有人上限、单人额度上限链上可配</span></li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>资产生命周期</h3>
-        <ul class="feat">
-          <li><span class="k">份额管理</span><span><span class="m">mint</span> / <span class="m">burn</span> / <span class="m">forcedTransfer</span></span></li>
-          <li><span class="k">风控操作</span><span>地址冻结、部分份额冻结、全局 pause</span></li>
-          <li><span class="k">钱包恢复</span><span><span class="m">recoveryAddress</span> 支持合规场景资产迁移</span></li>
-          <li><span class="k">收益分配</span><span>累计每股派息模型，gas 安全且免遍历持有人</span></li>
-        </ul>
-      </div>
-    </div>
+  <!-- AGENT-NATIVE -->
+  <section>
+    <div class="kicker"><span class="en">Built to be operated by an agent</span><span class="zh">为 Agent 运营而设计</span></div>
+    <h2><span class="en">A Skill, not a script</span><span class="zh">是 Skill，不是脚本</span></h2>
+    <ul class="disc">
+      <li><span class="k"><span class="en">Diligence-first</span><span class="zh">尽调前置</span></span><span><span class="en">RED rating or failed checks block issuance, with evidence.</span><span class="zh">RED 评级或检查不过即拒绝发行，并给出 evidence。</span></span></li>
+      <li><span class="k"><span class="en">Risk tiers</span><span class="zh">风险分档</span></span><span><span class="en">🟢 auto · 🟡 audit trail · 🔴 human confirm before deploy/mint/dividend.</span><span class="zh">🟢 自动 · 🟡 留痕 · 🔴 部署/mint/派息前人工确认。</span></span></li>
+      <li><span class="k"><span class="en">Receipt assertions</span><span class="zh">Receipt 断言</span></span><span><span class="en">Every write verifies status==1 before continuing.</span><span class="zh">每笔写操作验 status==1 才继续。</span></span></li>
+      <li><span class="k"><span class="en">Audit memory</span><span class="zh">审计记忆</span></span><span><span class="en">state.json records diligence, onboarding, dividends, and history.</span><span class="zh">state.json 记录尽调、准入、派息与操作历史。</span></span></li>
+      <li><span class="k"><span class="en">Key safety</span><span class="zh">私钥安全</span></span><span><span class="en">Private key via env only, never committed.</span><span class="zh">私钥仅走环境变量，绝不入库。</span></span></li>
+    </ul>
   </section>
 
-  <section id="sec05">
-    <div class="sec-head">
-      <span class="sec-num">05</span>
-      <span class="sec-title">Pharos 集成与安全</span>
-    </div>
-    <div class="grid-2">
-      <div class="card">
-        <h3>遵循 Skill Engine 规范</h3>
-        <ul class="feat">
-          <li><span class="k"><a class="ref" href="SKILL.md">SKILL.md</a></span><span>能力索引 + 写操作四步预检</span></li>
-          <li><span class="k"><a class="ref" href="assets/networks.json">networks.json</a></span><span>Atlantic / Pacific 的 RPC、Explorer 与验证端点</span></li>
-          <li><span class="k"><a class="ref" href="references/">references</a></span><span>精确 cast / forge 命令、参数表与错误处理</span></li>
-          <li><span class="k">Foundry</span><span>合约、测试、部署脚本与自动化脚本齐备</span></li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>Agent 可审计执行</h3>
-        <ul class="feat">
-          <li><span class="k">私钥隔离</span><span>仅环境变量，命令显式传入，不入库</span></li>
-          <li><span class="k">高风险确认</span><span>部署 / 增发 / 派息须人工 confirm</span></li>
-          <li><span class="k">交易断言</span><span>每笔写操作以 receipt 校验 status</span></li>
-          <li><span class="k">全程留痕</span><span><span class="m">state.json</span> 记录尽调、准入、派息与操作历史</span></li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section id="sec06">
-    <div class="sec-head">
-      <span class="sec-num">06</span>
-      <span class="sec-title">Skill 能力索引</span>
-      <span class="sec-note">意图 → 指令文档</span>
-    </div>
+  <!-- VALIDATION -->
+  <section>
+    <div class="kicker"><span class="en">Completed validation</span><span class="zh">已完成验证</span></div>
+    <h2><span class="en">What's verified</span><span class="zh">验证结果</span></h2>
     <table>
-      <thead>
-        <tr><th>用户场景</th><th>Reference</th><th>类型</th></tr>
-      </thead>
       <tbody>
-        <tr><td class="k">发行前链上尽调与风险评级</td><td><a class="ref" href="references/onchain-diligence.md">onchain-diligence.md</a></td><td><span class="tag read">只读</span></td></tr>
-        <tr><td class="k">合规代币部署、准入与生命周期</td><td><a class="ref" href="references/rwa-issuance.md">rwa-issuance.md</a></td><td><span class="tag write">写操作</span></td></tr>
-        <tr><td class="k">收益存入、查询与领取</td><td><a class="ref" href="references/rwa-dividend.md">rwa-dividend.md</a></td><td><span class="tag write">读 / 写</span></td></tr>
-        <tr><td class="k">发行后生成资产专属 Skill</td><td><a class="ref" href="references/spawn-asset-skill.md">spawn-asset-skill.md</a></td><td><span class="tag read">只读</span></td></tr>
-        <tr><td class="k">Pharos 部署、冒烟与合约验证</td><td><a class="ref" href="references/pharos-deploy-runbook.md">pharos-deploy-runbook.md</a></td><td><span class="tag write">写操作</span></td></tr>
-        <tr><td class="k">基础链上查询与通用操作</td><td><a class="ref" href="references/pharos-base-ops.md">pharos-base-ops.md</a></td><td><span class="tag write">读 / 写</span></td></tr>
+        <tr><td class="k">forge build</td><td><span style="color:var(--ok)"><span class="en">compiled successfully</span><span class="zh">编译成功</span></span></td></tr>
+        <tr><td class="k">forge test</td><td><span style="color:var(--ok)">24 passed · 0 failed</span> <span class="en">(incl. fuzz)</span><span class="zh">（含 fuzz）</span></td></tr>
+        <tr><td class="k"><span class="en">On-chain deploy</span><span class="zh">链上部署</span></td><td><a class="ref" href="https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de" target="_blank">0xfef7…Aa3DE</a></td></tr>
+        <tr><td class="k"><span class="en">On-chain smoke</span><span class="zh">链上 smoke</span></td><td><span style="color:var(--ok)">mint 1e18 · isVerified · holderCount=1</span></td></tr>
+        <tr><td class="k"><span class="en">Flywheel</span><span class="zh">飞轮</span></td><td><a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a> <span class="en">spawned</span><span class="zh">已生成</span></td></tr>
+        <tr><td class="k"><span class="en">Key safety</span><span class="zh">私钥安全</span></td><td class="mono">.env · state.json <span class="en">gitignored</span><span class="zh">已忽略</span></td></tr>
       </tbody>
     </table>
-  </section>
-
-  <section id="sec07">
-    <div class="sec-head">
-      <span class="sec-num">07</span>
-      <span class="sec-title">提交包内容</span>
-    </div>
-    <table>
-      <thead>
-        <tr><th>组件</th><th>说明</th></tr>
-      </thead>
-      <tbody>
-        <tr><td><a class="ref" href="SKILL.md">SKILL.md</a></td><td>Agent 入口：能力索引、预检纪律、风险分档</td></tr>
-        <tr><td><a class="ref" href="references/">references/</a></td><td>7 份链上操作指令（尽调 / 发行 / 派息 / 部署 / 验证 / 繁殖 / 基础）</td></tr>
-        <tr><td><a class="ref" href="assets/rwa/CompliantRWAToken.sol">CompliantRWAToken.sol</a></td><td>ERC-3643 风格 RWA 合约模板</td></tr>
-        <tr><td><a class="ref" href="src/">src/</a> · <a class="ref" href="test/">test/</a> · <a class="ref" href="script/">script/</a></td><td>Foundry 完整工程与 24 项测试</td></tr>
-        <tr><td><a class="ref" href="scripts/">scripts/</a></td><td>preflight · deploy · smoke · verify · spawn 自动化</td></tr>
-        <tr><td><a class="ref" href="VALIDATION_PLAN.md">VALIDATION_PLAN.md</a></td><td>可复现的本地编译、测试与 Pharos 链上验证步骤</td></tr>
-        <tr><td><a class="ref" href="COMPLETED_VALIDATION.md">COMPLETED_VALIDATION.md</a></td><td>本地 + 链上验证摘要</td></tr>
-        <tr><td><a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a></td><td><strong>已生成的资产专属 Skill</strong>（飞轮落点）</td></tr>
-        <tr><td><a class="ref" href="QUICKSTART.md">QUICKSTART.md</a></td><td>5 分钟复现指南</td></tr>
-        <tr><td><a class="ref" href="WORKED_EXAMPLE.md">WORKED_EXAMPLE.md</a></td><td>端到端命令流 + state.example.json</td></tr>
-        <tr><td><a class="ref" href="PHAROS_VISION.md">PHAROS_VISION.md</a></td><td>Pharos RealFi / Agentic 愿景对齐</td></tr>
-      </tbody>
-    </table>
-  </section>
-
-  <section id="sec08">
-    <div class="sec-head">
-      <span class="sec-num">08</span>
-      <span class="sec-title">已完成验证</span>
-      <span class="sec-note">Atlantic Testnet · chainId 688689</span>
-    </div>
-    <table>
-      <thead>
-        <tr><th>验证项</th><th>结果</th></tr>
-      </thead>
-      <tbody>
-        <tr><td class="k">Foundry 工具链</td><td class="mono">forge / cast 1.7.1</td></tr>
-        <tr><td class="k">forge build</td><td><span style="color:#3dd68c;">编译成功</span></td></tr>
-        <tr><td class="k">forge test</td><td><span style="color:#3dd68c;">24 passed · 0 failed</span>（含 fuzz）</td></tr>
-        <tr><td class="k">链上部署</td><td><a class="ref" href="https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de" target="_blank">0xfef7…Aa3DE</a> · <a class="ref" href="https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d" target="_blank">deploy tx</a></td></tr>
-        <tr><td class="k">链上 smoke</td><td><span style="color:#3dd68c;">mint 1e18 成功 · isVerified · holderCount=1</span></td></tr>
-        <tr><td class="k">生态飞轮</td><td><a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a> 已 spawn · 合约地址已固化</td></tr>
-        <tr><td class="k">Pharos Atlantic preflight</td><td><span style="color:#3dd68c;">RPC 可连 · chainId 688689 · 钱包余额非 0</span></td></tr>
-        <tr><td class="k">私钥安全</td><td><span class="mono">.env · cache/ · broadcast/ · state.json</span> 均在 .gitignore</td></tr>
-      </tbody>
-    </table>
-    <p style="font-size:0.82rem;color:var(--muted);margin-top:0.9rem;line-height:1.6;">
-      完整可复现证据与命令见 <a class="ref" href="COMPLETED_VALIDATION.md">COMPLETED_VALIDATION.md</a>。
+    <p class="lead" style="font-size:0.88rem;margin-top:0.9rem;">
+      <span class="en">Full reproducible evidence: <a class="ref" href="COMPLETED_VALIDATION.md">COMPLETED_VALIDATION.md</a> · <a class="ref" href="QUICKSTART.md">QUICKSTART.md</a></span>
+      <span class="zh">完整可复现证据：<a class="ref" href="COMPLETED_VALIDATION.md">COMPLETED_VALIDATION.md</a> · <a class="ref" href="QUICKSTART.md">QUICKSTART.md</a></span>
     </p>
   </section>
 
   <footer>
-    <span>Compliant RWA Issuance Agent</span>
-    Agent 入口 <a class="ref" href="SKILL.md">SKILL.md</a> · 详细说明 <a class="ref" href="SUBMISSION.md">SUBMISSION.md</a> · 验证 <a class="ref" href="COMPLETED_VALIDATION.md">COMPLETED_VALIDATION.md</a> · English pack: <code>../submission-build/pharos-rwa-skill-en/</code>
+    HatchFi <span class="gd">链孵</span> · Compliant RWA Issuance Agent<br/>
+    <span class="en">Built by Zhiwei Chen (陈知维) · Researcher at The Chinese University of Hong Kong · Pharos Skill-to-Agent Hackathon 2026</span>
+    <span class="zh">由陈知维（Zhiwei Chen）构建 · 香港中文大学研究员 · Pharos Skill-to-Agent Hackathon 2026</span>
   </footer>
+
+  <script>
+    function setLang(l) {
+      document.body.className = 'lang-' + l;
+      document.documentElement.lang = (l === 'zh') ? 'zh-CN' : 'en';
+      document.getElementById('btn-en').classList.toggle('active', l === 'en');
+      document.getElementById('btn-zh').classList.toggle('active', l === 'zh');
+      try { localStorage.setItem('hatchfi-lang', l); } catch (e) {}
+    }
+    (function () {
+      var saved = 'en';
+      try { saved = localStorage.getItem('hatchfi-lang') || 'en'; } catch (e) {}
+      setLang(saved);
+    })();
+  </script>
 </body>
 </html>

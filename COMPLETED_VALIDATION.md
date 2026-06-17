@@ -51,7 +51,7 @@ forge test
 Result:
 
 ```text
-Suite result: ok. 22 passed; 0 failed; 0 skipped
+Suite result: ok. 24 passed; 0 failed; 0 skipped
 ```
 
 The test suite (including a fuzz test) covers the core ERC-3643-style behavior:

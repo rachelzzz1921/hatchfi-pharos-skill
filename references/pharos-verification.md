@@ -31,7 +31,7 @@ command -v cast && cast --version
 forge build
 ```
 
-**FAIL 处理**：仅做最小化修复（import、OZ v5 接口、pragma）。**不改 ERC-3643 业务语义**。记录改动到 `DECISIONS.md`。
+**FAIL 处理**：仅做最小化修复（import、OZ v5 接口、pragma）。**不改 ERC-3643 业务语义**。记录改动到 `SECURITY.md` 或提交说明。
 
 ---
 

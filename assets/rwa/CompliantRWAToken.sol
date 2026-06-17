@@ -219,8 +219,8 @@ contract CompliantRWAToken is ERC20, Ownable, Pausable {
         override
         whenNotPaused
     {
-        // 普通转账（双方非零地址）才跑完整合规检查；
-        // mint（from=0）只要求收款方 isVerified；burn（to=0）放行
+        // 普通转账：完整 _enforceTransfer（身份 + 合规 + 冻结）
+        // mint：isVerified + canTransfer(0,to,value)；burn（to=0）放行
         if (from != address(0) && to != address(0)) {
             _enforceTransfer(from, to, value);
         } else if (from == address(0)) {
