@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HatchFi · Compliant RWA Issuance Agent · Pharos Skill</title>
+  <style>
+    :root {
+      --bg: #0a0b0e;
+      --surface: #131620;
+      --surface-2: #1a1e2a;
+      --border: #262b38;
+      --border-soft: #1e2230;
+      --text: #f2f4f8;
+      --text-2: #c4c9d4;
+      --muted: #7c8696;
+      --accent: #5b9bff;
+      --accent-hover: #8fbcff;
+      --accent-soft: rgba(91, 155, 255, 0.10);
+      --accent-line: rgba(91, 155, 255, 0.28);
+      --mono: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+      --sans: "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background:
+        radial-gradient(1200px 600px at 80% -10%, rgba(91,155,255,0.06), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      padding: 3.5rem 1.75rem 5rem;
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+    a { color: inherit; text-decoration: none; }
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .hero { padding-bottom: 2rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      line-height: 1.12;
+      margin: 0.9rem 0 0;
+    }
+    .hero-sub {
+      margin-top: 1rem;
+      font-size: 1.08rem;
+      line-height: 1.6;
+      color: var(--text-2);
+      max-width: 42rem;
+      font-weight: 350;
+    }
+    .hero-sub strong { color: var(--text); font-weight: 550; }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin-top: 2.5rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    @media (max-width: 720px) { .metrics { grid-template-columns: repeat(2, 1fr); } }
+    .metric { padding: 1.15rem 1.3rem; border-right: 1px solid var(--border-soft); }
+    .metric:last-child { border-right: none; }
+    @media (max-width: 720px) {
+      .metric:nth-child(2) { border-right: none; }
+      .metric:nth-child(-n+2) { border-bottom: 1px solid var(--border-soft); }
+    }
+    .metric-val { font-size: 1.7rem; font-weight: 600; letter-spacing: -0.02em; }
+    .metric-val.mono { font-family: var(--mono); font-size: 1.35rem; }
+    .metric-lbl { font-size: 0.76rem; color: var(--muted); margin-top: 0.15rem; letter-spacing: 0.01em; }
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.85rem 0;
+      margin-bottom: 1.75rem;
+      background: rgba(10, 11, 14, 0.82);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .nav a {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.03em;
+      color: var(--muted);
+      padding: 0.3rem 0.65rem;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .nav a:hover { color: var(--accent); border-color: var(--accent-line); background: var(--accent-soft); }
+    .nav .num { color: var(--accent); margin-right: 0.3rem; }
+    section { margin-bottom: 3rem; scroll-margin-top: 4.5rem; }
+    .sec-head { display: flex; align-items: baseline; gap: 0.7rem; margin-bottom: 1.25rem; }
+    .sec-num { font-family: var(--mono); font-size: 0.78rem; color: var(--accent); }
+    .sec-title { font-size: 1.18rem; font-weight: 600; letter-spacing: -0.01em; }
+    .sec-note { font-size: 0.85rem; color: var(--muted); margin-left: auto; }
+    .lead {
+      font-size: 1.02rem;
+      line-height: 1.7;
+      color: var(--text-2);
+      max-width: 46rem;
+    }
+    .lead strong { color: var(--text); font-weight: 550; }
+    .lead .term { font-family: var(--mono); font-size: 0.92em; color: var(--accent); }
+    .pipeline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.85rem; }
+    @media (max-width: 720px) { .pipeline { grid-template-columns: 1fr; } }
+    .stage {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.4rem;
+      position: relative;
+    }
+    .stage-idx {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+    .stage h3 { font-size: 1.02rem; font-weight: 600; margin: 0.5rem 0 0.55rem; letter-spacing: -0.01em; }
+    .stage p { font-size: 0.87rem; color: var(--text-2); line-height: 1.6; font-weight: 350; }
+    .stage code { font-family: var(--mono); font-size: 0.82em; color: var(--accent); background: var(--accent-soft); padding: 0.05rem 0.3rem; border-radius: 4px; }
+    .stage-arrow {
+      position: absolute; right: -0.62rem; top: 2.1rem;
+      width: 1.1rem; height: 1.1rem;
+      display: none; align-items: center; justify-content: center;
+      color: var(--muted); z-index: 2;
+    }
+    @media (min-width: 721px) { .stage:not(:last-child) .stage-arrow { display: flex; } }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+    @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.4rem 1.5rem; }
+    .card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; letter-spacing: -0.01em; }
+    .feat { list-style: none; }
+    .feat li {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 0.6rem;
+      font-size: 0.875rem;
+      color: var(--text-2);
+      padding: 0.4rem 0;
+      line-height: 1.55;
+      font-weight: 350;
+    }
+    .feat li + li { border-top: 1px solid var(--border-soft); }
+    .feat .k { color: var(--text); font-weight: 500; }
+    .feat .m { font-family: var(--mono); font-size: 0.82em; color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    th, td { text-align: left; padding: 0.78rem 1.1rem; border-bottom: 1px solid var(--border-soft); }
+    tr:last-child td { border-bottom: none; }
+    th { background: var(--surface-2); color: var(--muted); font-weight: 500; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    td { color: var(--text-2); font-weight: 350; }
+    td.k { color: var(--text); font-weight: 450; }
+    .mono { font-family: var(--mono); }
+    a.ref {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--accent);
+      border-bottom: 1px dashed var(--accent-line);
+      padding-bottom: 1px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    a.ref::after { content: " ↗"; font-size: 0.78em; opacity: 0.55; }
+    a.ref:hover { color: var(--accent-hover); border-bottom-color: var(--accent-hover); border-bottom-style: solid; }
+    .tag {
+      display: inline-block; font-family: var(--mono); font-size: 0.68rem;
+      padding: 0.12rem 0.5rem; border-radius: 999px; letter-spacing: 0.02em;
+    }
+    .tag.read { background: rgba(91,155,255,0.12); color: var(--accent); }
+    .tag.write { background: rgba(124,134,150,0.14); color: var(--text-2); }
+    footer {
+      margin-top: 3.5rem; padding-top: 1.4rem; border-top: 1px solid var(--border);
+      font-family: var(--mono); font-size: 0.76rem; color: var(--muted);
+      display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; align-items: center;
+    }
+    footer span { color: var(--text-2); }
+    footer a.ref { font-size: 0.76rem; }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="eyebrow">Pharos Skill-to-Agent · Compliant RealFi</div>
+    <h1>HatchFi · Compliant RWA Issuance Agent</h1>
+    <p class="hero-sub">
+      An agent-native issuance layer for compliant RealFi on Pharos. <strong>Already deployed on Atlantic, smoke-tested, and spawned the <code>skills/MPF-asset/</code> child Skill</strong> — from diligence and ERC-3643-style compliant issuance to lifecycle governance and dividend distribution, every step is auditable and every issued asset becomes a reusable capability (Skill-to-Skill flywheel).
+    </p>
+    <div class="metrics">
+      <div class="metric"><div class="metric-val">24</div><div class="metric-lbl">Foundry tests passed</div></div>
+      <div class="metric"><div class="metric-val mono">Live</div><div class="metric-lbl">Deployed on Atlantic</div></div>
+      <div class="metric"><div class="metric-val">7+</div><div class="metric-lbl">Reference command sets</div></div>
+      <div class="metric"><div class="metric-val mono">688689</div><div class="metric-lbl">Atlantic Testnet chainId</div></div>
+    </div>
+  </header>
+
+  <nav class="nav">
+    <a href="#sec01"><span class="num">01</span>Problem</a>
+    <a href="#sec02"><span class="num">02</span>Pipeline</a>
+    <a href="#sec03"><span class="num">03</span>Contract</a>
+    <a href="#sec04"><span class="num">04</span>Capabilities</a>
+    <a href="#sec05"><span class="num">05</span>Pharos Fit</a>
+    <a href="#sec06"><span class="num">06</span>Skill Index</a>
+    <a href="#sec07"><span class="num">07</span>Package</a>
+    <a href="#sec08"><span class="num">08</span>Validation</a>
+  </nav>
+
+  <section id="sec01">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <span class="sec-title">What it solves</span>
+    </div>
+    <p class="lead">
+      The real barrier to RWAs on-chain is not "deploying a token" — it is <strong>compliance</strong>: who can hold, who they can transfer to, how to handle non-compliant addresses, and how yield is distributed. These rules must live inside the token itself and remain auditable. HatchFi packages this compliant issuance flow into an agent-operable toolkit: a read-only diligence step builds a <span class="term">verifiable risk rating</span> before issuance, <span class="term">ERC-3643</span>-style identity and transfer constraints enforce compliance during issuance, and each issued asset is then distilled into a reusable capability unit.
+    </p>
+  </section>
+
+  <section id="sec02">
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <span class="sec-title">End-to-end pipeline</span>
+      <span class="sec-note">diligence → issuance → reuse</span>
+    </div>
+    <div class="pipeline">
+      <div class="stage">
+        <div class="stage-idx">STEP 01</div>
+        <h3>On-chain diligence gate</h3>
+        <p>Run read-only on-chain analysis on issuer and custodian addresses, producing an evidence-backed GREEN / YELLOW / RED rating. A failed rating blocks all subsequent issuance operations.</p>
+        <span class="stage-arrow">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </div>
+      <div class="stage">
+        <div class="stage-idx">STEP 02</div>
+        <h3>Compliant RWA issuance</h3>
+        <p>Deploy CompliantRWAToken with unified governance over investor eligibility, restricted transfers, mint &amp; burn, freeze &amp; recovery, and on-chain dividends.</p>
+        <span class="stage-arrow">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </div>
+      <div class="stage">
+        <div class="stage-idx">STEP 03</div>
+        <h3>Asset Skill output</h3>
+        <p>After issuance, auto-generate <code>skills/&lt;SYMBOL&gt;-asset/</code> with the contract address and command set baked in — a capability unit other agents can call directly.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec03">
+    <div class="sec-head">
+      <span class="sec-num">03</span>
+      <span class="sec-title">Contract architecture &amp; compliance gate</span>
+      <span class="sec-note">single-contract · ERC-3643-aligned naming</span>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Identity module <span class="m">IdentityRegistry</span></h3>
+        <ul class="feat">
+          <li><span class="k">Onboarding</span><span><span class="m">registerIdentity</span> / <span class="m">batchRegisterIdentity</span> / <span class="m">removeIdentity</span></span></li>
+          <li><span class="k">Query</span><span><span class="m">isVerified</span> / <span class="m">investorCountry</span></span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Compliance module <span class="m">ModularCompliance</span></h3>
+        <ul class="feat">
+          <li><span class="k">Rules</span><span><span class="m">canTransfer</span> / <span class="m">setComplianceRules</span></span></li>
+          <li><span class="k">Caps</span><span>max holders, max balance per investor, <span class="m">holderCount</span></span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Lifecycle module</h3>
+        <ul class="feat">
+          <li><span class="k">Supply</span><span><span class="m">mint</span> / <span class="m">burn</span> / <span class="m">forcedTransfer</span></span></li>
+          <li><span class="k">Risk</span><span>address freeze, partial freeze, wallet recovery, global <span class="m">pause</span></span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Dividend module</h3>
+        <ul class="feat">
+          <li><span class="k">Distribute</span><span><span class="m">depositDividend</span> / <span class="m">claimDividend</span> / <span class="m">dividendOf</span></span></li>
+          <li><span class="k">Model</span><span>cumulative per-share, no holder iteration, gas-safe</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <svg viewBox="0 0 760 392" role="img" aria-label="Compliant transfer gate data flow" style="width:100%;height:auto;margin-top:1.5rem;font-family:var(--mono);">
+      <defs>
+        <marker id="ah" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto">
+          <path d="M0 0 L7 3 L0 6 Z" fill="#5b9bff"></path>
+        </marker>
+      </defs>
+      <g font-size="13" fill="#c4c9d4">
+        <rect x="20"  y="14" width="210" height="42" rx="8" fill="#1a1e2a" stroke="#262b38"></rect>
+        <text x="125" y="40" text-anchor="middle" fill="#f2f4f8">transfer()</text>
+        <rect x="275" y="14" width="210" height="42" rx="8" fill="#1a1e2a" stroke="#262b38"></rect>
+        <text x="380" y="40" text-anchor="middle" fill="#f2f4f8">mint()</text>
+        <rect x="530" y="14" width="210" height="42" rx="8" fill="#1a1e2a" stroke="#262b38"></rect>
+        <text x="635" y="40" text-anchor="middle" fill="#f2f4f8">forcedTransfer()</text>
+      </g>
+      <g stroke="#5b9bff" stroke-width="1.4" fill="none" marker-end="url(#ah)" opacity="0.85">
+        <path d="M125 56 L300 100"></path>
+        <path d="M380 56 L380 100"></path>
+        <path d="M635 56 L460 100"></path>
+      </g>
+      <rect x="230" y="102" width="300" height="48" rx="9" fill="rgba(91,155,255,0.10)" stroke="#5b9bff"></rect>
+      <text x="380" y="131" text-anchor="middle" font-size="13.5" fill="#8fbcff">_update() · compliance transfer hook</text>
+      <g stroke="#5b9bff" stroke-width="1.4" fill="none" marker-end="url(#ah)" opacity="0.85">
+        <path d="M380 150 L132 206"></path>
+        <path d="M380 150 L380 206"></path>
+        <path d="M380 150 L628 206"></path>
+      </g>
+      <g font-size="12.5">
+        <rect x="20"  y="208" width="224" height="66" rx="8" fill="#131620" stroke="#262b38"></rect>
+        <text x="132" y="234" text-anchor="middle" fill="#7c8696">Identity layer</text>
+        <text x="132" y="256" text-anchor="middle" fill="#f2f4f8">isVerified(to)</text>
+        <rect x="268" y="208" width="224" height="66" rx="8" fill="#131620" stroke="#262b38"></rect>
+        <text x="380" y="234" text-anchor="middle" fill="#7c8696">Compliance layer</text>
+        <text x="380" y="256" text-anchor="middle" fill="#f2f4f8">canTransfer · holder/balance caps</text>
+        <rect x="516" y="208" width="224" height="66" rx="8" fill="#131620" stroke="#262b38"></rect>
+        <text x="628" y="234" text-anchor="middle" fill="#7c8696">Freeze layer</text>
+        <text x="628" y="256" text-anchor="middle" fill="#f2f4f8">unfrozen &amp; available ≥ amount</text>
+      </g>
+      <g stroke="#3a4252" stroke-width="1.4" fill="none">
+        <path d="M132 274 L132 300"></path>
+        <path d="M380 274 L380 300"></path>
+        <path d="M628 274 L628 300"></path>
+        <path d="M132 300 L628 300"></path>
+      </g>
+      <g stroke="#5b9bff" stroke-width="1.4" fill="none" marker-end="url(#ah)" opacity="0.85">
+        <path d="M250 300 L210 332"></path>
+        <path d="M510 300 L560 332"></path>
+      </g>
+      <text x="300" y="318" font-size="11.5" fill="#7c8696">all pass</text>
+      <text x="520" y="318" font-size="11.5" fill="#7c8696">any fails</text>
+      <rect x="40"  y="334" width="320" height="46" rx="9" fill="rgba(61,214,140,0.10)" stroke="#3dd68c"></rect>
+      <text x="200" y="362" text-anchor="middle" font-size="12.5" fill="#3dd68c">transfer executes + dividend settles</text>
+      <rect x="400" y="334" width="340" height="46" rx="9" fill="#1a1e2a" stroke="#7c8696"></rect>
+      <text x="570" y="356" text-anchor="middle" font-size="11.5" fill="#c4c9d4">revert: NotVerified / ComplianceFailure</text>
+      <text x="570" y="372" text-anchor="middle" font-size="11.5" fill="#c4c9d4">WalletFrozen / InsufficientUnfrozen</text>
+    </svg>
+    <p style="font-size:0.82rem;color:var(--muted);margin-top:0.9rem;line-height:1.6;">
+      Every transfer passes the triple check of the <span class="m">_update()</span> hook; <span class="m">mint</span> enforces both identity and compliance caps (max holders / max balance per investor); <span class="m">forcedTransfer</span> is a regulatory path that checks identity only, bypassing global compliance rules while still requiring a verified recipient.
+    </p>
+  </section>
+
+  <section id="sec04">
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <span class="sec-title">Core capabilities</span>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Compliance &amp; access</h3>
+        <ul class="feat">
+          <li><span class="k">Dual transfer check</span><span><span class="m">isVerified</span> + <span class="m">canTransfer</span> must both pass</span></li>
+          <li><span class="k">Investor onboarding</span><span>single &amp; batch identity registration, recorded by country</span></li>
+          <li><span class="k">Pre-transfer preview</span><span>read-only compliance check avoids invalid txs and wasted gas</span></li>
+          <li><span class="k">Rule governance</span><span>max holders and per-investor caps configurable on-chain</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Asset lifecycle</h3>
+        <ul class="feat">
+          <li><span class="k">Supply mgmt</span><span><span class="m">mint</span> / <span class="m">burn</span> / <span class="m">forcedTransfer</span></span></li>
+          <li><span class="k">Risk controls</span><span>address freeze, partial freeze, global pause</span></li>
+          <li><span class="k">Wallet recovery</span><span><span class="m">recoveryAddress</span> migrates assets in compliant scenarios</span></li>
+          <li><span class="k">Yield distribution</span><span>cumulative per-share model, gas-safe, no holder iteration</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec05">
+    <div class="sec-head">
+      <span class="sec-num">05</span>
+      <span class="sec-title">Pharos integration &amp; safety</span>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Follows the Skill Engine spec</h3>
+        <ul class="feat">
+          <li><span class="k"><a class="ref" href="SKILL.md">SKILL.md</a></span><span>capability index + 4-step write pre-checks</span></li>
+          <li><span class="k"><a class="ref" href="assets/networks.json">networks.json</a></span><span>Atlantic / Pacific RPC, explorer &amp; verify endpoints</span></li>
+          <li><span class="k"><a class="ref" href="references/">references</a></span><span>exact cast / forge commands, params &amp; error handling</span></li>
+          <li><span class="k">Foundry</span><span>contract, tests, deploy scripts &amp; automation included</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Auditable agent execution</h3>
+        <ul class="feat">
+          <li><span class="k">Key isolation</span><span>env var only, passed explicitly, never committed</span></li>
+          <li><span class="k">High-risk confirm</span><span>deploy / mint / dividend require human confirm</span></li>
+          <li><span class="k">Tx assertion</span><span>every write verifies receipt status</span></li>
+          <li><span class="k">Audit trail</span><span><span class="m">state.json</span> records diligence, onboarding, dividends &amp; history</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec06">
+    <div class="sec-head">
+      <span class="sec-num">06</span>
+      <span class="sec-title">Skill capability index</span>
+      <span class="sec-note">intent → reference</span>
+    </div>
+    <table>
+      <thead>
+        <tr><th>User scenario</th><th>Reference</th><th>Type</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="k">Pre-issuance on-chain diligence &amp; risk rating</td><td><a class="ref" href="references/onchain-diligence.md">onchain-diligence.md</a></td><td><span class="tag read">read-only</span></td></tr>
+        <tr><td class="k">Compliant token deploy, onboarding &amp; lifecycle</td><td><a class="ref" href="references/rwa-issuance.md">rwa-issuance.md</a></td><td><span class="tag write">write</span></td></tr>
+        <tr><td class="k">Dividend deposit, query &amp; claim</td><td><a class="ref" href="references/rwa-dividend.md">rwa-dividend.md</a></td><td><span class="tag write">read / write</span></td></tr>
+        <tr><td class="k">Spawn asset-specific Skill after issuance</td><td><a class="ref" href="references/spawn-asset-skill.md">spawn-asset-skill.md</a></td><td><span class="tag read">read-only</span></td></tr>
+        <tr><td class="k">Pharos deploy, smoke &amp; contract verify</td><td><a class="ref" href="references/pharos-deploy-runbook.md">pharos-deploy-runbook.md</a></td><td><span class="tag write">write</span></td></tr>
+        <tr><td class="k">Base on-chain queries &amp; ops</td><td><a class="ref" href="references/pharos-base-ops.md">pharos-base-ops.md</a></td><td><span class="tag write">read / write</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="sec07">
+    <div class="sec-head">
+      <span class="sec-num">07</span>
+      <span class="sec-title">Submission package</span>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Component</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><a class="ref" href="SKILL.md">SKILL.md</a></td><td>Agent entry: capability index, pre-check discipline, risk tiers</td></tr>
+        <tr><td><a class="ref" href="references/">references/</a></td><td>7 on-chain command sets (diligence / issuance / dividend / deploy / verify / spawn / base)</td></tr>
+        <tr><td><a class="ref" href="assets/rwa/CompliantRWAToken.sol">CompliantRWAToken.sol</a></td><td>ERC-3643-style RWA contract template</td></tr>
+        <tr><td><a class="ref" href="src/">src/</a> · <a class="ref" href="test/">test/</a> · <a class="ref" href="script/">script/</a></td><td>Full Foundry project with 24 tests</td></tr>
+        <tr><td><a class="ref" href="scripts/">scripts/</a></td><td>preflight · deploy · smoke · verify · spawn automation</td></tr>
+        <tr><td><a class="ref" href="VALIDATION_PLAN.md">VALIDATION_PLAN.md</a></td><td>Reproducible local build, test &amp; Pharos on-chain steps</td></tr>
+        <tr><td><a class="ref" href="COMPLETED_VALIDATION.md">COMPLETED_VALIDATION.md</a></td><td>Local + on-chain validation summary</td></tr>
+        <tr><td><a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a></td><td><strong>Spawned asset-specific Skill</strong> (flywheel artifact)</td></tr>
+        <tr><td><a class="ref" href="QUICKSTART.md">QUICKSTART.md</a></td><td>5-minute reproduce guide</td></tr>
+        <tr><td><a class="ref" href="WORKED_EXAMPLE.md">WORKED_EXAMPLE.md</a></td><td>End-to-end command flow + state.example.json</td></tr>
+        <tr><td><a class="ref" href="PHAROS_VISION.md">PHAROS_VISION.md</a></td><td>Pharos RealFi / Agentic vision alignment</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="sec08">
+    <div class="sec-head">
+      <span class="sec-num">08</span>
+      <span class="sec-title">Completed validation</span>
+      <span class="sec-note">Atlantic Testnet · chainId 688689</span>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Check</th><th>Result</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="k">Foundry toolchain</td><td class="mono">forge / cast 1.7.1</td></tr>
+        <tr><td class="k">forge build</td><td><span style="color:#3dd68c;">compiled successfully</span></td></tr>
+        <tr><td class="k">forge test</td><td><span style="color:#3dd68c;">24 passed · 0 failed</span> (incl. fuzz)</td></tr>
+        <tr><td class="k">On-chain deploy</td><td><a class="ref" href="https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de" target="_blank">0xfef7…Aa3DE</a> · <a class="ref" href="https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d" target="_blank">deploy tx</a></td></tr>
+        <tr><td class="k">On-chain smoke</td><td><span style="color:#3dd68c;">mint 1e18 succeeded · isVerified · holderCount=1</span></td></tr>
+        <tr><td class="k">Ecosystem flywheel</td><td><a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a> spawned · contract address baked in</td></tr>
+        <tr><td class="k">Pharos Atlantic preflight</td><td><span style="color:#3dd68c;">RPC reachable · chainId 688689 · non-zero balance</span></td></tr>
+        <tr><td class="k">Key safety</td><td><span class="mono">.env · cache/ · broadcast/ · state.json</span> all gitignored</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:0.82rem;color:var(--muted);margin-top:0.9rem;line-height:1.6;">
+      Full reproducible evidence and commands in <a class="ref" href="COMPLETED_VALIDATION.md">COMPLETED_VALIDATION.md</a>.
+    </p>
+  </section>
+
+  <footer>
+    <span>HatchFi · Compliant RWA Issuance Agent</span>
+    Agent entry <a class="ref" href="SKILL.md">SKILL.md</a> · Details <a class="ref" href="SUBMISSION.md">SUBMISSION.md</a> · Validation <a class="ref" href="COMPLETED_VALIDATION.md">COMPLETED_VALIDATION.md</a> · Chinese pack: <code>../pharos-rwa-skill-zh/</code>
+  </footer>
+</body>
+</html>

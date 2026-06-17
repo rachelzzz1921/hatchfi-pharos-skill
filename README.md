@@ -12,7 +12,7 @@ Pharos Skill-to-Agent package · live on Atlantic · Skill→Skill flywheel
 [![status](https://img.shields.io/badge/status-deployed_%26_smoke_passed-c9a227)](./DEPLOYMENT_RESULT.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e)](./src/CompliantRWAToken.sol)
 
-**📊 [Submission Dashboard (rendered)](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)**  ·  [Markdown 版](./SUBMISSION_DASHBOARD.md)
+**📊 Submission Dashboard:**  [English (rendered)](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.en.html)  ·  [中文（渲染版）](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)  ·  [Markdown](./SUBMISSION_DASHBOARD.md)
 
 </div>
 
@@ -80,7 +80,7 @@ More: [`QUICKSTART.md`](./QUICKSTART.md) · [`WORKED_EXAMPLE.md`](./WORKED_EXAMP
 | Doc | 内容 |
 |---|---|
 | [`SKILL.md`](./SKILL.md) | Agent entry — capability index, pre-checks, risk tiers |
-| [`SUBMISSION_DASHBOARD.html`](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html) | 可视化看板（渲染版） |
+| [Dashboard · EN](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.en.html) · [ZH](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html) | Visual dashboard (rendered) |
 | [`COMPLETED_VALIDATION.md`](./COMPLETED_VALIDATION.md) | Local + on-chain validation evidence |
 | [`DEPLOYMENT_RESULT.md`](./DEPLOYMENT_RESULT.md) | Deploy + smoke record |
 | [`SECURITY.md`](./SECURITY.md) | Audit findings & fixes |
