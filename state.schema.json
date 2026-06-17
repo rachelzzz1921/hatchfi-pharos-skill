@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RWA Agent State Memory",
+  "description": "合规 RWA 发行 Agent 的跨步骤状态记忆。agent 每完成一步读取并更新此文件，使「尽调→发行→派息」全流程具备连续记忆。这是 MemOS 式结构化记忆在 skill 层的极简落地——不放进合约（链下状态不该上链），而由 harness 在本地维护。",
+  "type": "object",
+  "properties": {
+    "config": {
+      "type": "object",
+      "description": "发行方可配置项。denylist 让尽调闸门具备确定性的拒绝路径（命中即 RED）。",
+      "properties": {
+        "denylist": {
+          "type": "array",
+          "description": "禁投地址名单（黑名单/制裁名单）。尽调时若 target 命中，evidence.flag=risk → 评级 RED → 拒绝发行。",
+          "items": { "type": "string", "description": "禁投地址" }
+        }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "description": "本次发行的 RWA 资产元信息",
+      "properties": {
+        "name": { "type": "string", "description": "资产名，如 'Manhattan Property Fund'" },
+        "symbol": { "type": "string", "description": "代币符号，如 'MPF'" },
+        "address": { "type": "string", "description": "部署后的合约地址；为空表示尚未发行" },
+        "deployed_at": { "type": "string", "description": "部署时间 ISO8601" },
+        "deploy_tx": { "type": "string", "description": "部署交易哈希，可审计" },
+        "max_holders": { "type": "integer", "description": "合规规则：最大持有人数" },
+        "max_balance_per_investor": { "type": "string", "description": "合规规则：单投资者持仓上限" }
+      }
+    },
+    "diligence": {
+      "type": "object",
+      "description": "发行前的尽调闸门结果（B skill 产出）",
+      "properties": {
+        "target": { "type": "string", "description": "被尽调地址（托管方/发行方）" },
+        "rating": { "type": "string", "enum": ["GREEN", "YELLOW", "RED", "UNCHECKED"], "description": "红黄绿三档" },
+        "passed": { "type": "boolean", "description": "是否通过闸门。false 时 agent 必须拒绝一切发行操作" },
+        "checked_at": { "type": "string" },
+        "evidence": {
+          "type": "array",
+          "description": "可验证依据数组——每条结论都能追溯到具体 cast 命令与返回值，规则确定性、可复现",
+          "items": {
+            "type": "object",
+            "properties": {
+              "check": { "type": "string", "description": "检查项标识，如 is_contract / tx_count / balance" },
+              "cmd": { "type": "string", "description": "实际执行的 cast 命令" },
+              "result": { "type": "string", "description": "命令返回的原始值" },
+              "infer": { "type": "string", "description": "从返回值推出的结论" },
+              "flag": { "type": "string", "enum": ["ok", "warn", "risk"], "description": "该项的风险标记" }
+            },
+            "required": ["check", "cmd", "result", "infer", "flag"]
+          }
+        }
+      }
+    },
+    "whitelist": {
+      "type": "array",
+      "description": "已注册的合规投资者身份（registerIdentity 的记录）",
+      "items": {
+        "type": "object",
+        "properties": {
+          "addr": { "type": "string" },
+          "country": { "type": "integer", "description": "ISO 3166 地区码" },
+          "tx": { "type": "string", "description": "注册交易哈希" },
+          "at": { "type": "string" }
+        }
+      }
+    },
+    "dividends": {
+      "type": "array",
+      "description": "派息历史（depositDividend 的记录）",
+      "items": {
+        "type": "object",
+        "properties": {
+          "amount": { "type": "string", "description": "存入的 PHRS 数量" },
+          "tx": { "type": "string" },
+          "at": { "type": "string" }
+        }
+      }
+    },
+    "spawned_skill": {
+      "type": "object",
+      "description": "D 自我繁殖产出——发行完成后自动为本资产生成的专属 skill 包路径（生态飞轮的落点）",
+      "properties": {
+        "generated": { "type": "boolean" },
+        "path": { "type": "string", "description": "生成的资产专属 skill 目录" },
+        "generated_at": { "type": "string" }
+      }
+    },
+    "last_action": { "type": "string", "description": "最近一次操作，用于断点续作" },
+    "history": {
+      "type": "array",
+      "description": "全流程操作流水（审计用，对齐金融可审计要求）",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string" },
+          "risk": { "type": "string", "enum": ["low", "medium", "high"], "description": "操作风险档（统一风险分级框架）" },
+          "confirmed_by_human": { "type": "boolean", "description": "高风险操作是否经人确认" },
+          "tx": { "type": "string" },
+          "at": { "type": "string" }
+        }
+      }
+    }
+  },
+  "required": ["asset", "diligence", "whitelist", "dividends", "last_action", "history"]
+}

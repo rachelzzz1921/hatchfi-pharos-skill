@@ -1,0 +1,27 @@
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+
+# Foundry
+cache/
+out/
+lib/
+broadcast/
+
+# Node (if any)
+node_modules/
+
+# Local agent state (may contain addresses; regenerate on deploy)
+state.json
+
+# Spawned skills (generated at runtime) — MPF-asset committed as flywheel proof
+skills/*
+!skills/MPF-asset/
+
+# Python
+scripts/__pycache__/
+.DS_Store
+DECISIONS.md
+CLAUDE_CODE_PROMPT.md
+DEMO.md

@@ -1,0 +1,31 @@
+---
+name: mpf-asset
+description: Asset-specific operations for Manhattan Property Fund (MPF) on Pharos Atlantic Testnet. Use this skill whenever a user asks to manage, inspect, whitelist, mint, transfer-check, or distribute dividends for this exact deployed RWA asset.
+---
+
+# Skill: MPF Asset Operations (Manhattan Property Fund)
+
+> Contract: `0xfef7519bebda6c47af49583dbc9e60801f8aa3de` (`CompliantRWAToken`, Pharos Atlantic Testnet)
+> Generated deterministically from the parent Compliant RWA Issuance Agent.
+
+## Capability Index
+
+| User intent | Operation | Risk | Reference |
+|---|---|---|---|
+| Check whether an address can hold MPF | `isVerified` | low | `references/MPF-issuance.md` |
+| Register a compliant investor | `registerIdentity` | medium | `references/MPF-issuance.md` |
+| Mint additional MPF shares | `mint` | high | `references/MPF-issuance.md` |
+| Preview transfer compliance | `canTransfer` | low | `references/MPF-issuance.md` |
+| Freeze or unfreeze wallet/shares | freeze functions | medium | `references/MPF-issuance.md` |
+| Force transfer or recover wallet | lifecycle functions | high | `references/MPF-issuance.md` |
+| Deposit asset dividends | `depositDividend` | high | `references/MPF-dividend.md` |
+| Check or claim dividends | `dividendOf` / `claimDividend` | low | `references/MPF-dividend.md` |
+| Run diligence on related addresses | onchain diligence | low | `references/MPF-diligence.md` |
+
+## Asset Constants
+
+- `TOKEN=0xfef7519bebda6c47af49583dbc9e60801f8aa3de`
+- `SYMBOL=MPF`
+- `NAME=Manhattan Property Fund`
+- `MAX_HOLDERS=100`
+- `MAX_BALANCE_PER_INVESTOR=1000000000000000000000000`

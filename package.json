@@ -1,0 +1,15 @@
+{
+  "name": "pharos-rwa-skill",
+  "private": true,
+  "description": "Compliant RWA Issuance Agent — Foundry + Pharos Atlantic deploy scripts",
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test -vvv",
+    "check": "./check.sh",
+    "preflight:pharos": "bash scripts/preflight.sh",
+    "deploy:pharos": "bash scripts/preflight.sh && forge script script/Deploy.s.sol:Deploy --rpc-url ${PHAROS_RPC_URL:-https://atlantic.dplabs-internal.com} --private-key $PRIVATE_KEY --broadcast --slow --legacy --with-gas-price 3000000000 --gas-limit 3500000 && bash scripts/post-deploy.sh",
+    "smoke:pharos": "bash scripts/smoke.sh",
+    "verify:pharos": "bash scripts/verify.sh",
+    "spawn:asset": "python3 scripts/spawn_asset_skill.py"
+  }
+}

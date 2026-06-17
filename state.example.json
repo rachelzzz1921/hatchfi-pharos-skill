@@ -1,0 +1,88 @@
+{
+  "config": {
+    "denylist": []
+  },
+  "asset": {
+    "name": "Manhattan Property Fund",
+    "symbol": "MPF",
+    "address": "0xfef7519bebda6c47af49583dbc9e60801f8aa3de",
+    "deployed_at": "2026-06-17T06:27:16Z",
+    "deploy_tx": "0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d",
+    "max_holders": 100,
+    "max_balance_per_investor": "1000000000000000000000000"
+  },
+  "diligence": {
+    "target": "0xA54A3C2766a80d3AFe7C4Bf00D5bcfF9e1892bc4",
+    "rating": "GREEN",
+    "passed": true,
+    "checked_at": "2026-06-17T06:20:00Z",
+    "evidence": [
+      {
+        "check": "denylist",
+        "cmd": "compare state.config.denylist[]",
+        "result": "miss",
+        "infer": "目标不在禁投名单",
+        "flag": "ok"
+      },
+      {
+        "check": "is_contract",
+        "cmd": "cast code 0xA54A3C2766a80d3AFe7C4Bf00D5bcfF9e1892bc4 --rpc-url $RPC",
+        "result": "0x",
+        "infer": "EOA",
+        "flag": "ok"
+      },
+      {
+        "check": "balance",
+        "cmd": "cast balance 0xA54A3C2766a80d3AFe7C4Bf00D5bcfF9e1892bc4 --rpc-url $RPC",
+        "result": ">0",
+        "infer": "有余额",
+        "flag": "ok"
+      },
+      {
+        "check": "tx_count",
+        "cmd": "cast nonce 0xA54A3C2766a80d3AFe7C4Bf00D5bcfF9e1892bc4 --rpc-url $RPC",
+        "result": "1",
+        "infer": "有链上历史",
+        "flag": "ok"
+      }
+    ]
+  },
+  "whitelist": [
+    {
+      "addr": "0xA54A3C2766a80d3AFe7C4Bf00D5bcfF9e1892bc4",
+      "country": 840,
+      "tx": "0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541",
+      "at": "2026-06-17T06:28:00Z"
+    }
+  ],
+  "dividends": [],
+  "spawned_skill": {
+    "generated": true,
+    "path": "skills/MPF-asset",
+    "generated_at": "2026-06-17T06:30:00Z"
+  },
+  "last_action": "spawn_asset_skill",
+  "history": [
+    {
+      "action": "deploy",
+      "risk": "high",
+      "confirmed_by_human": true,
+      "tx": "0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d",
+      "at": "2026-06-17T06:27:16Z"
+    },
+    {
+      "action": "mint",
+      "risk": "high",
+      "confirmed_by_human": true,
+      "tx": "0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541",
+      "at": "2026-06-17T06:28:00Z"
+    },
+    {
+      "action": "spawn_asset_skill",
+      "risk": "low",
+      "confirmed_by_human": false,
+      "tx": "",
+      "at": "2026-06-17T06:30:00Z"
+    }
+  ]
+}

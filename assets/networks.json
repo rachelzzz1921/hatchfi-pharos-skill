@@ -1,0 +1,26 @@
+{
+  "atlantic_testnet": {
+    "name": "Pharos Atlantic Testnet",
+    "rpc_url": "https://atlantic.dplabs-internal.com",
+    "chain_id": 688689,
+    "native_symbol": "PHRS",
+    "explorer_url": "https://atlantic.pharosscan.xyz",
+    "verify": {
+      "verifier": "blockscout",
+      "verifier_url": "https://api.socialscan.io/pharos-atlantic-testnet/v1/explorer/command_api/contract",
+      "indexer_delay_seconds": 10
+    }
+  },
+  "pacific_mainnet": {
+    "name": "Pharos Pacific Mainnet",
+    "rpc_url": "https://rpc.pharos.xyz",
+    "chain_id": 688688,
+    "native_symbol": "PHRS",
+    "explorer_url": "https://pharosscan.xyz",
+    "verify": {
+      "verifier": "blockscout",
+      "verifier_url": "https://api.socialscan.io/pharos/v1/explorer/command_api/contract",
+      "indexer_delay_seconds": 10
+    }
+  }
+}
