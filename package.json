@@ -21,6 +21,7 @@
     "refs:generate": "python3 scripts/generate_contract_refs.py",
     "refs:check": "python3 scripts/generate_contract_refs.py --check-drift",
     "eval:skill": "python3 scripts/run_skill_eval.py",
-    "eval:skill:json": "python3 scripts/run_skill_eval.py --format json"
+    "eval:skill:json": "python3 scripts/run_skill_eval.py --format json",
+    "badges:update": "python3 scripts/update_badges.py"
   }
 }

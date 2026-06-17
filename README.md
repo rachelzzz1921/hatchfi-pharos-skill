@@ -10,12 +10,12 @@ Issue a compliant RWA on Pharos with an AI agent — and keep a private operatin
 
 [![tests](https://img.shields.io/badge/Foundry-24_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
 [![eval](https://img.shields.io/badge/skill_eval-50%2F50-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
-[![live](https://img.shields.io/badge/Pharos_Atlantic-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
+[![live](https://img.shields.io/badge/Pharos_Atlantic_Testnet-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
 [![skill](https://img.shields.io/badge/hatched_Skill-private-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
 [![inspector](https://img.shields.io/badge/Skill_Inspector-8%2F100_LOW-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
 
-**🌐 English**  ·  [中文](./README.zh.md)  ·  📊 [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
+**English**  ·  [中文](./README.zh.md)  ·  [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
 
 Built for the [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide) · works on Pharos Atlantic Testnet
 
@@ -38,7 +38,7 @@ When an asset is issued, HatchFi also **spawns a private operating Skill for tha
 
 It extends the official [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide) — keeping `assets/networks.json`, write pre-checks, and `pharos-base-ops.md`, and adding RWA-specific playbooks, a spawn/refine pipeline, a contract-surface generator, an eval harness, and a static security gate on top.
 
-> This project began as a **Pharos Skill-to-Agent Hackathon 2026** submission, built for the Pharos RealFi chain. Full submission narrative and verification evidence: [Live Dashboard](./SUBMISSION_DASHBOARD.html) · [`docs/SUBMISSION.md`](./docs/SUBMISSION.md).
+> Extends the official [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide). Submission overview and verification evidence: [Live Dashboard](./SUBMISSION_DASHBOARD.html) · [`docs/SUBMISSION.md`](./docs/SUBMISSION.md).
 
 ---
 
@@ -63,7 +63,7 @@ export PRIVATE_KEY=0x...                                   # local only, never c
 export PHAROS_RPC_URL=https://atlantic.dplabs-internal.com
 npm run preflight:pharos            # chainId 688689 + balance pre-checks
 npm run deploy:pharos               # deploy → deployments/pharos.json
-npm run smoke:pharos                # registerIdentity + mint + receipt assert
+npm run smoke:pharos                # mint + receipt assert (registerIdentity if needed)
 npm run spawn:asset                 # → skills/<SYMBOL>-asset/  (your private operating Skill)
 ```
 
@@ -89,7 +89,7 @@ HatchFi is operated through `npm` scripts that wrap Foundry, `cast`, and the age
 |---|---|
 | `npm run preflight:pharos` | Verify chainId `688689`, deployer balance, env before any write |
 | `npm run deploy:pharos` | Deploy `CompliantRWAToken`, record `deployments/pharos.json` |
-| `npm run smoke:pharos` | `registerIdentity` + `mint`, asserting `receipt.status == 1` (idempotent) |
+| `npm run smoke:pharos` | `mint` + receipt assert (`registerIdentity` skipped if deployer already verified; idempotent) |
 | `npm run verify:pharos` | Re-read on-chain state for reconciliation |
 
 ### Spawn & evolve the asset Skill
@@ -210,12 +210,12 @@ Each spawned Skill also carries an auto-generated `<SYMBOL>-contract-surface.md`
 
 Everything the Skill accumulates — investor identities, diligence evidence, dividend detail, your preferences — is **yours and private by default**. It lives in your local `state.json` (gitignored), never on-chain, never bundled into a shareable package.
 
-- 🔑 **Deposit consent** — before any personal/sensitive info is recorded, the agent asks.
-- 🔑 **Share consent** — opening a Skill or any data scope to others is an explicit opt-in that emits a **permission manifest** (exactly what's *exposed* vs *withheld*). See [`PERMISSIONS.md`](./skills/MPF-asset/PERMISSIONS.md).
+- **Deposit consent** — before any personal/sensitive info is recorded, the agent asks.
+- **Share consent** — opening a Skill or any data scope to others is an explicit opt-in that emits a **permission manifest** (exactly what's *exposed* vs *withheld*). See [`PERMISSIONS.md`](./skills/MPF-asset/PERMISSIONS.md).
 
 > **Sharing a Skill ≠ sharing your data.** A spawned Skill carries only the public operating surface (contract address + commands); your sovereign ledger (`state.json`, including `PREFERENCES.md`) stays on your machine unless you choose otherwise.
 
-Issuing **MPF** automatically produced [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) — a private, ready-to-operate Skill with a permission manifest. When an issuer *chooses* to open one, it's a vetted, compliance-ready operating unit — contract baked in, diligence/issuance/dividend playbooks included, zero PII bundled. That's how opt-in sharing could gradually seed a permissioned RealFi network on Pharos, on each owner's terms.
+Issuing **MPF** produced [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) — a private operating Skill with a permission manifest. If an issuer later chooses to share it, the package includes only the public surface (contract address, commands, references) — not owner data.
 
 ---
 
@@ -224,8 +224,8 @@ Issuing **MPF** automatically produced [`skills/MPF-asset/`](./skills/MPF-asset/
 HatchFi is a Pharos **Skill**, not a script. The agent follows [`SKILL.md`](./SKILL.md) with operational discipline:
 
 - **Diligence-first** — a RED rating or failed checks block issuance, with evidence
-- **Risk tiers** — 🟢 auto · 🟡 audit trail · 🔴 human confirm card before deploy/mint/dividend
-- **Consent gates** — 🔑 explicit consent before depositing personal data or sharing a Skill (with a permission manifest)
+- **Risk tiers** — Low: auto · Medium: audit trail · High: human confirm before deploy/mint/dividend
+- **Consent gates** — explicit consent before depositing personal data or sharing a Skill (with a permission manifest)
 - **Skill Inspector gate** — static scan before install/upload/publish/share; critical/high findings block release
 - **Receipt assertions** — every write verifies `status==1` before continuing
 - **Audit memory** — `state.json` records diligence, onboarding, dividends, and history — owner-private by default
@@ -241,11 +241,11 @@ Before release, HatchFi went through a layered review loop. Issues found were fi
 |---|---|
 | **TDD test suite** | 24 Foundry tests, 0 failed, including a fuzz invariant proving dividends can't over-distribute (`claimable + dust ≤ deposit`) |
 | **Skill eval suite** | `npm run eval:skill` — 50/50 deterministic checks on gates, risk tiers, consent, and spawn structure |
-| **Security review** ([`docs/SECURITY.md`](./docs/SECURITY.md)) | 8 findings surfaced, all fixed or documented — each fix pinned by a named regression test |
+| **Security review** ([`docs/SECURITY.md`](./docs/SECURITY.md)) | Findings documented; fixes pinned by named regression tests |
 | **Compliance review** | Found and closed a compliance-critical gap (`mint` bypassing holder/balance caps) — issuance now enforces the same `canTransfer` rules as transfers |
-| **Production-readiness review** | Scored Strong (88/100), with the remaining items documented |
+| **Production-readiness review** | Documented in project review notes (see validation docs) |
 | **Pharos Skill Inspector** | [`8/100 LOW`](./docs/SKILL_SECURITY_REPORT.md) — 0 critical / 0 high / 0 medium blockers |
-| **On-chain verification** | `preflight → deploy → smoke` on Atlantic, every receipt asserted `status == 1` |
+| **On-chain verification** | `preflight → deploy → smoke` on Atlantic **Testnet**, every executed receipt asserted `status == 1` |
 
 Selected fixes (all test-covered):
 
@@ -257,7 +257,7 @@ Selected fixes (all test-covered):
 
 ## Verify on-chain
 
-HatchFi is deployed and smoke-tested on Pharos Atlantic.
+HatchFi is deployed and smoke-tested on **Pharos Atlantic Testnet**.
 
 | | |
 |---|---|
@@ -267,7 +267,9 @@ HatchFi is deployed and smoke-tested on Pharos Atlantic.
 | **Network** | Pharos Atlantic Testnet · chainId `688689` |
 | **Spawned Skill** | [`skills/MPF-asset/SKILL.md`](./skills/MPF-asset/SKILL.md) — child skill with `TOKEN=0xfef7…` baked in |
 
-A reviewer can confirm everything in ~2 minutes: `git clone` → `npm run build && npm run test` (24 passed) → `npm run eval:skill` (50/50) → open the contract on PharosScan.
+Smoke path: `registerIdentity` is skipped when the deployer is already verified; **mint + receipt assert** is the executed write path recorded below.
+
+Anyone can verify independently in ~2 minutes: `git clone` → `npm run build && npm run test` (24 passed) → `npm run eval:skill` (50/50) → open the contract on PharosScan (Atlantic Testnet).
 
 ---
 
@@ -288,7 +290,7 @@ A reviewer can confirm everything in ~2 minutes: `git clone` → `npm run build 
 |---|---|
 | [`SKILL.md`](./SKILL.md) | Agent entry — capability index, pre-checks, risk tiers |
 | [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html) | Submission overview & verification evidence (EN/中文) |
-| [`docs/SUBMISSION.md`](./docs/SUBMISSION.md) | Hackathon submission narrative |
+| [`docs/SUBMISSION.md`](./docs/SUBMISSION.md) | Submission overview and narrative |
 | [`references/spawn-asset-skill.md`](./references/spawn-asset-skill.md) | Spawn / refine / version / auto-refs / eval playbook |
 | [`eval/skill_behavior_cases.json`](./eval/skill_behavior_cases.json) | Eval case definitions |
 | [`docs/COMPLETED_VALIDATION.md`](./docs/COMPLETED_VALIDATION.md) | Local + on-chain validation evidence |
@@ -322,9 +324,9 @@ SUBMISSION_DASHBOARD.html      visual dashboard with EN/中文 toggle
 
 <div align="center">
 
-Built by **Zhiwei Chen (陈知维)** · Researcher at The Chinese University of Hong Kong
+Built by **Zhiwei Chen (陈知维)**
 
-HatchFi began as a project for the Pharos Skill-to-Agent Hackathon 2026, and is built to serve the Pharos RealFi chain.
+Built for the Pharos Skill-to-Agent Hackathon 2026 on the Pharos RealFi chain.
 
 [Pharos Skill Engine Guide](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide) · [Pharos Docs](https://docs.pharos.xyz)
 
