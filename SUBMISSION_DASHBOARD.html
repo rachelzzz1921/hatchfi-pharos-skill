@@ -118,6 +118,41 @@
 
     footer { margin-top: 3.5rem; padding-top: 1.4rem; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 0.76rem; color: var(--muted); text-align: center; line-height: 1.9; }
     footer .gd { color: var(--gold); }
+
+    .cta-bar {
+      margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.55rem; justify-content: center;
+    }
+    .cta-bar a {
+      font-family: var(--mono); font-size: 0.72rem; padding: 0.45rem 0.9rem; border-radius: 999px;
+      border: 1px solid var(--border); color: var(--text-2); transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .cta-bar a.primary { background: var(--teal-soft); border-color: var(--teal-line); color: var(--teal); font-weight: 500; }
+    .cta-bar a:hover { border-color: var(--teal); color: var(--text); background: rgba(45,212,191,0.06); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-top: 1.1rem; }
+    @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .highlight {
+      margin-top: 1.1rem; padding: 1.2rem 1.35rem; border-radius: 11px;
+      background: linear-gradient(135deg, rgba(201,162,39,0.08), rgba(45,212,191,0.04));
+      border: 1px solid rgba(201,162,39,0.22);
+    }
+    .highlight p { font-size: 0.92rem; color: var(--text-2); line-height: 1.65; margin-top: 0.45rem; }
+    .highlight p:first-child { margin-top: 0; }
+
+    .timeline { margin-top: 1.1rem; border-left: 2px solid var(--border); padding-left: 1.2rem; }
+    .timeline .item { position: relative; padding-bottom: 1.1rem; }
+    .timeline .item::before {
+      content: ""; position: absolute; left: -1.42rem; top: 0.35rem;
+      width: 8px; height: 8px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 3px rgba(45,212,191,0.15);
+    }
+    .timeline .item .t { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+    .timeline .item h4 { font-size: 0.95rem; font-weight: 600; margin: 0.25rem 0 0.35rem; color: var(--text); }
+    .timeline .item p { font-size: 0.86rem; color: var(--text-2); line-height: 1.6; }
+
+    h3 { font-size: 1.12rem; font-weight: 620; margin: 1.3rem 0 0.6rem; letter-spacing: -0.01em; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.7rem; }
+    .pill { font-family: var(--mono); font-size: 0.68rem; padding: 0.22rem 0.55rem; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-2); }
   </style>
 </head>
 <body class="lang-en">
@@ -142,6 +177,13 @@
       <span class="badge live"><span class="en">LIVE on Atlantic</span><span class="zh">Atlantic 已部署</span></span>
       <span class="badge gold"><span class="en">private Skill · compounds</span><span class="zh">私有 Skill · 复利</span></span>
       <span class="badge">ERC-3643 · chainId 688689</span>
+      <span class="badge gold"><span class="en">Strong 88/100 audit</span><span class="zh">审计 Strong 88/100</span></span>
+    </div>
+    <div class="cta-bar">
+      <a class="primary" href="https://bit.ly/4xkU0Wx" target="_blank" rel="noopener"><span class="en">Register · Hackathon</span><span class="zh">立即报名</span></a>
+      <a href="https://www.pharos.xyz/agent-carnival" target="_blank" rel="noopener">Pharos Agent Carnival</a>
+      <a href="https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide" target="_blank" rel="noopener"><span class="en">Skill Engine Guide</span><span class="zh">开发者手册</span></a>
+      <a href="https://github.com/rachelzzz1921/hatchfi-pharos-skill" target="_blank" rel="noopener">GitHub</a>
     </div>
   </header>
 
@@ -161,6 +203,55 @@
       <span class="en">Standard ERC-20 answers none of these. Most "RWA" projects stop at a mint button — and skip the part where an <strong>agent</strong> actually operates the asset over time.</span>
       <span class="zh">标准 ERC-20 一个都答不了。大多数「RWA」项目停在一个 mint 按钮，跳过了最关键的——一个 <strong>Agent</strong> 如何长期运营这支资产。</span>
     </p>
+  </section>
+
+  <!-- PHAROS ALIGNMENT -->
+  <section>
+    <div class="kicker"><span class="en">Built for Pharos</span><span class="zh">为 Pharos 而生</span></div>
+    <h2><span class="en">RealFi · Agentic · Composable — aligned with Pharos Skill Engine</span><span class="zh">RealFi · Agentic · Composable — 对齐 Pharos Skill Engine</span></h2>
+    <p class="lead">
+      <span class="en">Pharos sits at the intersection of <strong>RealFi</strong> (real-world asset value flows), <strong>protocol-native compliance</strong>, and <strong>agentic on-chain infrastructure</strong>. HatchFi is not a standalone script — it <strong>extends the official Pharos Skill Engine</strong> (<a class="ref" href="https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide" target="_blank">developer guide</a>) with RWA-specific references, diligence gates, and a spawn pipeline.</span>
+      <span class="zh">Pharos 位于 <strong>RealFi</strong>（现实世界资产价值流）、<strong>协议原生合规</strong>与 <strong>Agent 链上基础设施</strong>的交汇点。HatchFi 不是独立脚本——它<strong>扩展官方 Pharos Skill Engine</strong>（<a class="ref" href="https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide" target="_blank">开发者手册</a>），增加 RWA 专有 reference、尽调闸门与 spawn 流水线。</span>
+    </p>
+    <div class="grid-3">
+      <div class="card">
+        <div class="step">01 · REALFI</div>
+        <h3><span class="en">Compliant RWA token</span><span class="zh">合规 RWA 代币</span></h3>
+        <p><span class="en">ERC-3643-style <code>CompliantRWAToken</code> — identity, compliance caps, dividends, lifecycle. <strong>Live on Atlantic.</strong></span><span class="zh">ERC-3643 风格 <code>CompliantRWAToken</code>——身份、合规上限、派息、生命周期。<strong>已在 Atlantic 部署。</strong></span></p>
+      </div>
+      <div class="card">
+        <div class="step">02 · AGENTIC</div>
+        <h3><span class="en">Skill, not script</span><span class="zh">Skill，不是脚本</span></h3>
+        <p><span class="en"><code>SKILL.md</code> capability index · risk tiers 🟢🟡🔴 · human confirm cards · <code>state.json</code> audit memory · consent gates 🔑</span><span class="zh"><code>SKILL.md</code> 能力索引 · 风险分档 🟢🟡🔴 · 人工确认卡片 · <code>state.json</code> 审计记忆 · 同意闸 🔑</span></p>
+      </div>
+      <div class="card">
+        <div class="step">03 · COMPOSABLE</div>
+        <h3><span class="en">Skill → Skill flywheel</span><span class="zh">Skill 产 Skill 飞轮</span></h3>
+        <p><span class="en">Each issuance → <code>skills/&lt;SYMBOL&gt;-asset/</code>. Opt-in sharing seeds a network of vetted, compliance-ready asset Skills on Pharos.</span><span class="zh">每次发行 → <code>skills/&lt;SYMBOL&gt;-asset/</code>。Opt-in 分享培育 Pharos 上可复用、合规就绪的资产 Skill 网络。</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FULL PIPELINE -->
+  <section>
+    <div class="kicker"><span class="en">End-to-end pipeline</span><span class="zh">端到端流水线</span></div>
+    <h2><span class="en">Four phases an agent runs — with gates at every step</span><span class="zh">Agent 端到端四阶段——每步都有闸门</span></h2>
+    <pre class="ascii"><span class="gd">Phase A</span>  Diligence Gate          <span class="gd">Phase B</span>  Compliant Issuance       <span class="gd">Phase C</span>  Lifecycle Ops          <span class="gd">Phase D</span>  Skill Hatch
+─────────  ───────────────         ─────────  ──────────────────       ─────────  ───────────────         ─────────  ───────────
+read-only  GREEN/YELLOW/RED        deploy     ERC-3643 token           whitelist  register/freeze/mint    spawn      skills/MPF-asset/
+cast cmds  RED → block issuance    mint       identity·compliance·     dividends  deposit/claim/sweep     private    PERMISSIONS.md
+evidence   denylist + codesize     smoke      freeze triple gate       recovery   forcedTransfer/pause    refine     personalization loop
+           → state.diligence       preflight  24 tests + audit         audit      cast logs (12 events)   opt-in     consent.shares</pre>
+    <div class="grid-2">
+      <div class="card">
+        <h3><span class="en">7 agent playbooks</span><span class="zh">7 份 Agent playbook</span></h3>
+        <p><code>onchain-diligence</code> · <code>rwa-issuance</code> · <code>rwa-dividend</code> · <code>spawn-asset-skill</code> · <code>pharos-base-ops</code> · <code>pharos-deploy-runbook</code> · <code>pharos-verification</code></p>
+      </div>
+      <div class="card">
+        <h3><span class="en">Contract surface</span><span class="zh">合约能力面</span></h3>
+        <p><span class="en"><strong>20</strong> external functions · <strong>12</strong> ERC-3643-aligned events · <strong>5</strong> typed errors · <strong>24</strong> Foundry tests incl. fuzz invariant</span><span class="zh"><strong>20</strong> 个外部函数 · <strong>12</strong> 个 ERC-3643 对齐事件 · <strong>5</strong> 个类型化错误 · <strong>24</strong> 项 Foundry 测试含 fuzz 不变量</span></p>
+      </div>
+    </div>
   </section>
 
   <!-- COMPOUNDS FOR YOU (hero advantage) -->
@@ -198,6 +289,51 @@
       <span class="en"><strong>And opt-in sharing still seeds the ecosystem.</strong> When an issuer chooses to open a Skill, it's a vetted, compliance-ready operating unit — so the marginal cost of compliant RealFi on Pharos keeps falling, the flywheel still turns, but the owner holds the switch.</span>
       <span class="zh"><strong>而 opt-in 的分享照样滋养生态。</strong> 当发行人选择开放一个 Skill，它是经过验证、合规就绪的运营单元——Pharos 上合规 RealFi 的边际成本持续下降，飞轮照样转，但开关握在发行人手里。</span>
     </p>
+  </section>
+
+  <!-- PUBLIC ECOSYSTEM -->
+  <section>
+    <div class="kicker"><span class="en">Public ecosystem — opt-in, permissioned, composable</span><span class="zh">公开生态——opt-in、带权限、可组合</span></div>
+    <h2><span class="en">The flywheel that scales Pharos RealFi — without leaking private data</span><span class="zh">放大 Pharos RealFi 的飞轮——但不泄露私有数据</span></h2>
+    <p class="lead">
+      <span class="en">HatchFi's public value is real and already demonstrated. When an issuer <strong>chooses</strong> to open a spawned Skill, they contribute a <strong>vetted, compliance-ready operating unit</strong> to the Pharos agent ecosystem — contract address baked in, diligence/issuance/dividend playbooks included, <strong>zero PII bundled</strong>.</span>
+      <span class="zh">HatchFi 的公开价值真实且已实证。当发行人<strong>选择</strong>开放 spawn 出的 Skill，就向 Pharos Agent 生态贡献一个<strong>经过验证、合规就绪的运营单元</strong>——合约写死、尽调/发行/派息 playbook 齐全，<strong>零 PII 打包</strong>。</span>
+    </p>
+    <pre class="ascii"><span class="gd">Agent A</span>  HatchFi (parent skill)
+  ├─ diligence gate → deploy MPF @ Atlantic → smoke mint
+  └─ spawn <span class="hl">skills/MPF-asset/</span>  (private by default · PERMISSIONS.md)
+
+<span class="gd">Agent B, C, …</span>  (when owner opts in via 🔑 share consent)
+  └─ import <span class="hl">skills/MPF-asset/SKILL.md</span>
+       └─ manage whitelist · mint · dividends · diligence
+            <span class="gd">WITHOUT redeploying · WITHOUT accessing owner's state.json</span>
+
+<span class="gd">Every new RWA hatched</span>  →  +1 composable capability unit on Pharos
+  →  marginal cost of compliant RealFi trends toward zero
+  →  <span class="hl">owner holds the switch · manifest declares exposed vs withheld</span></pre>
+    <div class="flywheel-banner">
+      <div class="big">
+        <span class="en">More RWAs hatched → more opt-in Skills → <span class="hl">a permissioned RealFi network on Pharos</span>. Privacy by default; ecosystem by choice.</span>
+        <span class="zh">孵化越多 RWA → 越多 opt-in Skill → <span class="hl">Pharos 上的带权限 RealFi 网络</span>。默认私有，生态靠选择。</span>
+      </div>
+    </div>
+    <div class="grid-3" style="margin-top:1.2rem;">
+      <div class="card">
+        <div class="step"><span class="en">MOTHER SKILL</span><span class="zh">母 SKILL</span></div>
+        <h3><code>SKILL.md</code></h3>
+        <p><span class="en">Full issuance pipeline for <em>any</em> RWA — diligence → deploy → lifecycle → spawn.</span><span class="zh">任意 RWA 的完整发行流水线——尽调 → 部署 → 生命周期 → spawn。</span></p>
+      </div>
+      <div class="card">
+        <div class="step"><span class="en">CHILD SKILL · LIVE</span><span class="zh">子 SKILL · 已落地</span></div>
+        <h3><a class="ref" href="skills/MPF-asset/SKILL.md" style="font-size:0.95rem;">skills/MPF-asset/</a></h3>
+        <p><span class="en">Manhattan Property Fund · <code>TOKEN=0xfef7…Aa3DE</code> · 3 bound references · spawned &amp; operable today.</span><span class="zh">Manhattan Property Fund · <code>TOKEN=0xfef7…Aa3DE</code> · 3 份绑定 reference · 已 spawn、今日可运营。</span></p>
+      </div>
+      <div class="card">
+        <div class="step"><span class="en">NEXT RWA</span><span class="zh">下一支 RWA</span></div>
+        <h3><code>skills/&lt;NEXT&gt;-asset/</code></h3>
+        <p><span class="en">Same spawn pipeline — deterministic template fill from <code>state.asset</code>, zero LLM hallucination.</span><span class="zh">同一 spawn 流水线——从 <code>state.asset</code> 确定性模板填充，零 LLM 幻觉。</span></p>
+      </div>
+    </div>
   </section>
 
   <!-- LIVE PROOF -->
@@ -256,6 +392,33 @@
       <span class="en"><strong>mint</strong> enforces identity + compliance caps; <strong>forcedTransfer</strong> is a regulatory path (verified recipient only). Backed by 24 Foundry tests and a <a class="ref" href="docs/SECURITY.md">SECURITY.md</a> audit trail.</span>
       <span class="zh"><strong>mint</strong> 强制身份 + 合规上限；<strong>forcedTransfer</strong> 为监管路径（仅需收款方已验证）。背后是 24 项 Foundry 测试 + <a class="ref" href="docs/SECURITY.md">SECURITY.md</a> 审计记录。</span>
     </p>
+
+    <h3><span class="en">Pre-issuance diligence gate (Phase A)</span><span class="zh">发行前尽调闸门（Phase A）</span></h3>
+    <p class="lead" style="font-size:0.92rem;">
+      <span class="en">Before any deploy/mint, the agent runs <strong>read-only, zero-gas</strong> <code>cast</code> checks on the target address. Every conclusion is evidence-backed — command, raw result, inference, flag — written to <code>state.diligence</code>. <strong>RED blocks all issuance.</strong></span>
+      <span class="zh">任何 deploy/mint 之前，agent 对目标地址跑<strong>只读、零 gas</strong> 的 <code>cast</code> 检查。每条结论都有 evidence——命令、原始返回值、推断、flag——写入 <code>state.diligence</code>。<strong>RED 拒绝一切发行。</strong></span>
+    </p>
+    <table style="margin-top:0.6rem;">
+      <thead><tr><th><span class="en">Check</span><span class="zh">检查项</span></th><th><span class="en">Command</span><span class="zh">命令</span></th><th><span class="en">RED trigger</span><span class="zh">RED 触发</span></th></tr></thead>
+      <tbody>
+        <tr><td class="k">denylist</td><td class="mono">state.config.denylist match</td><td><span class="en">hit → risk → RED</span><span class="zh">命中 → risk → RED</span></td></tr>
+        <tr><td class="k">code_size</td><td class="mono">cast codesize &lt;target&gt;</td><td><span class="en">contract self-destructed (size==0) → RED</span><span class="zh">合约已自毁（size==0）→ RED</span></td></tr>
+        <tr><td class="k">is_contract</td><td class="mono">cast code &lt;target&gt;</td><td><span class="en">bytecode present → warn (review)</span><span class="zh">有字节码 → warn（复核）</span></td></tr>
+        <tr><td class="k">balance / tx_count</td><td class="mono">cast balance · cast nonce</td><td><span class="en">zero balance or zero nonce → warn</span><span class="zh">零余额或零 nonce → warn</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3><span class="en">Four modules in one contract (future-split ready)</span><span class="zh">四模块合一（未来可拆分）</span></h3>
+    <div class="pill-row">
+      <span class="pill">IdentityRegistry · isVerified / registerIdentity</span>
+      <span class="pill">ModularCompliance · canTransfer / maxHolders / maxBalance</span>
+      <span class="pill">Lifecycle · freeze / forcedTransfer / recovery / pause</span>
+      <span class="pill">Dividends · depositDividend / claim / sweep dust</span>
+    </div>
+    <p class="lead" style="font-size:0.9rem;margin-top:0.8rem;">
+      <span class="en">Function &amp; event naming strictly follows ERC-3643 (T-REX) so the contract can smoothly split into a standard multi-contract suite later. <strong>Permission matrix:</strong> <code>onlyOwner</code> (governance, dividends, dust sweep) vs <code>onlyAgent</code> (KYC, mint, freeze, regulatory paths).</span>
+      <span class="zh">函数与事件命名严格对齐 ERC-3643（T-REX），便于未来平滑拆分为标准多合约套件。<strong>权限矩阵：</strong><code>onlyOwner</code>（治理、派息、dust 回收）vs <code>onlyAgent</code>（KYC、mint、冻结、监管路径）。</span>
+    </p>
   </section>
 
   <!-- AGENT-NATIVE -->
@@ -292,12 +455,80 @@
       <span class="en">Full reproducible evidence: <a class="ref" href="docs/COMPLETED_VALIDATION.md">COMPLETED_VALIDATION.md</a> · <a class="ref" href="docs/QUICKSTART.md">QUICKSTART.md</a></span>
       <span class="zh">完整可复现证据：<a class="ref" href="docs/COMPLETED_VALIDATION.md">COMPLETED_VALIDATION.md</a> · <a class="ref" href="docs/QUICKSTART.md">QUICKSTART.md</a></span>
     </p>
+
+    <h3><span class="en">Audit findings — all fixed with regression tests</span><span class="zh">审计发现——全部配回归测试修复</span></h3>
+    <div class="timeline">
+      <div class="item">
+        <div class="t">D2 · <span class="en">compliance-critical</span><span class="zh">合规关键</span></div>
+        <h4><span class="en">mint bypassed holder/balance caps</span><span class="zh">mint 绕过持有人/额度上限</span></h4>
+        <p><span class="en">Fixed: mint branch now calls <code>canTransfer(0, to, value)</code>. Tests: <code>test_MintEnforcesMaxBalancePerInvestor</code>, <code>test_MintEnforcesMaxHolderCount</code>.</span><span class="zh">修复：mint 分支现调用 <code>canTransfer(0, to, value)</code>。测试：<code>test_MintEnforcesMaxBalancePerInvestor</code>、<code>test_MintEnforcesMaxHolderCount</code>。</span></p>
+      </div>
+      <div class="item">
+        <div class="t">F1 · <span class="en">medium</span><span class="zh">中</span></div>
+        <h4><span class="en">burn left frozenTokens &gt; balance → underflow lock</span><span class="zh">burn 后 frozenTokens &gt; balance → 下溢锁死</span></h4>
+        <p><span class="en">Fixed: burn rebalances frozen tokens. Test: <code>test_BurnKeepsFrozenWithinBalance</code>.</span><span class="zh">修复：burn 重新平衡冻结份额。测试：<code>test_BurnKeepsFrozenWithinBalance</code>。</span></p>
+      </div>
+      <div class="item">
+        <div class="t">D3 / D4 · <span class="en">dividend integrity</span><span class="zh">派息完整性</span></div>
+        <h4><span class="en">dust recovery + recovery migrates pending dividends</span><span class="zh">dust 回收 + 恢复迁移未领分红</span></h4>
+        <p><span class="en">Tests: <code>test_DividendDustSwept</code>, <code>test_RecoveryMigratesPendingDividend</code>, fuzz invariant on over-distribution.</span><span class="zh">测试：<code>test_DividendDustSwept</code>、<code>test_RecoveryMigratesPendingDividend</code>、超发 fuzz 不变量。</span></p>
+      </div>
+      <div class="item">
+        <div class="t">D1 · <span class="en">gate design</span><span class="zh">闸门设计</span></div>
+        <h4><span class="en">diligence could never reach RED</span><span class="zh">尽调闸门永远到不了 RED</span></h4>
+        <p><span class="en">Fixed: deterministic risk triggers (denylist hit, self-destructed contract). RED now actually blocks issuance.</span><span class="zh">修复：确定性 risk 触发（denylist 命中、合约自毁）。RED 现在真能拒绝发行。</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- JUDGE CHECKLIST -->
+  <section>
+    <div class="kicker"><span class="en">For judges · 60 seconds</span><span class="zh">评委 · 60 秒</span></div>
+    <h2><span class="en">Verify everything — without trusting our slides</span><span class="zh">一切可验——不必相信我们的 PPT</span></h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3><span class="en">On-chain (no setup)</span><span class="zh">链上（零配置）</span></h3>
+        <p>1. <a class="ref" href="https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de" target="_blank">PharosScan · MPF contract</a><br/>2. <a class="ref" href="https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d" target="_blank">Deploy tx</a> · <a class="ref" href="https://atlantic.pharosscan.xyz/tx/0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541" target="_blank">Smoke mint</a><br/>3. <a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/SKILL.md</a> — spawned child skill</p>
+      </div>
+      <div class="card">
+        <h3><span class="en">Local (2 minutes)</span><span class="zh">本地（2 分钟）</span></h3>
+        <p class="mono" style="font-size:0.78rem;line-height:1.55;color:var(--text-2);">git clone hatchfi-pharos-skill<br/>npm run build && npm run test<br/># → 24 passed · 0 failed</p>
+      </div>
+    </div>
+    <div class="highlight" style="margin-top:1rem;">
+      <p><span class="en"><strong>Why HatchFi for finals:</strong> live Atlantic deploy · ERC-3643 compliance + diligence gate · 24 tests + 8-finding audit all fixed · Skill→Skill flywheel proven (MPF-asset) · extends official Skill Engine · data sovereignty with opt-in ecosystem · production-readiness Strong 88/100.</span></p>
+      <p><span class="zh"><strong>为什么值得进决赛：</strong>Atlantic 真部署 · ERC-3643 合规 + 尽调闸门 · 24 测试 + 8 项审计全修复 · Skill→Skill 飞轮已实证（MPF-asset）· 扩展官方 Skill Engine · 数据主权 + opt-in 生态 · 生产就绪 Strong 88/100。</span></p>
+    </div>
+  </section>
+
+  <!-- REPRODUCE -->
+  <section>
+    <div class="kicker"><span class="en">Reproduce</span><span class="zh">复现</span></div>
+    <h2><span class="en">Full pipeline — copy &amp; run</span><span class="zh">完整流水线——复制即跑</span></h2>
+    <pre class="ascii" style="font-size:0.76rem;">curl -L https://foundry.paradigm.xyz | bash && foundryup
+forge install OpenZeppelin/openzeppelin-contracts@v5.1.0 && forge install foundry-rs/forge-std
+
+npm run build && npm run test          <span class="gd"># 24 passed · no wallet needed</span>
+npm run check                          <span class="gd"># no hardcoded keys</span>
+
+export PRIVATE_KEY=0x...               <span class="gd"># local only · never commit</span>
+export PHAROS_RPC_URL=https://atlantic.dplabs-internal.com
+npm run preflight:pharos               <span class="gd"># chainId 688689 · balance check</span>
+npm run deploy:pharos                  <span class="gd"># → deployments/pharos.json</span>
+npm run smoke:pharos                   <span class="gd"># registerIdentity + mint + receipt assert</span>
+npm run spawn:asset                    <span class="gd"># → skills/&lt;SYMBOL&gt;-asset/ + PERMISSIONS.md</span></pre>
   </section>
 
   <footer>
     HatchFi <span class="gd">链孵</span> · Compliant RWA Issuance Agent<br/>
-    <span class="en">Built by Zhiwei Chen (陈知维) · Researcher at The Chinese University of Hong Kong · Pharos Skill-to-Agent Hackathon 2026</span>
-    <span class="zh">由陈知维（Zhiwei Chen）构建 · 香港中文大学研究员 · Pharos Skill-to-Agent Hackathon 2026</span>
+    <span class="en">Built by Zhiwei Chen (陈知维) · Researcher at The Chinese University of Hong Kong</span>
+    <span class="zh">由陈知维（Zhiwei Chen）构建 · 香港中文大学研究员</span><br/>
+    <span class="en">Pharos Skill-to-Agent Hackathon 2026 · </span><a class="ref" href="https://bit.ly/4xkU0Wx" target="_blank" rel="noopener"><span class="en">Register</span><span class="zh">立即报名</span></a>
+    · <a class="ref" href="https://www.pharos.xyz/agent-carnival" target="_blank" rel="noopener">Agent Carnival</a>
+    · <a class="ref" href="https://discord.com/invite/pharos" target="_blank" rel="noopener">Discord</a>
+    · <a class="ref" href="https://t.me/+U27f5oGnJNlkZTI0" target="_blank" rel="noopener">Telegram</a>
+    · <a class="ref" href="https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide" target="_blank" rel="noopener"><span class="en">Skill Engine</span><span class="zh">开发者手册</span></a>
+    · <a class="ref" href="https://github.com/rachelzzz1921/hatchfi-pharos-skill" target="_blank" rel="noopener">GitHub</a>
   </footer>
 
   <script>

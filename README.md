@@ -11,9 +11,12 @@ Every RWA you hatch leaves *you* a private operating Skill — yours, and it com
 [![tests](https://img.shields.io/badge/Foundry-24_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
 [![live](https://img.shields.io/badge/Pharos_Atlantic-LIVE-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
 [![skill](https://img.shields.io/badge/hatched_Skill-private_+_compounds-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
+[![audit](https://img.shields.io/badge/Production_Audit-Strong_88%2F100-c9a227?style=flat-square)](./docs/SECURITY.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
 
 **🌐 English**  ·  [中文](./README.zh.md)  ·  📊 [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
+
+**Pharos Skill-to-Agent Hackathon 2026** · [Register](https://bit.ly/4xkU0Wx) · [Agent Carnival](https://www.pharos.xyz/agent-carnival) · [Skill Engine Guide](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide) · [Discord](https://discord.com/invite/pharos) · [Telegram](https://t.me/+U27f5oGnJNlkZTI0)
 
 </div>
 
@@ -38,7 +41,31 @@ HatchFi is an **agent-native issuance layer** for compliant RealFi on Pharos. It
    RED blocks issuance      identity·compliance·freeze    refines via conversation
 ```
 
-Compliance, diligence and audit are the hard base — not an afterthought. See [Compliance is the feature](#compliance-is-the-feature-not-friction) below.
+Compliance, diligence and audit are the hard base — not an afterthought. See [Compliance is the feature](#compliance-is-the-feature-not-friction) and [Built for Pharos](#built-for-pharos--realfi--agentic--composable) below.
+
+## Built for Pharos — RealFi · Agentic · Composable
+
+Pharos sits at the intersection of **RealFi**, **protocol-native compliance**, and **agentic on-chain infrastructure**. HatchFi **extends the official [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide)** — it keeps `assets/networks.json`, write pre-checks, and `pharos-base-ops.md`, and adds RWA-specific playbooks on top.
+
+| Pharos narrative | How HatchFi delivers |
+|---|---|
+| **RealFi / RWA** | ERC-3643-style `CompliantRWAToken` — identity, compliance caps, dividends, lifecycle. **Live on Atlantic.** |
+| **Protocol-native compliance** | `_update()` hook enforces `isVerified` + `canTransfer` on every transfer; **mint enforces the same caps** (compliance-critical fix, audit D2) |
+| **Agentic infrastructure** | `SKILL.md` capability index · risk tiers 🟢🟡🔴 · human confirm cards · `state.json` audit memory · consent gates 🔑 |
+| **Composable ecosystem** | **Skill→Skill flywheel**: each issuance → `skills/<SYMBOL>-asset/` — opt-in sharing seeds a permissioned RealFi network on Pharos |
+
+## End-to-end pipeline — four phases, gates at every step
+
+```
+Phase A  Diligence Gate     →  Phase B  Compliant Issuance  →  Phase C  Lifecycle Ops       →  Phase D  Skill Hatch
+         read-only cast            deploy ERC-3643 token             whitelist / freeze / mint        spawn skills/MPF-asset/
+         GREEN/YELLOW/RED          identity·compliance·freeze       dividends / recovery / audit     PERMISSIONS.md · private
+         RED blocks issuance       24 tests + 8-finding audit     cast logs (12 events)            personalization loop
+```
+
+**7 agent playbooks** in `references/`: `onchain-diligence` · `rwa-issuance` · `rwa-dividend` · `spawn-asset-skill` · `pharos-base-ops` · `pharos-deploy-runbook` · `pharos-verification`
+
+**Contract surface**: 20 external functions · 12 ERC-3643-aligned events · 5 typed errors · 24 Foundry tests (incl. fuzz invariant)
 
 ## It compounds — for *you*
 
@@ -67,6 +94,33 @@ The Skill and everything it accumulates — investor identities, diligence evide
 It is already proven, not theoretical: issuing **MPF** automatically produced [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) — a private, ready-to-operate Skill, with a permission manifest, that *you* can run today and open to others only by choice.
 
 **And when you *do* choose to share, it's genuinely useful to the ecosystem.** A spawned Skill is a vetted, compliance-ready operating unit — contract baked in, diligence/issuance/dividend playbooks included. Opt-in sharing is how HatchFi can seed a network of reusable, *permissioned* RealFi Skills on Pharos: every issuer who opts in contributes one more ready-to-operate asset Skill, so the marginal cost of compliant RealFi keeps falling — **on each owner's terms, with a clear manifest, never by default.** The flywheel still turns; the owner just holds the switch.
+
+## Public ecosystem — opt-in, permissioned, composable
+
+HatchFi's **public value is real and already demonstrated**. This is not "privacy vs ecosystem" — it's **privacy by default, ecosystem by choice**.
+
+```
+Agent A  HatchFi (parent skill)
+  ├─ diligence gate → deploy MPF @ Atlantic → smoke mint
+  └─ spawn skills/MPF-asset/  (private · PERMISSIONS.md)
+
+Agent B, C, …  (when owner opts in via 🔑 share consent)
+  └─ import skills/MPF-asset/SKILL.md
+       └─ manage whitelist · mint · dividends · diligence
+            WITHOUT redeploying · WITHOUT accessing owner's state.json
+
+Every new RWA hatched  →  +1 composable capability unit on Pharos
+  →  marginal cost of compliant RealFi trends toward zero
+  →  owner holds the switch · manifest declares exposed vs withheld
+```
+
+| Layer | Package | Reuse |
+|---|---|---|
+| **Mother Skill** | `SKILL.md` + 7 references | Any Pharos agent drives the full RWA issuance pipeline |
+| **Child Skill (live)** | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) | Manhattan Property Fund · `TOKEN=0xfef7…Aa3DE` · 3 bound references · operable today |
+| **Next RWA** | `skills/<NEXT>-asset/` | Same deterministic spawn — template fill from `state.asset`, zero LLM hallucination |
+
+> **More RWAs hatched → more opt-in Skills → a permissioned RealFi network on Pharos.** Privacy by default; ecosystem by choice.
 
 ## It's live — verify in 60 seconds
 
@@ -99,6 +153,30 @@ transfer / mint / forcedTransfer
 - **transfer** → all three gates
 - **mint** → identity **and** compliance caps (primary issuance respects holder/balance limits)
 - **forcedTransfer** → regulatory path; verified recipient only, bypasses global rules
+
+### Pre-issuance diligence gate (Phase A)
+
+Before any deploy/mint, the agent runs **read-only, zero-gas** `cast` checks. Every conclusion is evidence-backed — command, raw result, inference, flag — written to `state.diligence`. **RED blocks all issuance.**
+
+| Check | Command | RED trigger |
+|---|---|---|
+| `denylist` | `state.config.denylist` match | hit → **risk → RED** |
+| `code_size` | `cast codesize <target>` | contract self-destructed (size==0) → **RED** |
+| `is_contract` | `cast code <target>` | bytecode present → warn (review) |
+| `balance` / `tx_count` | `cast balance` · `cast nonce` | zero balance or zero nonce → warn |
+
+Full playbook: [`references/onchain-diligence.md`](./references/onchain-diligence.md)
+
+### Four modules in one contract (future-split ready)
+
+Function & event naming strictly follows **ERC-3643 (T-REX)** so the contract can smoothly split into a standard multi-contract suite later:
+
+- **IdentityRegistry** — `isVerified` / `registerIdentity` / `removeIdentity`
+- **ModularCompliance** — `canTransfer` / `maxHolders` / `maxBalancePerInvestor`
+- **Lifecycle** — freeze / `forcedTransfer` / `recoveryAddress` / pause
+- **Dividends** — `depositDividend` / `claimDividend` / `sweepUndistributedDividend`
+
+**Permission matrix**: `onlyOwner` (governance, dividends, dust sweep) vs `onlyAgent` (KYC, mint, freeze, regulatory paths) — full table in [`docs/SECURITY.md`](./docs/SECURITY.md).
 
 ## Reviewed like production infrastructure, not a hackathon demo
 
@@ -151,6 +229,17 @@ npm run spawn:asset               # → skills/MPF-asset/  (the flywheel)
 
 Detailed walkthroughs: [`QUICKSTART.md`](./docs/QUICKSTART.md) · [`WORKED_EXAMPLE.md`](./docs/WORKED_EXAMPLE.md) · [`VALIDATION_PLAN.md`](./docs/VALIDATION_PLAN.md)
 
+## For judges — verify in 60 seconds
+
+| Step | Action |
+|---|---|
+| **On-chain** | [PharosScan · MPF contract](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) · [Deploy tx](https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d) · [Smoke mint](https://atlantic.pharosscan.xyz/tx/0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541) |
+| **Spawned skill** | [`skills/MPF-asset/SKILL.md`](./skills/MPF-asset/SKILL.md) — child skill with hardcoded `TOKEN=0xfef7…` |
+| **Local (2 min)** | `git clone` → `npm run build && npm run test` → **24 passed · 0 failed** |
+| **Dashboard** | [Interactive overview (EN/中文)](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html) |
+
+**Why HatchFi for finals:** live Atlantic deploy · ERC-3643 compliance + diligence gate · 24 tests + 8-finding audit all fixed · Skill→Skill flywheel proven (MPF-asset) · extends official Skill Engine · data sovereignty with opt-in ecosystem · production-readiness **Strong 88/100**.
+
 ## Documentation
 
 | Doc | What's inside |
@@ -186,6 +275,7 @@ SUBMISSION_DASHBOARD.html      visual dashboard with EN/中文 toggle
 <div align="center">
 
 Built by **Zhiwei Chen (陈知维)** · Researcher at The Chinese University of Hong Kong
-Pharos Skill-to-Agent Hackathon · 2026
+
+Pharos Skill-to-Agent Hackathon 2026 · [Register](https://bit.ly/4xkU0Wx) · [Agent Carnival](https://www.pharos.xyz/agent-carnival) · [Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide) · [Discord](https://discord.com/invite/pharos) · [Telegram](https://t.me/+U27f5oGnJNlkZTI0)
 
 </div>
