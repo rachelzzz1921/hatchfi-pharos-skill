@@ -1,7 +1,8 @@
-# Reference: 资产专属 Skill 自我繁殖（spawn-asset-skill）
+# Reference: 资产专属 Skill 沉淀（spawn-asset-skill）
 
-> **能力定位**：一支 RWA 资产发行完成后，agent 自动为它生成一个**完整的、可复用的专属 skill 包**——把通用能力里的占位符替换成这支资产的真实地址与参数，使其他 agent 拿到即可零改造操作该资产。
-> **这是生态飞轮**：skill 产出 skill。每发行一支资产，生态里就多一个可复用能力单元。
+> **能力定位**：一支 RWA 资产发行完成后，agent 自动为它沉淀一个**完整的私有运营 skill 包**——把通用能力里的占位符替换成这支资产的真实地址与参数。**首先服务发行人自己**：发行人后续用自然语言运营这支资产时，这个 skill 持续精炼、越来越贴合其需求。
+> **默认私有**：生成的包默认仅供发行人自用（`sharing=private`），并附一份**权限清单 `PERMISSIONS.md`**。对外开放是发行人**显式、限定范围**的 opt-in（见下方 Sharing）。
+> **数据边界**：spawn 只带公开操作面（合约地址 + 命令）。发行人的主权账本（`state.json`：投资者 PII、尽调证据、派息明细、偏好）**永不复制进包**，仅按路径在本地引用。
 > **风险档**：🟢 低风险（纯本地文件生成，不发链上交易，agent 自动执行）。
 
 ---
@@ -19,13 +20,14 @@
 ```
 skills/<SYMBOL>-asset/
 ├── SKILL.md                      # 这支资产专属的能力索引（地址已写死）
+├── PERMISSIONS.md                # 权限清单：暴露面（地址+命令）vs 保留的私有数据
 └── references/
     ├── <symbol>-diligence.md     # 尽调（继承通用闸门，target 默认指向本资产相关方）
     ├── <symbol>-issuance.md      # 发行+生命周期（mint/冻结/强制转移/恢复，token 地址已填实）
     └── <symbol>-dividend.md      # 派息（depositDividend/claim/查询，地址已填实）
 ```
 
-> 全套而非只含操作命令——拿到这个包的 agent，对这支资产的尽调、发行、派息、生命周期管理**全链路开箱即用**，无需再回母 skill。
+> 全套而非只含操作命令——发行人（或其授权的 agent）对这支资产的尽调、发行、派息、生命周期管理**全链路开箱即用**，无需再回母 skill。`PERMISSIONS.md` 只列**公开操作面**；私有账本不在包内。
 
 ---
 
@@ -47,10 +49,25 @@ skills/<SYMBOL>-asset/
 
 实现：纯字符串模板替换（agent 用 sed / 脚本即可），生成后**校验**——确认产出的 `.md` 里已无 `<token>` 等未替换占位符，再写状态。
 
-生成完成后回写：
+生成完成后回写（默认私有 + 记录"待开放"的同意项）：
 ```json
-"spawned_skill": { "generated": true, "path": "skills/MPF-asset/", "generated_at": "<ISO8601>" }
+"spawned_skill": {
+  "generated": true,
+  "path": "skills/MPF-asset/",
+  "generated_at": "<ISO8601>",
+  "sharing": "private",
+  "permission_manifest": "skills/MPF-asset/PERMISSIONS.md"
+},
+"consent": {
+  "shares": [
+    { "artifact": "skills/MPF-asset/", "granted": false,
+      "exposed": ["contract_address", "operation_commands", "public_compliance_constants"],
+      "withheld": ["investor_pii", "diligence_evidence", "dividend_detail", "personalization"],
+      "at": "<ISO8601>" }
+  ]
+}
 ```
+`npm run spawn:asset`（`scripts/spawn_asset_skill.py`）已自动完成上述生成与回写。
 
 ---
 
@@ -76,9 +93,36 @@ skills/<SYMBOL>-asset/
 
 ---
 
-## 飞轮价值（3-C，低调版，写进母 SKILL.md 顶部一句）
+## Personalization（个性化精炼，服务自己）
 
-> 母 SKILL.md 顶部功能描述里中性陈述即可，不谈设计哲学：
-> "发行完成后自动产出该资产的可复用操作 skill，供其他 agent 直接调用。"
+落点是**为发行人自己服务**：每次自然语言交互都可能精炼这支资产的运营方式。把发行人反复确认的偏好——常用司法辖区、默认持有人上限/单人持仓上限、派息节奏、披露模板、自定义风险阈值——经 **🔑 沉淀同意**后写入 `state.personalization`：
 
-讲的是能力本身。其生态含义（每发行一支资产 → 生态多一个可复用能力单元）由评审自行体会，不自夸。
+```json
+"personalization": {
+  "preferences": {
+    "jurisdictions": [840, 344],
+    "default_max_holders": 100,
+    "default_max_balance_per_investor": "1000000000000000000000000",
+    "dividend_cadence": "quarterly",
+    "disclosure_template": "reg-d-506c"
+  },
+  "refined_at": "<ISO8601>",
+  "refine_log": [
+    { "change": "set dividend_cadence=quarterly", "from_interaction": "用户在第3次派息时确认按季度", "consented": true, "at": "<ISO8601>" }
+  ]
+}
+```
+
+下次发行/操作时，agent **先从 profile 预填、再与发行人确认差异**，而不是每次从零问起——skill 随需求持续成长。偏好属主权数据，默认私有；写入前出沉淀同意卡片说明"记录什么、用途、仅存本地"。
+
+## Sharing（开放与权限清单，默认私有）
+
+子 skill **默认 `sharing=private`**，仅供发行人自用。要把它（或任何数据范围）交给他人/其他 agent 前，必须走 **🔑 开放同意**：
+
+1. 读 `PERMISSIONS.md`，向发行人展示**权限清单**——明确"暴露什么 vs 保留什么"：
+   - **暴露**：合约地址、操作命令、公开合规常量（MAX_HOLDERS 等）。
+   - **保留**：投资者 PII、尽调证据、派息明细、个性化偏好（这些只在 `state.json` 本地）。
+2. 出同意卡片（操作=对外开放 / 对象=该 skill / 暴露面 / 保留面 / 接收方），收到 `consent` 才执行。
+3. 回写 `state.consent.shares`：把对应记录的 `granted` 置 `true`，并记 `recipient` 与时间；`state.spawned_skill.sharing` 置 `shared`。
+
+> **铁律：分享 skill ≠ 分享数据。** 即便开放，离开本机的也只有 `PERMISSIONS.md` 列出的公开操作面；`state.json` 永不随包外发。未获同意时，一律按默认私有处理。

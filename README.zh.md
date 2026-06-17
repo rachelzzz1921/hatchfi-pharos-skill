@@ -4,13 +4,13 @@
 
 # HatchFi · 链孵
 
-### 把合规 RWA 孵化成可复用 Agent Skill。
+### 把合规 RWA 孵化成 Agent Skill。
 
-每孵化一支 RWA，就留下一个可复用 Skill。
+每孵化一支 RWA，就为*你自己*留下一个私有运营 Skill——归你所有，越用越强。
 
 [![tests](https://img.shields.io/badge/Foundry-24_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
 [![live](https://img.shields.io/badge/Pharos_Atlantic-已部署-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
-[![flywheel](https://img.shields.io/badge/Skill产Skill-飞轮已实证-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
+[![skill](https://img.shields.io/badge/孵化Skill-私有+复利-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
 [![standard](https://img.shields.io/badge/ERC--3643-风格-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
 
 [English](./README.md)  ·  **🌐 中文**  ·  📊 [在线看板](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
@@ -29,32 +29,42 @@
 
 ## HatchFi 做了什么
 
-HatchFi 是面向 Pharos 合规 RealFi 的 **Agent 原生发行层**。它把受监管的 RWA 发行做成一条 AI Agent 能端到端执行、链上可验证、并且——这是关键——**沉淀成可复用 Skill** 的工作流。
+HatchFi 是面向 Pharos 合规 RealFi 的 **Agent 原生发行层**。它把受监管的 RWA 发行做成一条 AI Agent 能端到端执行（尽调、合规发行、生命周期、审计）、链上可验证的工作流，然后——这是关键——**为你留下一个针对该资产的私有运营 Skill，并在你与它对话的过程中持续变强**。
 
 ```
-①  尽调闸门        →   ②  合规发行           →   ③  Skill 孵化
+①  尽调闸门        →   ②  合规发行           →   ③  Skill 孵化（归你）
    只读风险画像          ERC-3643 代币           生成 skills/<SYMBOL>-asset/
-   GREEN/YELLOW/RED      已在 Atlantic 部署        任意 Agent 可复用
-   RED 拒绝发行          每笔转账双重闸门          无需重新部署
+   GREEN/YELLOW/RED      已在 Atlantic 部署        默认私有 · 服务你自己
+   RED 拒绝发行          身份·合规·冻结三闸        在对话中持续精炼
 ```
 
-## 飞轮——为什么会复利增长
+合规、尽调、审计是硬能力底座，不是事后补丁。详见下方 [合规是特性](#合规是特性不是摩擦)。
+
+## 它会复利——为*你*而复利
 
 这是最该被评委记住的部分。
 
-大多数发行工具只产出**一支**代币就结束了。HatchFi 产出代币的同时，还产出**一个针对该资产的可复用 Agent Skill**——合约地址和操作命令都已写死。
+大多数发行工具只产出**一支**代币就结束了。HatchFi 产出代币的同时，还为该资产产出**一个私有运营 Skill**——合约地址和操作命令都已写死。当你用自然语言管理这支资产时，这个 Skill **会学习你的偏好、越来越贴合你的 RWA 需求**（常用辖区、持有人上限、派息节奏、披露模板）。
 
 ```
 HatchFi（母 Skill）
-  └── 在 Atlantic 发行 MPF  ──spawn──►  skills/MPF-asset/   ◄── 任意 Agent 导入
-        └── 发行下一支 RWA  ──spawn──►  skills/<NEXT>-asset/     直接运营该资产
-                                                                  （白名单、mint、派息）
-                                                                  无需重新部署
+  └── 在 Atlantic 发行 MPF  ──spawn──►  skills/MPF-asset/   ◄── 首先服务你
+        └── 你持续运营它   ──精炼──►  更贴合你的 Skill     （白名单、mint、派息）
+                                                              无需重新部署
 ```
 
-> **孵化越多 RWA → 沉淀越多 Skill → Pharos 上合规 RealFi 的边际成本趋近于零。**
+> **孵化 → 自然语言运营 → Skill 复利式贴合*你*的需求。** 飞轮朝内转：它让*你自己*的合规 RealFi 越来越便宜、越来越锋利，而不是替别人省成本。
 
-这已经被实证，不是设想：发行 **MPF** 自动产出了 [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md)——一个其他 Agent 今天就能直接运行的独立 Skill。
+### 数据归你，分享由你决定。
+
+这个 Skill 及它积累的一切——投资者身份、尽调证据、派息明细、你的偏好——**都归你所有、默认私有**。它们存在你本地的 `state.json`（gitignore），不上链，不会被打包进可分享的包里。
+
+- 🔑 **沉淀同意**——记录任何个人/敏感信息前，agent 先征求同意。
+- 🔑 **开放同意**——对外开放某个 Skill 或数据范围是显式 opt-in，且会输出一份**权限清单**（明确「**暴露什么** vs **保留什么**）。见自动生成的 [`PERMISSIONS.md`](./skills/MPF-asset/PERMISSIONS.md)。
+
+> **分享一个 Skill ≠ 分享你的数据。** spawn 出的 Skill 只带公开操作面（合约地址 + 命令）；你的主权账本除非你同意，否则绝不离开你的机器。
+
+这已经被实证，不是设想：发行 **MPF** 自动产出了 [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md)——一个带权限清单、私有、即可运营的 Skill，*你*今天就能跑，并且只在你愿意时才对外开放。
 
 ## 它是 live 的——60 秒可验证
 
@@ -96,8 +106,9 @@ HatchFi 是 Pharos **Skill**，不是脚本。Agent 按 [`SKILL.md`](./SKILL.md)
 
 - **尽调前置** — RED 评级或检查不过即拒绝发行，并给出 evidence
 - **风险分档** — 🟢 自动 · 🟡 留痕 · 🔴 部署/mint/派息前出人工确认卡片
+- **同意闸** — 🔑 沉淀个人数据或对外分享 Skill 前需显式同意（并附权限清单）
 - **Receipt 断言** — 每笔写操作验 `status==1` 才继续
-- **审计记忆** — `state.json` 记录尽调、准入、派息与操作历史
+- **审计记忆** — `state.json` 记录尽调、准入、派息与操作历史——默认归你私有
 - **私钥安全** — 私钥仅走环境变量，绝不入库
 
 ## 自己跑一遍

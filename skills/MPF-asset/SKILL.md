@@ -7,6 +7,8 @@ description: Asset-specific operations for Manhattan Property Fund (MPF) on Phar
 
 > Contract: `0xfef7519bebda6c47af49583dbc9e60801f8aa3de` (`CompliantRWAToken`, Pharos Atlantic Testnet)
 > Generated deterministically from the parent Compliant RWA Issuance Agent.
+> **Private by default — serves its owner first.** Sharing scope is declared in `PERMISSIONS.md`;
+> the owner's data (investor PII, diligence evidence, dividends, preferences) is NOT in this package.
 
 ## Capability Index
 

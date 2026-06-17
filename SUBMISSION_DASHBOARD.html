@@ -134,13 +134,13 @@
       <span class="zh">把合规 RWA 孵化成可复用 Agent Skill。</span>
     </p>
     <p class="subline">
-      <span class="en">An agent-native issuance layer for compliant RealFi on Pharos. Every RWA you hatch leaves a reusable Skill behind.</span>
-      <span class="zh">面向 Pharos 合规 RealFi 的 Agent 原生发行层。每孵化一支 RWA，就留下一个可复用 Skill。</span>
+      <span class="en">An agent-native issuance layer for compliant RealFi on Pharos. Every RWA you hatch leaves <em>you</em> a private operating Skill — yours, and it compounds as you talk to it.</span>
+      <span class="zh">面向 Pharos 合规 RealFi 的 Agent 原生发行层。每孵化一支 RWA，就为<em>你自己</em>留下一个私有运营 Skill——归你所有，越用越强。</span>
     </p>
     <div class="badges">
       <span class="badge ok">24 Foundry tests</span>
       <span class="badge live"><span class="en">LIVE on Atlantic</span><span class="zh">Atlantic 已部署</span></span>
-      <span class="badge gold"><span class="en">Skill→Skill flywheel</span><span class="zh">Skill 产 Skill 飞轮</span></span>
+      <span class="badge gold"><span class="en">private Skill · compounds</span><span class="zh">私有 Skill · 复利</span></span>
       <span class="badge">ERC-3643 · chainId 688689</span>
     </div>
   </header>
@@ -163,28 +163,36 @@
     </p>
   </section>
 
-  <!-- FLYWHEEL (hero advantage) -->
+  <!-- COMPOUNDS FOR YOU (hero advantage) -->
   <section>
-    <div class="kicker"><span class="en">Why it compounds</span><span class="zh">为什么会复利</span></div>
-    <h2><span class="en">The flywheel: every issuance leaves a Skill</span><span class="zh">飞轮：每次发行都留下一个 Skill</span></h2>
+    <div class="kicker"><span class="en">Why it compounds — for you</span><span class="zh">为什么会复利——为你</span></div>
+    <h2><span class="en">Every issuance leaves you a private operating Skill</span><span class="zh">每次发行，都为你留下一个私有运营 Skill</span></h2>
     <p class="lead">
-      <span class="en">Most issuance tools produce <strong>one</strong> deployed token and stop. HatchFi produces a deployed token <strong>plus a reusable agent Skill</strong> for that exact asset — contract address and command set already baked in.</span>
-      <span class="zh">大多数发行工具只产出<strong>一支</strong>代币就结束。HatchFi 产出代币的同时，还产出<strong>一个针对该资产的可复用 Agent Skill</strong>——合约地址和操作命令都已写死。</span>
+      <span class="en">Most issuance tools produce <strong>one</strong> deployed token and stop. HatchFi produces a deployed token <strong>plus a private operating Skill</strong> for that exact asset. As you manage it in natural language, the Skill <strong>learns your preferences and gets more aligned with your RWA needs</strong>.</span>
+      <span class="zh">大多数发行工具只产出<strong>一支</strong>代币就结束。HatchFi 产出代币的同时，还为该资产产出<strong>一个私有运营 Skill</strong>。当你用自然语言管理它时，这个 Skill <strong>会学习你的偏好、越来越贴合你的 RWA 需求</strong>。</span>
     </p>
     <pre class="ascii"><span class="gd">HatchFi</span> (parent skill)
-  └── issues <span class="hl">MPF</span> on Atlantic   ──spawn──►  <span class="hl">skills/MPF-asset/</span>   ◄── any agent imports
-        └── issues next RWA   ──spawn──►  skills/&lt;NEXT&gt;-asset/      and operates the asset
-                                                                   (whitelist · mint · dividends)
+  └── issues <span class="hl">MPF</span> on Atlantic   ──spawn──►  <span class="hl">skills/MPF-asset/</span>   ◄── serves <span class="gd">YOU</span> first
+        └── you keep operating it ──refine──►  better-fit Skill   (whitelist · mint · dividends)
                                                                    <span class="gd">WITHOUT redeploying</span></pre>
     <div class="flywheel-banner">
       <div class="big">
-        <span class="en">More RWAs hatched → more reusable Skills → <span class="hl">the marginal cost of compliant RealFi on Pharos trends toward zero.</span></span>
-        <span class="zh">孵化越多 RWA → 沉淀越多 Skill → <span class="hl">Pharos 上合规 RealFi 的边际成本趋近于零。</span></span>
+        <span class="en">Hatch → operate in natural language → <span class="hl">the Skill compounds to fit your needs.</span> The flywheel points inward.</span>
+        <span class="zh">孵化 → 自然语言运营 → <span class="hl">Skill 复利式贴合你的需求。</span> 飞轮朝内转。</span>
       </div>
     </div>
-    <p class="lead" style="margin-top:1.1rem;">
-      <span class="en">Already proven, not theoretical: issuing MPF automatically produced <a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a>, a standalone Skill another agent can run today.</span>
-      <span class="zh">已实证，非设想：发行 MPF 自动产出了 <a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a>——其他 Agent 今天就能直接运行的独立 Skill。</span>
+    <h3 style="margin-top:1.4rem;"><span class="en">You own the data. Sharing is your call.</span><span class="zh">数据归你，分享由你决定。</span></h3>
+    <p class="lead" style="margin-top:0.6rem;">
+      <span class="en">The Skill and everything it accumulates — investor identities, diligence evidence, dividend detail, your preferences — are <strong>yours and private by default</strong> (local <span class="term">state.json</span>, gitignored, never on-chain, never bundled).</span>
+      <span class="zh">这个 Skill 及它积累的一切——投资者身份、尽调证据、派息明细、你的偏好——<strong>都归你所有、默认私有</strong>（本地 <span class="term">state.json</span>，gitignore，不上链、不打包）。</span>
+    </p>
+    <ul class="disc" style="margin-top:0.6rem;">
+      <li><span class="k">🔑 <span class="en">Deposit consent</span><span class="zh">沉淀同意</span></span><span><span class="en">The agent asks before recording any personal/sensitive info.</span><span class="zh">记录任何个人/敏感信息前，agent 先征求同意。</span></span></li>
+      <li><span class="k">🔑 <span class="en">Share consent</span><span class="zh">开放同意</span></span><span><span class="en">Opening a Skill or data scope is explicit opt-in, emitting a <a class="ref" href="skills/MPF-asset/PERMISSIONS.md">permission manifest</a> (exposed vs withheld).</span><span class="zh">对外开放 Skill 或数据是显式 opt-in，并输出一份<a class="ref" href="skills/MPF-asset/PERMISSIONS.md">权限清单</a>（暴露 vs 保留）。</span></span></li>
+    </ul>
+    <p class="lead" style="margin-top:0.9rem;">
+      <span class="en"><strong>Sharing a Skill ≠ sharing your data.</strong> Already proven: issuing MPF produced <a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a> — private, with a permission manifest, yours to run today and open only by choice.</span>
+      <span class="zh"><strong>分享一个 Skill ≠ 分享你的数据。</strong> 已实证：发行 MPF 产出了 <a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a>——带权限清单、私有、你今天就能跑，只在你愿意时才对外开放。</span>
     </p>
   </section>
 
@@ -253,8 +261,9 @@
     <ul class="disc">
       <li><span class="k"><span class="en">Diligence-first</span><span class="zh">尽调前置</span></span><span><span class="en">RED rating or failed checks block issuance, with evidence.</span><span class="zh">RED 评级或检查不过即拒绝发行，并给出 evidence。</span></span></li>
       <li><span class="k"><span class="en">Risk tiers</span><span class="zh">风险分档</span></span><span><span class="en">🟢 auto · 🟡 audit trail · 🔴 human confirm before deploy/mint/dividend.</span><span class="zh">🟢 自动 · 🟡 留痕 · 🔴 部署/mint/派息前人工确认。</span></span></li>
+      <li><span class="k"><span class="en">Consent gates</span><span class="zh">同意闸</span></span><span><span class="en">🔑 explicit consent before depositing personal data or sharing a Skill (with a permission manifest).</span><span class="zh">🔑 沉淀个人数据或对外分享 Skill 前需显式同意（并附权限清单）。</span></span></li>
       <li><span class="k"><span class="en">Receipt assertions</span><span class="zh">Receipt 断言</span></span><span><span class="en">Every write verifies status==1 before continuing.</span><span class="zh">每笔写操作验 status==1 才继续。</span></span></li>
-      <li><span class="k"><span class="en">Audit memory</span><span class="zh">审计记忆</span></span><span><span class="en">state.json records diligence, onboarding, dividends, and history.</span><span class="zh">state.json 记录尽调、准入、派息与操作历史。</span></span></li>
+      <li><span class="k"><span class="en">Audit memory</span><span class="zh">审计记忆</span></span><span><span class="en">state.json records diligence, onboarding, dividends, and history — owner-private by default.</span><span class="zh">state.json 记录尽调、准入、派息与操作历史——默认归你私有。</span></span></li>
       <li><span class="k"><span class="en">Key safety</span><span class="zh">私钥安全</span></span><span><span class="en">Private key via env only, never committed.</span><span class="zh">私钥仅走环境变量，绝不入库。</span></span></li>
     </ul>
   </section>
@@ -269,7 +278,7 @@
         <tr><td class="k">forge test</td><td><span style="color:var(--ok)">24 passed · 0 failed</span> <span class="en">(incl. fuzz)</span><span class="zh">（含 fuzz）</span></td></tr>
         <tr><td class="k"><span class="en">On-chain deploy</span><span class="zh">链上部署</span></td><td><a class="ref" href="https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de" target="_blank">0xfef7…Aa3DE</a></td></tr>
         <tr><td class="k"><span class="en">On-chain smoke</span><span class="zh">链上 smoke</span></td><td><span style="color:var(--ok)">mint 1e18 · isVerified · holderCount=1</span></td></tr>
-        <tr><td class="k"><span class="en">Flywheel</span><span class="zh">飞轮</span></td><td><a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a> <span class="en">spawned</span><span class="zh">已生成</span></td></tr>
+        <tr><td class="k"><span class="en">Hatched Skill</span><span class="zh">孵化 Skill</span></td><td><a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a> <span class="en">spawned · private</span><span class="zh">已生成 · 私有</span></td></tr>
         <tr><td class="k"><span class="en">Key safety</span><span class="zh">私钥安全</span></td><td class="mono">.env · state.json <span class="en">gitignored</span><span class="zh">已忽略</span></td></tr>
       </tbody>
     </table>

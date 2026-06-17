@@ -6,11 +6,11 @@
 
 ### Where compliant RWAs hatch into Agent Skills.
 
-Every RWA you hatch leaves a reusable Skill behind.
+Every RWA you hatch leaves *you* a private operating Skill — yours, and it compounds.
 
 [![tests](https://img.shields.io/badge/Foundry-24_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
 [![live](https://img.shields.io/badge/Pharos_Atlantic-LIVE-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
-[![flywheel](https://img.shields.io/badge/Skill→Skill-flywheel_proven-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
+[![skill](https://img.shields.io/badge/hatched_Skill-private_+_compounds-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
 
 **🌐 English**  ·  [中文](./README.zh.md)  ·  📊 [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
@@ -29,32 +29,42 @@ Standard ERC-20 answers none of these. Most "RWA" hackathon projects stop at a m
 
 ## What HatchFi does
 
-HatchFi is an **agent-native issuance layer** for compliant RealFi on Pharos. It turns regulated RWA launch into a workflow an AI agent can run end-to-end, verify on-chain, and — this is the key part — **leave behind as a reusable Skill**.
+HatchFi is an **agent-native issuance layer** for compliant RealFi on Pharos. It turns regulated RWA launch into a workflow an AI agent runs end-to-end — diligence, compliant issuance, lifecycle, audit — verifies on-chain, and then **leaves you a private operating Skill for that asset that keeps improving as you talk to it.**
 
 ```
-①  Diligence Gate   →   ②  Compliant Issuance   →   ③  Skill Hatch
+①  Diligence Gate   →   ②  Compliant Issuance   →   ③  Skill Hatch (yours)
    read-only risk          ERC-3643 token, live         spawn skills/<SYMBOL>-asset/
-   GREEN/YELLOW/RED         on Pharos Atlantic            reusable by any agent
-   RED blocks issuance      dual transfer gate            no redeploy needed
+   GREEN/YELLOW/RED         on Pharos Atlantic            private-by-default · serves you
+   RED blocks issuance      identity·compliance·freeze    refines via conversation
 ```
 
-## The flywheel — why this compounds
+Compliance, diligence and audit are the hard base — not an afterthought. See [Compliance is the feature](#compliance-is-the-feature-not-friction) below.
+
+## It compounds — for *you*
 
 This is the part judges should remember.
 
-Most issuance tools produce **one** deployed token and stop. HatchFi produces a deployed token **plus a reusable agent Skill** for that exact asset — with the contract address and command set already baked in.
+Most issuance tools produce **one** deployed token and stop. HatchFi produces a deployed token **plus a private operating Skill** for that exact asset — contract address and command set baked in. As you manage the asset in natural language, that Skill **learns your preferences and gets more aligned with your RWA needs** (jurisdictions, holder caps, dividend cadence, disclosure templates).
 
 ```
 HatchFi (parent skill)
-  └── issues MPF on Atlantic  ──spawn──►  skills/MPF-asset/   ◄── any agent imports this
-        └── issues next RWA   ──spawn──►  skills/<NEXT>-asset/     and operates the asset
-                                                                    (whitelist, mint, dividends)
+  └── issues MPF on Atlantic  ──spawn──►  skills/MPF-asset/   ◄── serves YOU first
+        └── you keep operating it ──refine──►  better-fit Skill   (whitelist, mint, dividends)
                                                                     WITHOUT redeploying
 ```
 
-> **More RWAs hatched → more reusable Skills → the marginal cost of compliant RealFi on Pharos trends toward zero.**
+> **Hatch → operate in natural language → the Skill compounds to fit *your* needs.** The flywheel points inward: it makes *your* compliant RealFi cheaper and sharper over time, not someone else's.
 
-It is already proven, not theoretical: issuing **MPF** automatically produced [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md), a standalone Skill another agent can run today.
+### You own the data. Sharing is your call.
+
+The Skill and everything it accumulates — investor identities, diligence evidence, dividend detail, your preferences — are **yours and private by default**. They live in your local `state.json` (gitignored), never on-chain, never bundled into a shareable package.
+
+- 🔑 **Deposit consent** — before any personal/sensitive info is recorded, the agent asks.
+- 🔑 **Share consent** — opening a Skill or any data scope to others is an explicit opt-in that emits a **permission manifest** (exactly what's *exposed* vs *withheld*). See the generated [`PERMISSIONS.md`](./skills/MPF-asset/PERMISSIONS.md).
+
+> **Sharing a Skill ≠ sharing your data.** A spawned Skill carries only the public operating surface (contract address + commands); your sovereign ledger never leaves your machine unless you say so.
+
+It is already proven, not theoretical: issuing **MPF** automatically produced [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) — a private, ready-to-operate Skill, with a permission manifest, that *you* can run today and open to others only by choice.
 
 ## It's live — verify in 60 seconds
 
@@ -96,8 +106,9 @@ HatchFi is a Pharos **Skill**, not a script. The agent follows [`SKILL.md`](./SK
 
 - **Diligence-first** — RED rating or failed checks block issuance, with evidence
 - **Risk tiers** — 🟢 auto · 🟡 audit trail · 🔴 human confirm card before deploy/mint/dividend
+- **Consent gates** — 🔑 explicit consent before depositing personal data or sharing a Skill (with a permission manifest)
 - **Receipt assertions** — every write verifies `status==1` before continuing
-- **Audit memory** — `state.json` records diligence, onboarding, dividends, and history
+- **Audit memory** — `state.json` records diligence, onboarding, dividends, and history — owner-private by default
 - **Key safety** — private key via env only, never committed
 
 ## Run it yourself

@@ -1,9 +1,86 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "RWA Agent State Memory",
-  "description": "合规 RWA 发行 Agent 的跨步骤状态记忆。agent 每完成一步读取并更新此文件，使「尽调→发行→派息」全流程具备连续记忆。这是 MemOS 式结构化记忆在 skill 层的极简落地——不放进合约（链下状态不该上链），而由 harness 在本地维护。",
+  "description": "合规 RWA 发行 Agent 的跨步骤状态记忆。agent 每完成一步读取并更新此文件，使「尽调→发行→派息」全流程具备连续记忆。这是 MemOS 式结构化记忆在 skill 层的极简落地——不放进合约（链下状态不该上链），而由 harness 在本地维护。这是发行人的主权数据：默认私有、默认 gitignore、永不打包进可分享的子 skill；沉淀敏感信息或对外开放均需记录在 consent 段的显式同意。",
   "type": "object",
   "properties": {
+    "ownership": {
+      "type": "object",
+      "description": "数据主权声明。此文件归发行人所有，默认私有。agent 不得在未记录 consent.shares 同意的情况下把任何私有段（whitelist / personalization / diligence.evidence / dividends 明细）暴露给他人或其他 agent。",
+      "properties": {
+        "owner": { "type": "string", "description": "发行人标识或地址" },
+        "private_by_default": { "type": "boolean", "default": true, "description": "默认私有开关；spawn 出的子 skill 仅含公开操作面，私有账本不复制进包" },
+        "notice": { "type": "string", "description": "人类可读的主权声明，例如「本文件含投资者 PII 与尽调证据，分享前需 owner 显式同意」" }
+      }
+    },
+    "consent": {
+      "type": "object",
+      "description": "显式同意账本——两道同意闸（沉淀 / 开放）的留痕，可审计。未记录对应同意即视为未授权，agent 须按默认私有处理。",
+      "properties": {
+        "deposits": {
+          "type": "array",
+          "description": "🔑 沉淀同意：把个人/敏感信息写入私有段前获得的同意记录",
+          "items": {
+            "type": "object",
+            "properties": {
+              "scope": { "type": "string", "description": "沉淀范围，如 'personalization.preferences' / 'whitelist.pii'" },
+              "granted": { "type": "boolean", "description": "是否获得发行人同意" },
+              "at": { "type": "string", "description": "同意时间 ISO8601" },
+              "note": { "type": "string", "description": "记录什么、用途、存放位置（仅本地）" }
+            },
+            "required": ["scope", "granted", "at"]
+          }
+        },
+        "shares": {
+          "type": "array",
+          "description": "🔑 开放同意：对外暴露 skill 或数据范围前获得的同意 + 权限清单（暴露什么 / 保留什么）",
+          "items": {
+            "type": "object",
+            "properties": {
+              "artifact": { "type": "string", "description": "被开放的对象，如 'skills/MPF-asset/' 或导出的 profile" },
+              "granted": { "type": "boolean", "description": "是否获得发行人同意；false = 仅自用，未对外" },
+              "exposed": { "type": "array", "items": { "type": "string" }, "description": "权限清单·暴露项，如 ['contract_address', 'operation_commands']" },
+              "withheld": { "type": "array", "items": { "type": "string" }, "description": "权限清单·保留项，如 ['investor_pii', 'diligence_evidence', 'dividend_detail', 'preferences']" },
+              "recipient": { "type": "string", "description": "开放给谁（可选）" },
+              "at": { "type": "string" }
+            },
+            "required": ["artifact", "granted", "exposed", "withheld", "at"]
+          }
+        }
+      }
+    },
+    "personalization": {
+      "type": "object",
+      "description": "个性化偏好 profile——主权私有数据。每次 NL 交互可经沉淀同意精炼，使下次发行/操作更贴合发行人需求。默认私有，分享需开放同意。",
+      "properties": {
+        "preferences": {
+          "type": "object",
+          "description": "发行人反复确认的默认偏好，发行时用于预填",
+          "properties": {
+            "jurisdictions": { "type": "array", "items": { "type": "integer" }, "description": "常用司法辖区 ISO 3166 地区码" },
+            "default_max_holders": { "type": "integer", "description": "默认最大持有人数" },
+            "default_max_balance_per_investor": { "type": "string", "description": "默认单投资者持仓上限" },
+            "dividend_cadence": { "type": "string", "description": "派息节奏，如 'quarterly'" },
+            "disclosure_template": { "type": "string", "description": "披露/文档模板标识" },
+            "risk_thresholds": { "type": "object", "description": "自定义风险阈值（如自动拒绝的尽调评级）" }
+          }
+        },
+        "refined_at": { "type": "string", "description": "最近一次精炼时间" },
+        "refine_log": {
+          "type": "array",
+          "description": "精炼历史——每次从交互学到的偏好变更可追溯",
+          "items": {
+            "type": "object",
+            "properties": {
+              "change": { "type": "string", "description": "精炼了什么偏好" },
+              "from_interaction": { "type": "string", "description": "来源交互摘要" },
+              "consented": { "type": "boolean", "description": "是否经沉淀同意" },
+              "at": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
     "config": {
       "type": "object",
       "description": "发行方可配置项。denylist 让尽调闸门具备确定性的拒绝路径（命中即 RED）。",
@@ -80,11 +157,13 @@
     },
     "spawned_skill": {
       "type": "object",
-      "description": "D 自我繁殖产出——发行完成后自动为本资产生成的专属 skill 包路径（生态飞轮的落点）",
+      "description": "发行完成后为本资产沉淀的私有运营 skill。首先服务发行人自己；默认私有（sharing=private），对外开放需 consent.shares 显式同意 + 权限清单。",
       "properties": {
         "generated": { "type": "boolean" },
         "path": { "type": "string", "description": "生成的资产专属 skill 目录" },
-        "generated_at": { "type": "string" }
+        "generated_at": { "type": "string" },
+        "sharing": { "type": "string", "enum": ["private", "shared"], "default": "private", "description": "默认 private（仅自用）；shared 需对应 consent.shares 记录" },
+        "permission_manifest": { "type": "string", "description": "权限清单文件路径（PERMISSIONS.md）：声明暴露面 vs 保留的私有数据" }
       }
     },
     "last_action": { "type": "string", "description": "最近一次操作，用于断点续作" },

@@ -80,6 +80,8 @@ description: Asset-specific operations for {asset['name']} ({symbol}) on Pharos 
 
 > Contract: `{asset['address']}` (`CompliantRWAToken`, Pharos Atlantic Testnet)
 > Generated deterministically from the parent Compliant RWA Issuance Agent.
+> **Private by default — serves its owner first.** Sharing scope is declared in `PERMISSIONS.md`;
+> the owner's data (investor PII, diligence evidence, dividends, preferences) is NOT in this package.
 
 ## Capability Index
 
@@ -107,6 +109,42 @@ description: Asset-specific operations for {asset['name']} ({symbol}) on Pharos 
     )
 
 
+def _write_permission_manifest(asset: dict, out_dir: Path) -> None:
+    """Declare the sharing boundary: what this skill exposes vs what stays private.
+
+    The spawned skill is private-by-default and serves its owner first. It bundles
+    ONLY the public operating surface (contract address + operation playbooks). The
+    owner's sovereign ledger (state.json: investor PII, diligence evidence, dividend
+    detail, personalization) is NEVER copied here — sharing a skill != sharing data.
+    """
+    symbol = asset["symbol"]
+    (out_dir / "PERMISSIONS.md").write_text(
+        f"""# Permission Manifest · {symbol} Asset Skill
+
+> Sharing status: **private** (serves the owner first).
+> Opening this skill to anyone else is an explicit, scoped opt-in — record it in
+> the parent `state.json` → `consent.shares` before distributing.
+
+## Exposed (public operating surface)
+
+- Contract address: `{asset['address']}`
+- Operation commands & references (whitelist check, mint, transfer-check, dividends, diligence)
+- Public compliance constants: MAX_HOLDERS={asset['max_holders']}, MAX_BALANCE_PER_INVESTOR={asset['max_balance']}
+
+## Withheld (owner's sovereign data — never bundled)
+
+- Investor identities / PII (`state.whitelist`)
+- Diligence evidence (`state.diligence.evidence`)
+- Dividend distribution detail (`state.dividends`)
+- Personalization preferences & templates (`state.personalization`)
+
+These remain in the owner's local `state.json` (gitignored) and are only referenced
+by path at runtime. **Sharing this skill does not share the data above.**
+""",
+        encoding="utf-8",
+    )
+
+
 def main() -> None:
     asset = _load_asset()
     symbol = _safe_symbol(asset["symbol"])
@@ -115,6 +153,7 @@ def main() -> None:
     refs_dir.mkdir(parents=True, exist_ok=True)
 
     _write_skill(asset, out_dir)
+    _write_permission_manifest(asset, out_dir)
 
     templates = {
         ROOT / "references" / "onchain-diligence.md": refs_dir / f"{symbol}-diligence.md",
@@ -140,26 +179,53 @@ def main() -> None:
     if leftovers:
         raise SystemExit("Unreplaced placeholders remain:\n" + "\n".join(leftovers))
 
+    now = _dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    manifest_rel = str((out_dir / "PERMISSIONS.md").relative_to(ROOT))
+    skill_rel = str(out_dir.relative_to(ROOT)) + "/"
+
     state = {}
     if STATE.exists():
         state = json.loads(STATE.read_text())
+    state.setdefault("ownership", {}).setdefault("private_by_default", True)
+    state["ownership"].setdefault(
+        "notice",
+        "state.json holds investor PII, diligence evidence and personalization — "
+        "owner-private. Sharing any skill/data requires explicit consent (consent.shares).",
+    )
     state["spawned_skill"] = {
         "generated": True,
-        "path": str(out_dir.relative_to(ROOT)) + "/",
-        "generated_at": _dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "path": skill_rel,
+        "generated_at": now,
+        "sharing": "private",
+        "permission_manifest": manifest_rel,
     }
+    # Record the sharing decision as NOT-yet-granted: the skill is private until the
+    # owner explicitly consents to open it (with the exposed/withheld manifest).
+    state.setdefault("consent", {}).setdefault("shares", []).append(
+        {
+            "artifact": skill_rel,
+            "granted": False,
+            "exposed": ["contract_address", "operation_commands", "public_compliance_constants"],
+            "withheld": ["investor_pii", "diligence_evidence", "dividend_detail", "personalization"],
+            "at": now,
+        }
+    )
     state["last_action"] = "spawn_asset_skill"
     state.setdefault("history", []).append(
         {
             "action": "spawn_asset_skill",
             "risk": "low",
             "confirmed_by_human": False,
-            "at": state["spawned_skill"]["generated_at"],
+            "at": now,
         }
     )
     STATE.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
 
-    print(f"Generated {out_dir.relative_to(ROOT)}/")
+    print(f"Generated {skill_rel} (private-by-default)")
+    print(f"  Permission manifest: {manifest_rel}")
+    print("  This skill serves YOU first. It is private until you explicitly consent")
+    print("  to share it (see PERMISSIONS.md + state.consent.shares). Sharing the skill")
+    print("  does NOT share your state.json (investor PII / diligence / dividends).")
 
 
 if __name__ == "__main__":
