@@ -245,7 +245,7 @@ npm run spawn:asset               # → skills/MPF-asset/（飞轮落点）
 | 文档 | 内容 |
 |---|---|
 | [`SKILL.md`](./SKILL.md) | Agent 入口——能力索引、预检纪律、风险分档 |
-| [在线看板](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html) | 可视化看板，含 EN/中文 切换 |
+| [在线看板](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html) | 可视化概览 · EN/中文 切换 · 顶部 sticky 导航 · 审查闭环图 |
 | [`docs/COMPLETED_VALIDATION.md`](./docs/COMPLETED_VALIDATION.md) | 本地 + 链上验证证据 |
 | [`DEPLOYMENT_RESULT.md`](./DEPLOYMENT_RESULT.md) | 部署 + smoke 记录（自动生成）|
 | [`docs/SECURITY.md`](./docs/SECURITY.md) | 审计发现与修复 |

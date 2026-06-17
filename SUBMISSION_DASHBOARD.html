@@ -22,6 +22,7 @@
       --ok: #3dd68c;
       --mono: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
       --sans: "SF Pro Display", "SF Pro Text", "PingFang SC", system-ui, sans-serif;
+      --nav-h: 3.25rem;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; scroll-behavior: smooth; }
@@ -71,7 +72,105 @@
     .badge.gold { color: var(--gold); border-color: rgba(201,162,39,0.3); background: rgba(201,162,39,0.08); }
     .badge.ok { color: var(--ok); border-color: rgba(61,214,140,0.3); background: rgba(61,214,140,0.08); }
 
-    section { margin-bottom: 2.8rem; scroll-margin-top: 2rem; }
+    section { margin-bottom: 2.8rem; scroll-margin-top: calc(var(--nav-h) + 1.25rem); }
+    section[id] { position: relative; }
+    section[id]::before {
+      content: ""; position: absolute; inset: -0.5rem -0.75rem auto -0.75rem; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-soft) 20%, var(--border-soft) 80%, transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    section[id]:target::before { opacity: 1; }
+
+    /* sticky section nav */
+    .sticky-nav {
+      position: sticky; top: 0; z-index: 40;
+      margin: 0 -1.75rem 2rem; padding: 0 1.75rem;
+      background: rgba(10, 15, 13, 0.72);
+      backdrop-filter: blur(14px) saturate(1.2);
+      -webkit-backdrop-filter: blur(14px) saturate(1.2);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .sticky-nav.is-scrolled {
+      border-bottom-color: var(--border);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    }
+    .sticky-nav-inner {
+      display: flex; align-items: center; gap: 1rem;
+      min-height: var(--nav-h); max-width: 1020px; margin: 0 auto;
+    }
+    .nav-brand {
+      font-family: var(--mono); font-size: 0.78rem; font-weight: 600;
+      color: var(--gold); letter-spacing: 0.04em; white-space: nowrap; flex-shrink: 0;
+      padding: 0.35rem 0; transition: color 0.15s;
+    }
+    .nav-brand:hover { color: var(--teal); }
+    .nav-links {
+      display: flex; align-items: center; gap: 0.15rem;
+      overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+      flex: 1; mask-image: linear-gradient(90deg, transparent, #000 8px, #000 calc(100% - 24px), transparent);
+      padding: 0.35rem 0;
+    }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a {
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.02em;
+      padding: 0.42rem 0.75rem; border-radius: 999px; white-space: nowrap;
+      color: var(--muted); border: 1px solid transparent;
+      transition: color 0.18s, background 0.18s, border-color 0.18s, transform 0.12s;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .nav-links a:active { transform: scale(0.97); }
+    .nav-links a.active {
+      color: var(--teal); background: var(--teal-soft); border-color: var(--teal-line);
+    }
+    .nav-links a:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+    .nav-jump {
+      font-family: var(--mono); font-size: 0.68rem; color: var(--muted);
+      white-space: nowrap; flex-shrink: 0; display: none;
+    }
+    @media (min-width: 640px) { .nav-jump { display: block; } }
+
+    .back-top {
+      position: fixed; bottom: 1.25rem; right: 1.25rem; z-index: 45;
+      width: 2.35rem; height: 2.35rem; border-radius: 50%;
+      background: rgba(19, 26, 22, 0.9); border: 1px solid var(--border);
+      color: var(--teal); font-size: 1rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transform: translateY(8px);
+      transition: opacity 0.25s, transform 0.25s, border-color 0.15s, background 0.15s;
+      backdrop-filter: blur(8px);
+    }
+    .back-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .back-top:hover { border-color: var(--teal-line); background: var(--teal-soft); }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 1.3rem 1.4rem;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { border-color: rgba(45,212,191,0.22); transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,0,0,0.22); }
+      margin-top: 1.1rem; padding: 1rem; border-radius: 12px;
+      background: var(--surface); border: 1px solid var(--border); overflow-x: auto;
+    }
+    .svg-wrap svg { display: block; min-width: 680px; width: 100%; height: auto; }
+    @media (max-width: 720px) { .svg-wrap svg { min-width: 520px; } }
+
+    .review-loop-caption {
+      font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+      text-align: center; margin-top: 0.65rem; letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 2.5rem 1.1rem 4.5rem; }
+      .sticky-nav { margin: 0 -1.1rem 1.6rem; padding: 0 1.1rem; }
+      .nav-links { padding-right: 4.2rem; }
+      h1 { font-size: 2rem; }
+      .langbar { top: 0.65rem; right: 0.65rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card, .nav-links a, .back-top, .sticky-nav { transition: none; }
+    }
     .kicker { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); margin-bottom: 0.5rem; }
     h2 { font-size: 1.5rem; font-weight: 620; letter-spacing: -0.02em; margin-bottom: 0.9rem; }
     .lead { font-size: 1.04rem; line-height: 1.72; color: var(--text-2); max-width: 47rem; }
@@ -105,7 +204,6 @@
 
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.85rem; margin-top: 1.1rem; }
     @media (max-width: 720px) { .grid-3 { grid-template-columns: 1fr; } }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 1.3rem 1.4rem; }
     .card .step { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; }
     .card h3 { font-size: 1.02rem; font-weight: 600; margin: 0.45rem 0 0.5rem; }
     .card p { font-size: 0.86rem; color: var(--text-2); line-height: 1.6; font-weight: 350; }
@@ -161,7 +259,7 @@
     <button id="btn-zh" onclick="setLang('zh')">中文</button>
   </div>
 
-  <header class="hero">
+  <header class="hero" id="top">
     <img src="./assets/brand/logo.png" alt="HatchFi logo" />
     <h1>HatchFi <span class="cn-name">链孵</span></h1>
     <p class="tagline">
@@ -186,6 +284,20 @@
       <a href="https://github.com/rachelzzz1921/hatchfi-pharos-skill" target="_blank" rel="noopener">GitHub</a>
     </div>
   </header>
+
+  <nav class="sticky-nav" id="sticky-nav" aria-label="Section navigation">
+    <div class="sticky-nav-inner">
+      <a class="nav-brand" href="#top">HatchFi</a>
+      <span class="nav-jump"><span class="en">Jump to</span><span class="zh">跳转</span></span>
+      <div class="nav-links" role="navigation">
+        <a href="#live" data-section="live"><span class="en">Live</span><span class="zh">链上</span></a>
+        <a href="#ecosystem" data-section="ecosystem"><span class="en">Ecosystem</span><span class="zh">生态</span></a>
+        <a href="#compliance" data-section="compliance"><span class="en">Compliance</span><span class="zh">合规</span></a>
+        <a href="#review" data-section="review"><span class="en">Review</span><span class="zh">审查</span></a>
+        <a href="#reproduce" data-section="reproduce"><span class="en">Reproduce</span><span class="zh">复现</span></a>
+      </div>
+    </div>
+  </nav>
 
   <!-- PROBLEM -->
   <section>
@@ -292,7 +404,7 @@ evidence   denylist + codesize     smoke      freeze triple gate       recovery 
   </section>
 
   <!-- PUBLIC ECOSYSTEM -->
-  <section>
+  <section id="ecosystem">
     <div class="kicker"><span class="en">Public ecosystem — opt-in, permissioned, composable</span><span class="zh">公开生态——opt-in、带权限、可组合</span></div>
     <h2><span class="en">The flywheel that scales Pharos RealFi — without leaking private data</span><span class="zh">放大 Pharos RealFi 的飞轮——但不泄露私有数据</span></h2>
     <p class="lead">
@@ -337,7 +449,7 @@ evidence   denylist + codesize     smoke      freeze triple gate       recovery 
   </section>
 
   <!-- LIVE PROOF -->
-  <section>
+  <section id="live">
     <div class="kicker"><span class="en">Verify in 60 seconds</span><span class="zh">60 秒可验证</span></div>
     <h2><span class="en">It's live on Pharos Atlantic</span><span class="zh">已在 Pharos Atlantic 上线</span></h2>
     <p class="lead">
@@ -355,7 +467,7 @@ evidence   denylist + codesize     smoke      freeze triple gate       recovery 
   </section>
 
   <!-- COMPLIANCE -->
-  <section>
+  <section id="compliance">
     <div class="kicker"><span class="en">Compliance is the feature</span><span class="zh">合规是特性</span></div>
     <h2><span class="en">A triple gate on every transfer</span><span class="zh">每笔转账的三层闸门</span></h2>
     <p class="lead">
@@ -436,9 +548,102 @@ evidence   denylist + codesize     smoke      freeze triple gate       recovery 
   </section>
 
   <!-- VALIDATION -->
-  <section>
+  <section id="review">
     <div class="kicker"><span class="en">Reviewed like production infrastructure</span><span class="zh">像生产基础设施一样被审查</span></div>
     <h2><span class="en">What's verified — and what it survived</span><span class="zh">验证结果——以及它扛过的审查</span></h2>
+    <p class="lead" style="margin-bottom:0.4rem;">
+      <span class="en">Every gate below is a real review round HatchFi passed before submission. Issues found → fixed with a named regression test → loop continues until ship-ready.</span>
+      <span class="zh">下方每一关都是 HatchFi 提交前真实走过的审查轮次。发现问题 → 具名回归测试修复 → 循环直至可提交。</span>
+    </p>
+
+    <!-- Review loop SVG (EN) -->
+    <div class="svg-wrap en">
+      <svg viewBox="0 0 920 200" role="img" aria-label="Review loop diagram">
+        <defs>
+          <marker id="rl-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 Z" fill="#2dd4bf"/></marker>
+          <linearGradient id="rl-gold" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a227" stop-opacity="0.15"/><stop offset="100%" stop-color="#2dd4bf" stop-opacity="0.08"/></linearGradient>
+        </defs>
+        <rect x="8" y="8" width="904" height="184" rx="12" fill="url(#rl-gold)" stroke="#25322b"/>
+        <!-- nodes -->
+        <g font-family="SF Mono, JetBrains Mono, monospace">
+          <rect x="24" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#2dd4bf" stroke-opacity="0.5"/>
+          <text x="83" y="94" text-anchor="middle" fill="#6ee7d8" font-size="10">① TDD</text>
+          <text x="83" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">24 tests · fuzz</text>
+          <rect x="158" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#2dd4bf" stroke-opacity="0.5"/>
+          <text x="217" y="94" text-anchor="middle" fill="#6ee7d8" font-size="10">② Security</text>
+          <text x="217" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">8 findings fixed</text>
+          <rect x="292" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#c9a227" stroke-opacity="0.6"/>
+          <text x="351" y="94" text-anchor="middle" fill="#d8b94a" font-size="10">③ Compliance</text>
+          <text x="351" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">mint cap D2</text>
+          <rect x="426" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#2dd4bf" stroke-opacity="0.5"/>
+          <text x="485" y="94" text-anchor="middle" fill="#6ee7d8" font-size="10">④ Production</text>
+          <text x="485" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">Strong 88/100</text>
+          <rect x="560" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#2dd4bf" stroke-opacity="0.5"/>
+          <text x="619" y="94" text-anchor="middle" fill="#6ee7d8" font-size="10">⑤ Red-team</text>
+          <text x="619" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">Skeptic pass</text>
+          <rect x="694" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#2dd4bf" stroke-opacity="0.5"/>
+          <text x="753" y="94" text-anchor="middle" fill="#6ee7d8" font-size="10">⑥ On-chain</text>
+          <text x="753" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">deploy+smoke</text>
+          <rect x="828" y="72" width="72" height="56" rx="8" fill="rgba(61,214,140,0.12)" stroke="#3dd68c"/>
+          <text x="864" y="98" text-anchor="middle" fill="#3dd68c" font-size="11" font-weight="600">✓</text>
+          <text x="864" y="114" text-anchor="middle" fill="#3dd68c" font-size="8.5">Ship</text>
+        </g>
+        <!-- forward arrows -->
+        <g stroke="#2dd4bf" stroke-width="1.2" fill="none" marker-end="url(#rl-arrow)" opacity="0.75">
+          <line x1="142" y1="100" x2="154" y2="100"/><line x1="276" y1="100" x2="288" y2="100"/>
+          <line x1="410" y1="100" x2="422" y2="100"/><line x1="544" y1="100" x2="556" y2="100"/>
+          <line x1="678" y1="100" x2="690" y2="100"/><line x1="812" y1="100" x2="824" y2="100"/>
+        </g>
+        <!-- feedback loop -->
+        <path d="M 864 128 Q 864 168 460 168 Q 56 168 56 128" stroke="#c9a227" stroke-width="1.1" fill="none" stroke-dasharray="5 4" opacity="0.55" marker-end="url(#rl-arrow)"/>
+        <text x="460" y="186" text-anchor="middle" fill="#7c8a82" font-family="SF Mono, monospace" font-size="9">each fix → regression test → re-run gate</text>
+        <text x="460" y="28" text-anchor="middle" fill="#c9a227" font-family="SF Mono, monospace" font-size="10.5" letter-spacing="0.08em">REVIEW LOOP · SUBMISSION-READY</text>
+      </svg>
+      <p class="review-loop-caption en">forge test → security audit → compliance review → production audit → adversarial review → Atlantic verify → submit</p>
+    </div>
+    <!-- Review loop SVG (ZH) -->
+    <div class="svg-wrap zh">
+      <svg viewBox="0 0 920 200" role="img" aria-label="审查闭环流程图">
+        <defs>
+          <marker id="rl-arrow-zh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 Z" fill="#2dd4bf"/></marker>
+          <linearGradient id="rl-gold-zh" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a227" stop-opacity="0.15"/><stop offset="100%" stop-color="#2dd4bf" stop-opacity="0.08"/></linearGradient>
+        </defs>
+        <rect x="8" y="8" width="904" height="184" rx="12" fill="url(#rl-gold-zh)" stroke="#25322b"/>
+        <g font-family="PingFang SC, SF Pro Text, sans-serif">
+          <rect x="24" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#2dd4bf" stroke-opacity="0.5"/>
+          <text x="83" y="94" text-anchor="middle" fill="#6ee7d8" font-size="10">① TDD 测试</text>
+          <text x="83" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">24 项 · fuzz</text>
+          <rect x="158" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#2dd4bf" stroke-opacity="0.5"/>
+          <text x="217" y="94" text-anchor="middle" fill="#6ee7d8" font-size="10">② 安全审计</text>
+          <text x="217" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">8 项全修复</text>
+          <rect x="292" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#c9a227" stroke-opacity="0.6"/>
+          <text x="351" y="94" text-anchor="middle" fill="#d8b94a" font-size="10">③ 合规审查</text>
+          <text x="351" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">mint 上限 D2</text>
+          <rect x="426" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#2dd4bf" stroke-opacity="0.5"/>
+          <text x="485" y="94" text-anchor="middle" fill="#6ee7d8" font-size="10">④ 生产就绪</text>
+          <text x="485" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">Strong 88/100</text>
+          <rect x="560" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#2dd4bf" stroke-opacity="0.5"/>
+          <text x="619" y="94" text-anchor="middle" fill="#6ee7d8" font-size="10">⑤ 红队评审</text>
+          <text x="619" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">Skeptic 过关</text>
+          <rect x="694" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#2dd4bf" stroke-opacity="0.5"/>
+          <text x="753" y="94" text-anchor="middle" fill="#6ee7d8" font-size="10">⑥ 链上验证</text>
+          <text x="753" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">deploy+smoke</text>
+          <rect x="828" y="72" width="72" height="56" rx="8" fill="rgba(61,214,140,0.12)" stroke="#3dd68c"/>
+          <text x="864" y="98" text-anchor="middle" fill="#3dd68c" font-size="11" font-weight="600">✓</text>
+          <text x="864" y="114" text-anchor="middle" fill="#3dd68c" font-size="8.5">提交</text>
+        </g>
+        <g stroke="#2dd4bf" stroke-width="1.2" fill="none" marker-end="url(#rl-arrow-zh)" opacity="0.75">
+          <line x1="142" y1="100" x2="154" y2="100"/><line x1="276" y1="100" x2="288" y2="100"/>
+          <line x1="410" y1="100" x2="422" y2="100"/><line x1="544" y1="100" x2="556" y2="100"/>
+          <line x1="678" y1="100" x2="690" y2="100"/><line x1="812" y1="100" x2="824" y2="100"/>
+        </g>
+        <path d="M 864 128 Q 864 168 460 168 Q 56 168 56 128" stroke="#c9a227" stroke-width="1.1" fill="none" stroke-dasharray="5 4" opacity="0.55" marker-end="url(#rl-arrow-zh)"/>
+        <text x="460" y="186" text-anchor="middle" fill="#7c8a82" font-family="PingFang SC, sans-serif" font-size="9">每项修复 → 回归测试 → 重跑闸门</text>
+        <text x="460" y="28" text-anchor="middle" fill="#c9a227" font-family="PingFang SC, sans-serif" font-size="10.5" letter-spacing="0.06em">审查闭环 · 提交就绪</text>
+      </svg>
+      <p class="review-loop-caption zh">forge test → 安全审计 → 合规审查 → 生产就绪 → 对抗评审 → Atlantic 验证 → 提交</p>
+    </div>
+
     <table>
       <tbody>
         <tr><td class="k">forge build / test</td><td><span style="color:var(--ok)">24 passed · 0 failed</span> <span class="en">(incl. fuzz invariant: dividends never over-distribute)</span><span class="zh">（含 fuzz 不变量：派息绝不超发）</span></td></tr>
@@ -502,7 +707,7 @@ evidence   denylist + codesize     smoke      freeze triple gate       recovery 
   </section>
 
   <!-- REPRODUCE -->
-  <section>
+  <section id="reproduce">
     <div class="kicker"><span class="en">Reproduce</span><span class="zh">复现</span></div>
     <h2><span class="en">Full pipeline — copy &amp; run</span><span class="zh">完整流水线——复制即跑</span></h2>
     <pre class="ascii" style="font-size:0.76rem;">curl -L https://foundry.paradigm.xyz | bash && foundryup
@@ -518,6 +723,8 @@ npm run deploy:pharos                  <span class="gd"># → deployments/pharos
 npm run smoke:pharos                   <span class="gd"># registerIdentity + mint + receipt assert</span>
 npm run spawn:asset                    <span class="gd"># → skills/&lt;SYMBOL&gt;-asset/ + PERMISSIONS.md</span></pre>
   </section>
+
+  <button type="button" class="back-top" id="back-top" aria-label="Back to top" title="Back to top">↑</button>
 
   <footer>
     HatchFi <span class="gd">链孵</span> · Compliant RWA Issuance Agent<br/>
@@ -539,6 +746,65 @@ npm run spawn:asset                    <span class="gd"># → skills/&lt;SYMBOL&
       document.getElementById('btn-zh').classList.toggle('active', l === 'zh');
       try { localStorage.setItem('hatchfi-lang', l); } catch (e) {}
     }
+
+    (function initNav() {
+      var nav = document.getElementById('sticky-nav');
+      var links = document.querySelectorAll('.nav-links a[data-section]');
+      var sections = [];
+      links.forEach(function (a) {
+        var id = a.getAttribute('data-section');
+        var el = document.getElementById(id);
+        if (el) sections.push({ id: id, el: el, link: a });
+      });
+
+      function setActive(id) {
+        links.forEach(function (a) {
+          a.classList.toggle('active', a.getAttribute('data-section') === id);
+        });
+      }
+
+      if ('IntersectionObserver' in window && sections.length) {
+        var observer = new IntersectionObserver(function (entries) {
+          var visible = entries.filter(function (e) { return e.isIntersecting; })
+            .sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+          if (visible.length) setActive(visible[0].target.id);
+        }, { rootMargin: '-45% 0px -45% 0px', threshold: [0, 0.15, 0.4] });
+        sections.forEach(function (s) { observer.observe(s.el); });
+      }
+
+      links.forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          var id = a.getAttribute('data-section');
+          var target = document.getElementById(id);
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setActive(id);
+            history.replaceState(null, '', '#' + id);
+          }
+        });
+      });
+
+      window.addEventListener('scroll', function () {
+        if (nav) nav.classList.toggle('is-scrolled', window.scrollY > 80);
+        var btn = document.getElementById('back-top');
+        if (btn) btn.classList.toggle('visible', window.scrollY > 480);
+      }, { passive: true });
+
+      var backTop = document.getElementById('back-top');
+      if (backTop) {
+        backTop.addEventListener('click', function () {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          history.replaceState(null, '', '#top');
+        });
+      }
+
+      if (location.hash) {
+        var hashId = location.hash.slice(1);
+        if (document.getElementById(hashId)) setActive(hashId);
+      }
+    })();
+
     (function () {
       var saved = 'en';
       try { saved = localStorage.getItem('hatchfi-lang') || 'en'; } catch (e) {}
