@@ -1,87 +1,87 @@
-# Pharos Atlantic Testnet · 部署 Runbook
+# Pharos Atlantic Testnet · Deployment Runbook
 
-> **目标**：你只需在终端设置 `PRIVATE_KEY` 和 `PHAROS_RPC_URL`，运行下面命令即可完成部署与验证。
-> **工作目录**：`pharos-rwa-skill/`（Foundry 项目）
+> **Goal**: Set `PRIVATE_KEY` and `PHAROS_RPC_URL` in your terminal, run the commands below to deploy and verify.
+> **Working directory**: `pharos-rwa-skill/` (Foundry project)
 
-## 项目识别
+## Project identity
 
-| 项 | 值 |
+| Item | Value |
 |---|---|
-| 框架 | **Foundry**（`foundry.toml` + `script/` + `test/`） |
-| 主合约 | `CompliantRWAToken`（`src/CompliantRWAToken.sol`） |
-| 部署脚本 | `script/Deploy.s.sol:Deploy` |
-| 测试 | `test/CompliantRWAToken.t.sol`（16 用例） |
-| 前端 | 无（跳过 wagmi 适配） |
+| Framework | **Foundry** (`foundry.toml` + `script/` + `test/`) |
+| Main contract | `CompliantRWAToken` (`src/CompliantRWAToken.sol`) |
+| Deploy script | `script/Deploy.s.sol:Deploy` |
+| Tests | `test/CompliantRWAToken.t.sol` (16 cases) |
+| Frontend | None (wagmi adapter skipped) |
 
-## 网络参数
+## Network parameters
 
-| 项 | 值 |
+| Item | Value |
 |---|---|
 | Network | Pharos Atlantic Testnet |
 | Chain ID | **688689** |
-| Native Token | PHRS |
-| RPC 默认 | `https://atlantic.dplabs-internal.com` |
-| Explorer 主 | https://atlantic.pharosscan.xyz |
-| Explorer 备 | https://pharos-testnet.socialscan.io |
+| Native token | PHRS |
+| Default RPC | `https://atlantic.dplabs-internal.com` |
+| Explorer (primary) | https://atlantic.pharosscan.xyz |
+| Explorer (backup) | https://pharos-testnet.socialscan.io |
 
-## 安全规则（必须遵守）
+## Security rules (mandatory)
 
-1. 不索要助记词 / 私钥
-2. 私钥**只**从环境变量 `PRIVATE_KEY` 读取
-3. 不把私钥写入源码、README、日志、JSON、git
-4. `.env` 在 `.gitignore` 中；仓库只保留 `.env.example`
-5. 不用 bot / 刷号脚本
-6. 链上 write 仅低风险：`registerIdentity` + `mint 1 token`
+1. Never ask for mnemonic / private key in chat
+2. Private key **only** from env `PRIVATE_KEY`
+3. Never write keys into source, README, logs, JSON, or git
+4. `.env` in `.gitignore`; repo keeps `.env.example` only
+5. No bot / sybil scripts
+6. On-chain writes limited to low-risk demo: `registerIdentity` + `mint 1 token`
 
-## 环境变量
+## Environment variables
 
 ```bash
-# .env.example（复制为 .env 本地使用，勿提交）
+# .env.example (copy to .env locally — do not commit)
 PRIVATE_KEY=
 PHAROS_RPC_URL=https://atlantic.dplabs-internal.com
 
-# 可选：覆盖部署参数
+# Optional deploy overrides
 ASSET_NAME=Manhattan Property Fund
 ASSET_SYMBOL=MPF
 MAX_HOLDERS=100
 MAX_BALANCE=1000000000000000000000000
 ```
 
-## 一键命令流
+## One-shot command flow
 
 ```bash
 cd pharos-rwa-skill
 
-# 0. 依赖（首次）
+# 0. Dependencies (first time)
 curl -L https://foundry.paradigm.xyz | bash && foundryup
 forge install OpenZeppelin/openzeppelin-contracts@v5.1.0 --no-commit
 forge install foundry-rs/forge-std --no-commit
 
-# 1. 本地验证（无需私钥）
+# 1. Local validation (no private key)
 npm run build          # forge build
 npm run test           # forge test -vvv
 npm run check          # ./check.sh
 
-# 2. 链上（需私钥 + PHRS）
-export PRIVATE_KEY=0x你的私钥          # 你自己设置，不要发给 agent
+# 2. On-chain (needs key + PHRS)
+export PRIVATE_KEY=0xYOUR_KEY          # you set this — do not send to agent
 export PHAROS_RPC_URL=https://atlantic.dplabs-internal.com
 
 npm run preflight:pharos
 npm run deploy:pharos
 npm run smoke:pharos
-npm run verify:pharos   # 记录浏览器验证结果
+npm run verify:pharos   # record explorer verification
 ```
 
-## 部署后产物
+## Post-deploy artifacts
 
-| 文件 | 内容 |
+| File | Contents |
 |---|---|
-| `deployments/pharos.json` | 地址、tx、explorer 链接 |
-| `DEPLOYMENT_RESULT.md` | 部署后生成的人类可读部署报告 |
-| `state.json` | `state.schema.json` 的 asset 段（agent 记忆） |
-| `broadcast/` | Foundry 广播记录（可 gitignore） |
+| `deployments/pharos.json` | Address, tx, explorer links |
+| `DEPLOYMENT_RESULT.md` | Human-readable deploy report |
+| `state.json` | `state.schema.json` asset section (agent memory) |
+| `broadcast/` | Foundry broadcast (may gitignore) |
 
-## Explorer 链接格式
+## Explorer link format
 
 ```
 https://atlantic.pharosscan.xyz/address/<CONTRACT>
@@ -89,37 +89,37 @@ https://atlantic.pharosscan.xyz/tx/<TX_HASH>
 https://pharos-testnet.socialscan.io/address/<CONTRACT>
 ```
 
-## 冒烟流程（Phase 6）
+## Smoke flow (Phase 6)
 
-1. **Read**：`name()`、`symbol()`、`maxHolders()`、`holderCount()`、`owner()`
-2. **Write**：`registerIdentity(deployer, 840)` → receipt OK
-3. **Write**：`mint(deployer, 1e18)` → receipt OK
-4. **Read**：`isVerified(deployer)`、`balanceOf(deployer)`
+1. **Read**: `name()`, `symbol()`, `maxHolders()`, `holderCount()`, `owner()`
+2. **Write**: `registerIdentity(deployer, 840)` → receipt OK
+3. **Write**: `mint(deployer, 1e18)` → receipt OK
+4. **Read**: `isVerified(deployer)`, `balanceOf(deployer)`
 
-## 错误兜底
+## Error recovery
 
-| 现象 | 动作 |
+| Symptom | Action |
 |---|---|
-| RPC 失败 | 重试一次；仍失败 → 换 `PHAROS_RPC_URL`（如 ZAN 自建） |
-| chainId ≠ 688689 | **停止部署** |
-| 余额 = 0 | **停止** → 去 faucet 领 PHRS |
-| 编译失败 | 最小修复，不改业务逻辑 |
-| verify 结果 | 记入 `DEPLOYMENT_RESULT.md` |
+| RPC failure | Retry once; else change `PHAROS_RPC_URL` (e.g. ZAN) |
+| chainId ≠ 688689 | **Stop deploy** |
+| balance = 0 | **Stop** → faucet for PHRS |
+| Build failure | Minimal fix only; do not change business logic |
+| Verify result | Record in `DEPLOYMENT_RESULT.md` |
 
-## 与黑客松流水线的关系
+## Hackathon pipeline relationship
 
 ```
-本地 Phase 1-4 (build/test/security)
+Local Phase 1-4 (build/test/security)
     ↓
-Phase 5 preflight（你设 PRIVATE_KEY）
+Phase 5 preflight (you set PRIVATE_KEY)
     ↓
 Phase 6 deploy + smoke → state.json
     ↓
-Phase 7 verify（可选）
+Phase 7 verify (optional)
     ↓
 spawn-asset-skill → skills/MPF-asset/
     ↓
-DEMO.md 录屏
+DEMO.md recording
 ```
 
-详细门禁见 `references/pharos-verification.md`。
+Detailed gates: `references/pharos-verification.md`.

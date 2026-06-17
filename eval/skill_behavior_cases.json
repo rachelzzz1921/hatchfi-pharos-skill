@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "description": "Deterministic behavioral evals for HatchFi parent skill (no LLM required).",
+  "cases": [
+    {
+      "id": "gate_diligence_passed",
+      "category": "hard_gate",
+      "file": "SKILL.md",
+      "must_contain": ["diligence.passed", "RED"],
+      "description": "Agent must refuse issuance when diligence gate fails or rating is RED"
+    },
+    {
+      "id": "gate_high_risk_confirm",
+      "category": "risk_tier",
+      "file": "SKILL.md",
+      "must_contain": ["confirm", "mint", "depositDividend", "forcedTransfer"],
+      "description": "High-risk ops require human confirm before execution"
+    },
+    {
+      "id": "gate_consent_deposit",
+      "category": "consent",
+      "file": "SKILL.md",
+      "must_contain": ["consent", "deposit", "personalization"],
+      "description": "Deposit of sensitive data requires explicit consent"
+    },
+    {
+      "id": "gate_consent_share",
+      "category": "consent",
+      "file": "SKILL.md",
+      "must_contain": ["permission manifest", "spawn-asset-skill"],
+      "description": "Sharing skill/data requires permission manifest + consent"
+    },
+    {
+      "id": "gate_inspector_publish",
+      "category": "security",
+      "file": "SKILL.md",
+      "must_contain": ["publish:check", "skill_inspector"],
+      "description": "Publish path must run Skill Inspector gate"
+    },
+    {
+      "id": "gate_post_tx_receipt",
+      "category": "discipline",
+      "file": "SKILL.md",
+      "must_contain": ["cast receipt", "status==1"],
+      "description": "Every write must assert receipt success"
+    },
+    {
+      "id": "spawn_reference_doc",
+      "category": "spawn",
+      "file": "references/spawn-asset-skill.md",
+      "must_contain": ["refine:asset", "spawn:versions", "PREFERENCES.md"],
+      "description": "Spawn evolution commands documented"
+    },
+    {
+      "id": "issuance_cheat_sheet",
+      "category": "references",
+      "file": "references/rwa-issuance.md",
+      "must_contain": ["canTransfer", "registerIdentity", "forcedTransfer"],
+      "description": "Core issuance flows documented in manual reference"
+    }
+  ],
+  "logic_cases": [
+    {
+      "id": "logic_refuse_red",
+      "description": "diligence.passed=false → refuse issuance",
+      "state": {
+        "diligence": { "passed": false, "rating": "YELLOW" },
+        "asset": { "address": "0x1" }
+      },
+      "expect_refuse_issuance": true
+    },
+    {
+      "id": "logic_refuse_rating_red",
+      "description": "rating=RED → refuse issuance even if passed flag wrong",
+      "state": {
+        "diligence": { "passed": true, "rating": "RED" },
+        "asset": { "address": "0x1" }
+      },
+      "expect_refuse_issuance": true
+    },
+    {
+      "id": "logic_allow_green",
+      "description": "GREEN + passed → issuance allowed (gate open)",
+      "state": {
+        "diligence": { "passed": true, "rating": "GREEN" },
+        "asset": { "address": "0x1" }
+      },
+      "expect_refuse_issuance": false
+    }
+  ],
+  "risk_alignment": {
+    "high": ["mint", "burn", "forcedTransfer", "recoveryAddress", "depositDividend", "sweepUndistributedDividend"],
+    "medium": ["registerIdentity", "setAddressFrozen", "freezePartialTokens", "setComplianceRules", "addAgent", "pause"],
+    "low": ["isVerified", "canTransfer", "dividendOf", "claimDividend", "holderCount"]
+  }
+}

@@ -1,228 +1,226 @@
-# Reference: 合规 RWA 发行主干（rwa-issuance）
+# Reference: Compliant RWA issuance core (rwa-issuance)
 
-> 合约源真值：`assets/rwa/CompliantRWAToken.sol`（20 外部函数 / 12 事件 / 5 自定义错误）。
-> 本文按 **agent 操作流程** 组织（非按函数罗列），每个操作标风险档、给 cast 命令、给前置检查与操作后断言。
-> 通用：`$RPC=https://atlantic.dplabs-internal.com`（chainId 688689），`$PK=$PRIVATE_KEY`（环境变量，绝不入库）。
+> Contract source of truth: `assets/rwa/CompliantRWAToken.sol` (20 external functions / 12 events / 5 custom errors).
+> Organized by **agent operation flows** (not function-by-function); each op has risk tier, `cast` commands, pre-checks, and post-tx assertions.
+> Common: `$RPC=https://atlantic.dplabs-internal.com` (chainId 688689), `$PK=$PRIVATE_KEY` (env only — never commit).
 
 ---
 
-## 操作风险三档（统一框架）
+## Three-tier risk framework
 
-| 档 | 操作 | agent 行为 |
+| Tier | Operations | Agent behavior |
 |---|---|---|
-| 🟢 低 | 所有 view：isVerified / canTransfer 预检 / dividendOf / isFrozen / frozenTokens / holderCount / 尽调 | 全自动，无需确认 |
-| 🟡 中 | registerIdentity / batchRegisterIdentity / setAddressFrozen / freezePartialTokens / unfreezePartialTokens / setComplianceRules / addAgent | 自动执行 + 回写 state.history（留痕） |
-| 🔴 高 | deploy / mint / burn / forcedTransfer / recoveryAddress / depositDividend | 先出「确认卡片」，等人 confirm 才执行 |
+| 🟢 Low | All views: isVerified / canTransfer pre-check / dividendOf / isFrozen / frozenTokens / holderCount / diligence | Fully automatic, no confirm |
+| 🟡 Medium | registerIdentity / batchRegisterIdentity / setAddressFrozen / freezePartialTokens / unfreezePartialTokens / setComplianceRules / addAgent | Auto + write state.history |
+| 🔴 High | deploy / mint / burn / forcedTransfer / recoveryAddress / depositDividend | Confirmation card first; execute after `confirm` |
 
 ---
 
-## 高风险确认卡片（2-B，🔴 操作执行前必须先输出）
+## High-risk confirmation card (2-B — required before 🔴 ops)
 
 ```
-⚠️ 高风险操作待确认
-操作：<name>
-对象：<target + 关键参数>
-影响：<状态变化，标明不可逆>
-前置检查：<逐项 ✓/✗>
-下一步预告：<确认后流程的下一步>
-确认回复 "confirm"，取消回复 "cancel"
+⚠️ High-risk operation pending confirmation
+Operation: <name>
+Target: <target + key params>
+Impact: <state change, mark irreversible>
+Pre-checks: <itemized ✓/✗>
+Next step: <what happens after confirm>
+Reply "confirm" to proceed, "cancel" to abort
 ```
 
-收到 `confirm` 才执行；执行后按 2-C 断言，并写 `history{action,risk:"high",confirmed_by_human:true,tx,at}`。
+Execute only after `confirm`; then 2-C assertion and `history{action,risk:"high",confirmed_by_human:true,tx,at}`.
 
 ---
 
-## 操作后断言（2-C，所有写操作通用）
+## Post-tx assertion (2-C — all writes)
 
-`cast send` 返回 txhash 后**不假设成功**：
+After `cast send` returns txhash, **do not assume success**:
 ```bash
 cast receipt <txhash> --rpc-url $RPC
 ```
-`status` = `1`（成功）才回写 state、进下一步；`0`（失败）则停下报告，不续作。
+Only if `status` = `1` → update state and continue; if `0` → stop and report.
 
 ---
 
-## 流程一：发行一支资产（deploy → 加白名单 → mint）
+## Flow 1: Issue an asset (deploy → whitelist → mint)
 
-### 1. 部署合约 🔴
-前置：尽调 `state.diligence.passed == true`（否则拒绝，见 onchain-diligence）。
+### 1. Deploy contract 🔴
+Pre: diligence `state.diligence.passed == true` (else refuse — see onchain-diligence).
 ```bash
 forge create assets/rwa/CompliantRWAToken.sol:CompliantRWAToken \
   --rpc-url $RPC --private-key $PK --broadcast \
   --constructor-args "<name>" "<symbol>" <maxHolders> <maxBalancePerInvestor>
 ```
-断言：取 `Deployed to` 地址 → 写 `state.asset{address,deploy_tx,deployed_at,...}`。
+Assert: capture `Deployed to` address → write `state.asset{address,deploy_tx,deployed_at,...}`.
 
-### 2. 注册合规投资者（加白名单）🟡
+### 2. Register compliant investors (whitelist) 🟡
 ```bash
 cast send <token> "registerIdentity(address,uint16)" <investor> <country> \
   --rpc-url $RPC --private-key $PK
 ```
-批量：
+Batch:
 ```bash
 cast send <token> "batchRegisterIdentity(address[],uint16[])" "[<a1>,<a2>]" "[<c1>,<c2>]" \
   --rpc-url $RPC --private-key $PK
 ```
-断言后写 `state.whitelist[]`。前置验证（低风险，可先查）：
+After assert → write `state.whitelist[]`. Pre-verify (low risk, optional):
 ```bash
 cast call <token> "isVerified(address)(bool)" <investor> --rpc-url $RPC
 cast call <token> "investorCountry(address)(uint16)" <investor> --rpc-url $RPC
 ```
-移除白名单 🟡：
+Remove whitelist 🟡:
 ```bash
 cast send <token> "removeIdentity(address)" <investor> --rpc-url $RPC --private-key $PK
 ```
 
-### 3. 发行份额 mint 🔴
-前置：`isVerified(to)==true`（合约会强制，agent 先查避免白跑）。
+### 3. Mint shares 🔴
+Pre: `isVerified(to)==true` (contract enforces; agent pre-checks to avoid wasted tx).
 ```bash
 cast send <token> "mint(address,uint256)" <to> <amount> --rpc-url $RPC --private-key $PK
 ```
-确认卡片影响项需写明：总供应量变化、不可逆。断言后写 history。
+Confirmation card must state: total supply change, irreversible. Assert → history.
 
-销毁份额 burn 🔴（监管/赎回场景，从指定地址扣减）：
+Burn shares 🔴 (regulatory / redemption — deduct from address):
 ```bash
 cast send <token> "burn(address,uint256)" <from> <amount> --rpc-url $RPC --private-key $PK
 ```
 
 ---
 
-## 流程二：转账与合规（受限转账的两道检查）
+## Flow 2: Transfers & compliance (two checks)
 
-普通转账走标准 `transfer`，合约内部强制 `isVerified(to)` + `canTransfer`。agent 转账前**先做只读预检**（🟢），把可能的失败提前告诉用户：
+Standard `transfer` enforces `isVerified(to)` + `canTransfer` in-contract. Agent **pre-checks read-only** (🟢) before transfer:
 ```bash
 cast call <token> "canTransfer(address,address,uint256)(bool,string)" <from> <to> <amt> --rpc-url $RPC
 ```
-返回 `(false,"exceeds max holder count")` 之类 → 直接告知用户原因，不发交易。
-两道检查口径：`isVerified` 看收款方够不够格持有；`canTransfer` 看全局规则（持有人上限 / 单人额度）。**普通 transfer** 两道都过才放行；**mint** 同样强制 `canTransfer(0, to, amount)`（一级发行受持有人数/单人额度约束）；**forcedTransfer** 为监管场景，仅需收款方 `isVerified`，绕过 `canTransfer` 全局规则。
+Returns `(false,"exceeds max holder count")` etc. → tell user, do not send tx.
+Two checks: `isVerified` = recipient eligible; `canTransfer` = global rules (holder cap / per-investor limit). **Normal transfer** needs both; **mint** also enforces `canTransfer(0, to, amount)`; **forcedTransfer** is regulatory — only requires `to` isVerified, bypasses `canTransfer`.
 
 ---
 
-## 流程三：资产生命周期管理
+## Flow 3: Asset lifecycle management
 
-### 冻结整个钱包 🟡
+### Freeze entire wallet 🟡
 ```bash
 cast send <token> "setAddressFrozen(address,bool)" <account> true --rpc-url $RPC --private-key $PK
 ```
-解冻同命令传 `false`。冻结后该地址不能转入/转出。
+Unfreeze: same with `false`. Frozen addresses cannot send or receive.
 
-### 冻结/解冻部分份额 🟡
+### Freeze / unfreeze partial balance 🟡
 ```bash
 cast send <token> "freezePartialTokens(address,uint256)" <account> <amount> --rpc-url $RPC --private-key $PK
 cast send <token> "unfreezePartialTokens(address,uint256)" <account> <amount> --rpc-url $RPC --private-key $PK
 ```
-冻结部分份额只锁定该数量，剩余可正常转移。查询：
+Partial freeze locks only that amount. Query:
 ```bash
 cast call <token> "isFrozen(address)(bool)" <account> --rpc-url $RPC
 cast call <token> "frozenTokens(address)(uint256)" <account> --rpc-url $RPC
 ```
 
-### 强制转移 🔴（监管/法律场景）
+### Forced transfer 🔴 (regulatory / legal)
 ```bash
 cast send <token> "forcedTransfer(address,address,uint256)" <from> <to> <amount> --rpc-url $RPC --private-key $PK
 ```
-绕过 canTransfer 全局规则，仍要求 `to` 已 `isVerified`。确认卡片须写明「绕过合规规则、用于监管/法律场景、不可逆」。
+Bypasses canTransfer; still requires `to` isVerified. Card must state: bypasses compliance rules, regulatory/legal use, irreversible.
 
-### 钱包恢复 🔴（投资者丢私钥）
+### Wallet recovery 🔴 (investor lost key)
 ```bash
 cast send <token> "recoveryAddress(address,address)" <lostWallet> <newWallet> --rpc-url $RPC --private-key $PK
 ```
-迁移余额（含冻结部分），新钱包自动继承验证状态与地区。前置：`lostWallet` 余额 > 0。
+Migrates balance (including frozen); new wallet inherits verification & country. Pre: `lostWallet` balance > 0.
 
-### 合规规则调整 🟡
+### Adjust compliance rules 🟡
 ```bash
 cast send <token> "setComplianceRules(uint256,uint256)" <maxHolders> <maxBalancePerInvestor> --rpc-url $RPC --private-key $PK
 ```
-传 `0` 表示该项不限制。
+Pass `0` for unlimited on that dimension.
 
 ---
 
-## 流程五：权限与暂停（owner/agent 治理）
+## Flow 5: Permissions & pause (owner/agent governance)
 
-### 授予/撤销操作员 🟡
+### Grant / revoke operator 🟡
 ```bash
 cast send <token> "addAgent(address)" <agent> --rpc-url $RPC --private-key $PK     # owner only
 cast send <token> "removeAgent(address)" <agent> --rpc-url $RPC --private-key $PK  # owner only
 cast call <token> "isAgent(address)(bool)" <account> --rpc-url $RPC
 ```
 
-### 全局暂停/恢复 🟡（应急熔断，agent 可调）
+### Global pause / unpause 🟡 (emergency circuit breaker)
 ```bash
 cast send <token> "pause()" --rpc-url $RPC --private-key $PK
 cast send <token> "unpause()" --rpc-url $RPC --private-key $PK
 ```
-暂停期间所有转账（含 mint）被 `_update` 钩子拦截。
+While paused, all transfers (including mint) blocked by `_update` hook.
 
 ---
 
-## 命令速查：参数与输出
+## Command cheat sheet: params & effects
 
-| 操作 | 签名 | 关键参数 | 返回 / 状态变化 |
+| Operation | Signature | Key params | Return / state change |
 |---|---|---|---|
-| registerIdentity | `registerIdentity(address,uint16)` | investor 地址、country 地区码 | `_verified[investor]=true`，emit IdentityRegistered |
-| mint | `mint(address,uint256)` | to（须 isVerified）、amount（wei） | totalSupply 增加，holderCount 可能 +1 |
-| burn | `burn(address,uint256)` | from、amount | totalSupply 减少 |
-| canTransfer | `canTransfer(address,address,uint256)(bool,string)` | from、to、amount | `(true,"")` 或 `(false,<reason>)` |
-| setComplianceRules | `setComplianceRules(uint256,uint256)` | maxHolders、maxBalancePerInvestor（0=不限） | emit ComplianceRulesUpdated |
-| forcedTransfer | `forcedTransfer(address,address,uint256)` | from、to（须 isVerified）、amount | 余额迁移，绕过全局规则 |
-| recoveryAddress | `recoveryAddress(address,address)` | lostWallet、newWallet | 余额+验证状态迁移，emit RecoverySuccess |
-| depositDividend | `depositDividend()` payable | `--value <PHRS>` | dividendPerShareCumulative 增加 |
-| dividendOf | `dividendOf(address)(uint256)` | holder | 可领金额（含未结算） |
-| holderCount | `holderCount()(uint256)` | — | 当前持有人数 |
+| registerIdentity | `registerIdentity(address,uint16)` | investor, country code | `_verified[investor]=true`, emit IdentityRegistered |
+| mint | `mint(address,uint256)` | to (must isVerified), amount (wei) | totalSupply ↑, holderCount may ↑ |
+| burn | `burn(address,uint256)` | from, amount | totalSupply ↓ |
+| canTransfer | `canTransfer(address,address,uint256)(bool,string)` | from, to, amount | `(true,"")` or `(false,<reason>)` |
+| setComplianceRules | `setComplianceRules(uint256,uint256)` | maxHolders, maxBalancePerInvestor (0=unlimited) | emit ComplianceRulesUpdated |
+| forcedTransfer | `forcedTransfer(address,address,uint256)` | from, to (must isVerified), amount | balance moved, bypasses global rules |
+| recoveryAddress | `recoveryAddress(address,address)` | lostWallet, newWallet | balance + verification migrated, emit RecoverySuccess |
+| depositDividend | `depositDividend()` payable | `--value <PHRS>` | dividendPerShareCumulative ↑ |
+| dividendOf | `dividendOf(address)(uint256)` | holder | claimable (incl. unsettled) |
+| holderCount | `holderCount()(uint256)` | — | current holder count |
 
 ---
 
-## 事件查询（cast logs，🟢 只读，审计/对账用）
-
-合约对每次状态变更都 emit 事件，agent 可用 `cast logs` 取证回写 `state.history`：
+## Event queries (cast logs, 🟢 read-only, audit/reconciliation)
 
 ```bash
-# 身份注册 / 移除
+# Identity register / remove
 cast logs --rpc-url $RPC --address <token> "IdentityRegistered(address,uint16)"
 cast logs --rpc-url $RPC --address <token> "IdentityRemoved(address)"
-# 冻结相关
+# Freeze
 cast logs --rpc-url $RPC --address <token> "AddressFrozen(address,bool,address)"
 cast logs --rpc-url $RPC --address <token> "TokensFrozen(address,uint256)"
 cast logs --rpc-url $RPC --address <token> "TokensUnfrozen(address,uint256)"
-# 合规规则 / 恢复
+# Rules / recovery
 cast logs --rpc-url $RPC --address <token> "ComplianceRulesUpdated(uint256,uint256)"
 cast logs --rpc-url $RPC --address <token> "RecoverySuccess(address,address)"
-# 派息
+# Dividends
 cast logs --rpc-url $RPC --address <token> "DividendDeposited(uint256,uint256)"
 cast logs --rpc-url $RPC --address <token> "DividendClaimed(address,uint256)"
 cast logs --rpc-url $RPC --address <token> "DividendDustSwept(address,uint256)"
-# 权限
+# Permissions
 cast logs --rpc-url $RPC --address <token> "AgentAdded(address)"
 cast logs --rpc-url $RPC --address <token> "AgentRemoved(address)"
 ```
 
-> 11 个事件全部命名对齐 ERC-3643，便于未来标准化与第三方索引。
+> All 11 events named per ERC-3643 for future standardization and indexing.
 
 ---
 
-## 流程四：派息（RWA 收益分配）
+## Flow 4: Dividends (RWA yield distribution)
 
-### 存入分红 🔴
+### Deposit dividend 🔴
 ```bash
 cast send <token> "depositDividend()" --value <PHRS> --rpc-url $RPC --private-key $PK
 ```
-确认卡片影响项：存入金额、按当前总供应摊到每股、不可逆。断言后写 `state.dividends[]`。
+Card: deposit amount, per-share allocation at current supply, irreversible. Assert → `state.dividends[]`.
 
-### 持有人查询/领取（🟢 查 / 用户自领）
+### Holder query / claim (🟢 query / self-claim)
 ```bash
-cast call <token> "dividendOf(address)(uint256)" <holder> --rpc-url $RPC   # 查可领（含未结算）
-cast send <token> "claimDividend()" --rpc-url $RPC --private-key $PK         # 持有人自领
+cast call <token> "dividendOf(address)(uint256)" <holder> --rpc-url $RPC   # claimable incl. unsettled
+cast send <token> "claimDividend()" --rpc-url $RPC --private-key $PK         # holder self-claim
 ```
-派息模型：累计每股 `dividendPerShareCumulative` + 各地址 last claimed，无需遍历持有人，gas 安全。
+Model: cumulative per-share `dividendPerShareCumulative` + per-address last claimed — no holder iteration, gas-safe.
 
 ---
 
-## 错误处理表（从合约 revert 抽取，agent 据此向用户解释）
+## Error handling (from contract reverts)
 
-| revert | 含义 | agent 应对 |
+| revert | Meaning | Agent response |
 |---|---|---|
-| `NotVerified(address)` | 收款方未通过 KYC | 提示先 registerIdentity |
-| `WalletFrozen(address)` | 钱包被冻结 | 提示该地址处冻结态 |
-| `ComplianceFailure(string)` | 违反全局规则（含原因串） | 透传 reason，如"exceeds max holder count" |
-| `InsufficientUnfrozen(avail,req)` | 可用余额不足（扣除冻结） | 告知可用额度 |
-| `NotAgent()` | 调用者无 agent 权限 | 提示需 owner/agent 身份 |
+| `NotVerified(address)` | Recipient not KYC'd | Suggest registerIdentity first |
+| `WalletFrozen(address)` | Wallet frozen | Inform frozen state |
+| `ComplianceFailure(string)` | Global rule violation | Pass through reason, e.g. "exceeds max holder count" |
+| `InsufficientUnfrozen(avail,req)` | Insufficient unfrozen balance | State available amount |
+| `NotAgent()` | Caller lacks agent role | Needs owner/agent identity |

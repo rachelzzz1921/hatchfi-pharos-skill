@@ -14,6 +14,13 @@
     "deploy:pharos": "bash scripts/preflight.sh && forge script script/Deploy.s.sol:Deploy --rpc-url ${PHAROS_RPC_URL:-https://atlantic.dplabs-internal.com} --private-key $PRIVATE_KEY --broadcast --slow --legacy --with-gas-price 3000000000 --gas-limit 3500000 && bash scripts/post-deploy.sh",
     "smoke:pharos": "bash scripts/smoke.sh",
     "verify:pharos": "bash scripts/verify.sh",
-    "spawn:asset": "python3 scripts/spawn_asset_skill.py"
+    "spawn:asset": "python3 scripts/spawn_asset_skill.py",
+    "refine:asset": "python3 scripts/refine_asset_skill.py",
+    "spawn:versions": "python3 scripts/spawn_skill_versions.py list",
+    "spawn:rollback": "python3 scripts/spawn_skill_versions.py rollback",
+    "refs:generate": "python3 scripts/generate_contract_refs.py",
+    "refs:check": "python3 scripts/generate_contract_refs.py --check-drift",
+    "eval:skill": "python3 scripts/run_skill_eval.py",
+    "eval:skill:json": "python3 scripts/run_skill_eval.py --format json"
   }
 }

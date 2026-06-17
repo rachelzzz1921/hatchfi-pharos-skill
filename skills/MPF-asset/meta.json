@@ -1,0 +1,34 @@
+{
+  "symbol": "MPF",
+  "contract": "0xfef7519bebda6c47af49583dbc9e60801f8aa3de",
+  "version": 4,
+  "updated_at": "2026-06-17T10:10:34Z",
+  "evolution": [
+    {
+      "action": "spawn",
+      "at": "2026-06-17T10:08:09Z",
+      "version": 1,
+      "detail": "full deterministic regen from parent templates"
+    },
+    {
+      "action": "refine",
+      "at": "2026-06-17T10:08:09Z",
+      "version": 2,
+      "detail": "personalization keys: jurisdictions, dividend_cadence, disclosure_template, risk_thresholds"
+    },
+    {
+      "action": "spawn",
+      "at": "2026-06-17T10:09:17Z",
+      "version": 3,
+      "detail": "full deterministic regen from parent templates"
+    },
+    {
+      "action": "spawn",
+      "at": "2026-06-17T10:10:34Z",
+      "version": 4,
+      "detail": "full deterministic regen from parent templates"
+    }
+  ],
+  "spawned_at": "2026-06-17T10:10:34Z",
+  "refined_at": "2026-06-17T10:08:09Z"
+}

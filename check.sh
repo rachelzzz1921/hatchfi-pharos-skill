@@ -28,6 +28,20 @@ python3 scripts/skill_inspector.py . --format markdown --output docs/SKILL_SECUR
 python3 scripts/skill_inspector.py . --format json --output docs/SKILL_SECURITY_REPORT.json --fail-on high
 python3 scripts/skill_inspector.py . --format text --fail-on high
 
+echo "== 8. Auto-generated contract references =="
+python3 scripts/generate_contract_refs.py --check-drift
+
+echo "== 9. Skill behavioral eval =="
+python3 scripts/run_skill_eval.py
+
+echo "== 10. Spawned skill evolution (if present) =="
+if [ -d skills ]; then
+  for meta in skills/*-asset/meta.json; do
+    [ -f "$meta" ] || continue
+    python3 -c "import json,sys; m=json.load(open(sys.argv[1])); print(f'✅ {sys.argv[1]} version={m.get(\"version\",\"?\")}')" "$meta"
+  done
+fi
+
 echo ""
 echo "✅ 自检通过。发布前安全报告: docs/SKILL_SECURITY_REPORT.md"
 echo "部署: npm run preflight:pharos && npm run deploy:pharos && npm run smoke:pharos"

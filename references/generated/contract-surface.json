@@ -1,0 +1,322 @@
+{
+  "source": "src/CompliantRWAToken.sol",
+  "functions": [
+    {
+      "name": "registerIdentity",
+      "params": "address,uint16",
+      "modifiers": "external onlyAgent",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"registerIdentity(address,uint16)\" <investor> <country> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "batchRegisterIdentity",
+      "params": "address[],uint16[]",
+      "modifiers": "external\n        onlyAgent",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"batchRegisterIdentity(address[],uint16[])\" \"[<a1>]\" \"[<c1>]\" --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "removeIdentity",
+      "params": "address",
+      "modifiers": "external onlyAgent",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"removeIdentity(address)\" <investor> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "isVerified",
+      "params": "address",
+      "modifiers": "public view returns (bool)",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "cast call <token> \"isVerified(address)(bool)\" <account> --rpc-url $RPC"
+    },
+    {
+      "name": "investorCountry",
+      "params": "address",
+      "modifiers": "external view returns (uint16)",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "cast call <token> \"investorCountry(address)(uint16)\" <account> --rpc-url $RPC"
+    },
+    {
+      "name": "setComplianceRules",
+      "params": "uint256,uint256",
+      "modifiers": "external\n        onlyOwner",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"setComplianceRules(uint256,uint256)\" $MAX_HOLDERS $MAX_BALANCE --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "canTransfer",
+      "params": "address,address,uint256",
+      "modifiers": "public\n        view\n        returns (bool ok, string memory reason)",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "cast call <token> \"canTransfer(address,address,uint256)(bool,string)\" <from> <to> <amt> --rpc-url $RPC"
+    },
+    {
+      "name": "setAddressFrozen",
+      "params": "address,bool",
+      "modifiers": "external onlyAgent",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"setAddressFrozen(address,bool)\" <account> true --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "freezePartialTokens",
+      "params": "address,uint256",
+      "modifiers": "external onlyAgent",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"freezePartialTokens(address,uint256)\" <account> <amount> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "unfreezePartialTokens",
+      "params": "address,uint256",
+      "modifiers": "external onlyAgent",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"unfreezePartialTokens(address,uint256)\" <account> <amount> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "isFrozen",
+      "params": "address",
+      "modifiers": "external view returns (bool)",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "cast call <token> \"isFrozen(address)(bool)\" <account> --rpc-url $RPC"
+    },
+    {
+      "name": "frozenTokens",
+      "params": "address",
+      "modifiers": "external view returns (uint256)",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "cast call <token> \"frozenTokens(address)(uint256)\" <account> --rpc-url $RPC"
+    },
+    {
+      "name": "mint",
+      "params": "address,uint256",
+      "modifiers": "external onlyAgent",
+      "risk": "high",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"mint(address,uint256)\" <to> <amount> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "burn",
+      "params": "address,uint256",
+      "modifiers": "external onlyAgent",
+      "risk": "high",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"burn(address,uint256)\" <from> <amount> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "forcedTransfer",
+      "params": "address,address,uint256",
+      "modifiers": "external\n        onlyAgent\n        returns (bool)",
+      "risk": "high",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"forcedTransfer(address,address,uint256)\" <from> <to> <amount> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "recoveryAddress",
+      "params": "address,address",
+      "modifiers": "external\n        onlyAgent\n        returns (bool)",
+      "risk": "high",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"recoveryAddress(address,address)\" <lost> <new> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "depositDividend",
+      "params": "",
+      "modifiers": "external payable onlyOwner",
+      "risk": "high",
+      "mutability": "payable",
+      "cast_hint": "cast send <token> \"depositDividend()\" --value <PHRS> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "sweepUndistributedDividend",
+      "params": "address",
+      "modifiers": "external onlyOwner",
+      "risk": "high",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"sweepUndistributedDividend(address)\" <to> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "claimDividend",
+      "params": "",
+      "modifiers": "external",
+      "risk": "low",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"claimDividend()\" --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "dividendOf",
+      "params": "address",
+      "modifiers": "external view returns (uint256)",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "cast call <token> \"dividendOf(address)(uint256)\" <holder> --rpc-url $RPC"
+    },
+    {
+      "name": "addAgent",
+      "params": "address",
+      "modifiers": "external onlyOwner",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"addAgent(address)\" <agent> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "removeAgent",
+      "params": "address",
+      "modifiers": "external onlyOwner",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"removeAgent(address)\" <agent> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "isAgent",
+      "params": "address",
+      "modifiers": "external view returns (bool)",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "cast call <token> \"isAgent(address)(bool)\" <account> --rpc-url $RPC"
+    },
+    {
+      "name": "pause",
+      "params": "",
+      "modifiers": "external onlyAgent",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"pause()\" --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "unpause",
+      "params": "",
+      "modifiers": "external onlyAgent",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"unpause()\" --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "maxHolders",
+      "params": "",
+      "modifiers": "public state variable",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "cast call <token> \"maxHolders()(uint256)\" --rpc-url $RPC"
+    },
+    {
+      "name": "maxBalancePerInvestor",
+      "params": "",
+      "modifiers": "public state variable",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "cast call <token> \"maxBalancePerInvestor()(uint256)\" --rpc-url $RPC"
+    },
+    {
+      "name": "holderCount",
+      "params": "",
+      "modifiers": "public state variable",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "cast call <token> \"holderCount()(uint256)\" --rpc-url $RPC"
+    },
+    {
+      "name": "dividendPerShareCumulative",
+      "params": "",
+      "modifiers": "public state variable",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "cast call <token> \"dividendPerShareCumulative()(...)\" --rpc-url $RPC"
+    },
+    {
+      "name": "undistributedDividend",
+      "params": "",
+      "modifiers": "public state variable",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "cast call <token> \"undistributedDividend()(uint256)\" --rpc-url $RPC"
+    }
+  ],
+  "events": [
+    {
+      "name": "AgentAdded",
+      "params": "address indexed agent"
+    },
+    {
+      "name": "AgentRemoved",
+      "params": "address indexed agent"
+    },
+    {
+      "name": "IdentityRegistered",
+      "params": "address indexed investor, uint16 country"
+    },
+    {
+      "name": "IdentityRemoved",
+      "params": "address indexed investor"
+    },
+    {
+      "name": "AddressFrozen",
+      "params": "address indexed userAddress, bool indexed isFrozen, address indexed owner"
+    },
+    {
+      "name": "TokensFrozen",
+      "params": "address indexed userAddress, uint256 amount"
+    },
+    {
+      "name": "TokensUnfrozen",
+      "params": "address indexed userAddress, uint256 amount"
+    },
+    {
+      "name": "ComplianceRulesUpdated",
+      "params": "uint256 maxHolders, uint256 maxBalancePerInvestor"
+    },
+    {
+      "name": "RecoverySuccess",
+      "params": "address indexed lostWallet, address indexed newWallet"
+    },
+    {
+      "name": "DividendDeposited",
+      "params": "uint256 amount, uint256 newCumulativePerShare"
+    },
+    {
+      "name": "DividendClaimed",
+      "params": "address indexed investor, uint256 amount"
+    },
+    {
+      "name": "DividendDustSwept",
+      "params": "address indexed to, uint256 amount"
+    }
+  ],
+  "errors": [
+    {
+      "name": "NotAgent",
+      "params": ""
+    },
+    {
+      "name": "NotVerified",
+      "params": "address account"
+    },
+    {
+      "name": "WalletFrozen",
+      "params": "address account"
+    },
+    {
+      "name": "ComplianceFailure",
+      "params": "string reason"
+    },
+    {
+      "name": "InsufficientUnfrozen",
+      "params": "uint256 available, uint256 required"
+    }
+  ],
+  "counts": {
+    "functions": 30,
+    "events": 12,
+    "errors": 5
+  }
+}

@@ -1,111 +1,111 @@
-# Reference: 链上尽调闸门（onchain-diligence）
+# Reference: On-chain diligence gate (onchain-diligence)
 
-> **能力定位**：发行任何 RWA 资产前，对目标地址（托管方 / 发行方 / 大额认购方）做**只读、零 gas** 的链上尽调，产出红黄绿风险画像。**结论必须可验证**——每一条都追溯到具体 cast 命令与返回值。
-> **风险档**：🟢 低风险（纯只读，agent 全自动执行，无需人确认）。
-> **闸门作用**：评级为 RED 时，agent 必须拒绝后续一切发行操作（写入 `state.diligence.passed = false`）。
-
----
-
-## 何时触发
-
-用户意图含："先查一下这个地址""这个托管方靠谱吗""发行前尽调""能不能把代币发给它"——在执行 `mint` / `registerIdentity` 给某地址前，**强制**先跑本尽调。
+> **Capability**: Before issuing any RWA asset, run **read-only, zero-gas** on-chain diligence on target addresses (custodian / issuer / large subscriber) and produce a red/yellow/green risk profile. **Every conclusion must be verifiable** — each line traces to a specific `cast` command and return value.
+> **Risk tier**: 🟢 Low (read-only only; agent runs automatically; no human confirm).
+> **Gate behavior**: On RED rating, agent must refuse all subsequent issuance ops (`state.diligence.passed = false`).
 
 ---
 
-## 检查项与命令（全部只读，target = 被尽调地址，RPC 用 pharos_atlantic）
+## When to trigger
 
-每项检查产出确定性 `flag ∈ {ok, warn, risk}`。**risk 是闸门的硬否决信号**，下表的 risk 条件让「RED → 拒绝发行」真正可达，而非装饰。
+User intent includes: "check this address first", "is this custodian trustworthy", "pre-issuance diligence", "can we issue tokens to it" — **mandatory** diligence before `mint` / `registerIdentity` / `forcedTransfer` to that address.
 
-| check | cast 命令 | 含义 | flag 判定（确定性） |
+---
+
+## Checks & commands (all read-only; target = address under review; RPC = pharos_atlantic)
+
+Each check yields deterministic `flag ∈ {ok, warn, risk}`. **risk is a hard veto for the gate** — RED → refuse issuance is reachable, not decorative.
+
+| check | cast command | Meaning | flag rules (deterministic) |
 |---|---|---|---|
-| `denylist` | 比对 `state.config.denylist[]`（发行方维护的黑名单/制裁名单） | target 是否在禁投名单 | 命中 → **risk**；未命中 → ok |
-| `is_contract` | `cast code <target> --rpc-url $RPC` | 是 EOA 还是合约 | `0x`（EOA）→ ok；有字节码（合约）→ warn（投资者通常应为受 KYC 的 EOA，向不透明合约发行需复核） |
-| `code_size` | `cast codesize <target> --rpc-url $RPC` | 合约字节码大小 | 非合约 → ok；合约且 `> 0` → warn；**合约但 codesize `== 0`（已自毁/代码消失）→ risk** |
-| `balance` | `cast balance <target> --rpc-url $RPC` | 原生 PHRS 余额 | `> 0` → ok；`== 0` → warn（空地址，无 gas 付能力） |
-| `tx_count` | `cast nonce <target> --rpc-url $RPC` | 发起过的交易数（活跃度） | `> 0` → ok；`== 0` → warn（全新地址，无历史） |
+| `denylist` | Compare against `state.config.denylist[]` (issuer-maintained block/sanctions list) | Is target blocked? | Hit → **risk**; miss → ok |
+| `is_contract` | `cast code <target> --rpc-url $RPC` | EOA vs contract | `0x` (EOA) → ok; bytecode present → warn (investors usually KYC'd EOAs; issuing to opaque contracts needs review) |
+| `code_size` | `cast codesize <target> --rpc-url $RPC` | Contract bytecode size | Not a contract → ok; contract with `> 0` → warn; **contract with codesize `== 0` (self-destructed) → risk** |
+| `balance` | `cast balance <target> --rpc-url $RPC` | Native PHRS balance | `> 0` → ok; `== 0` → warn (empty address, no gas) |
+| `tx_count` | `cast nonce <target> --rpc-url $RPC` | Outbound tx count (activity) | `> 0` → ok; `== 0` → warn (brand-new address, no history) |
 
-> 命令以 Foundry `cast` 为准。`$RPC` = `https://atlantic.dplabs-internal.com`（Pharos atlantic 测试网，chainId 688689）。
-> 链上检查全部为 `view`/只读 RPC 调用，**不发交易、不花 gas、零风险**；`denylist` 为本地名单比对——故整体归为 🟢 低风险，agent 自动执行。
+> Commands follow Foundry `cast`. `$RPC` = `https://atlantic.dplabs-internal.com` (Pharos Atlantic testnet, chainId 688689).
+> On-chain checks are view/read-only RPC — **no txs, no gas, zero risk**; `denylist` is local list comparison — overall 🟢 low, agent auto-runs.
 >
-> **risk 触发条件汇总（任一命中即 RED，闸门关闭）**：
-> 1. `denylist` 命中发行方黑名单/制裁名单；
-> 2. target 是合约但 `codesize == 0`（曾部署、现已自毁，代码不可信）。
+> **risk triggers (any one → RED, gate closed)**:
+> 1. `denylist` hit on issuer block/sanctions list;
+> 2. target is a contract with `codesize == 0` (was deployed, now self-destructed — code untrusted).
 >
-> 发行方可在 `state.config.denylist` 维护需禁投的地址，使「合规前置」具备可执行的拒绝路径。
+> Issuer can maintain `state.config.denylist` for blocked addresses — gives compliance-first a real refuse path.
 
 ---
 
-## evidence 结构（写入 state.diligence.evidence，可验证）
+## evidence structure (written to state.diligence.evidence — verifiable)
 
-每个检查项产出一条 evidence，结构固定：
+Each check produces one evidence record:
 
 ```json
 {
   "check": "is_contract",
   "cmd": "cast code 0xABC... --rpc-url $RPC",
   "result": "0x",
-  "infer": "目标为 EOA（外部账户），非合约",
+  "infer": "Target is EOA (externally owned account), not a contract",
   "flag": "ok"
 }
 ```
 
-`flag` 取值：`ok`（正常） / `warn`（需注意） / `risk`（高风险）。
+`flag` values: `ok` / `warn` / `risk`.
 
 ---
 
-## 评级规则（写死，不靠 agent 主观判断 —— 规则确定性、可复现）
+## Rating rules (fixed — not agent subjective judgment)
 
-按所有 evidence 的 flag 统计，规则如下，**确定性、可复现**：
+From all evidence flags, **deterministic and reproducible**:
 
-- **🔴 RED**：任意一项 flag = `risk`。→ `passed = false`，**闸门关闭**，拒绝发行。
-- **🟡 YELLOW**：无 risk，但 ≥ 2 项 flag = `warn`。→ `passed = true` 但提示风险，建议人工复核。
-- **🟢 GREEN**：无 risk，且 warn ≤ 1 项。→ `passed = true`，可进入发行。
+- **🔴 RED**: any flag = `risk`. → `passed = false`, **gate closed**, refuse issuance.
+- **🟡 YELLOW**: no risk, but ≥ 2 flags = `warn`. → `passed = true` but surface risk; recommend human review.
+- **🟢 GREEN**: no risk, and warn ≤ 1. → `passed = true`, proceed to issuance.
 
-> 评级是 evidence 的纯函数：`rating = f(evidence[].flag)`。agent 不"感觉"，只套规则。任何人拿同样的链上数据，得出的评级必然一致——这是它可信的根本。
+> Rating is a pure function of evidence: `rating = f(evidence[].flag)`. Same chain data → same rating — that's why it's trustworthy.
 
 ---
 
-## 闸门强约束（1-C）
+## Gate enforcement (1-C)
 
-尽调完成后，agent 把结果写入 `state.json`：
+After diligence, agent writes `state.json`:
 ```json
 "diligence": { "target": "0x...", "rating": "GREEN", "passed": true, "evidence": [...] }
 ```
 
-后续任何发行类操作（mint / registerIdentity 给该 target / forcedTransfer 到该 target）执行前，agent **必须**读 `state.diligence`：
-- `passed == false` 或 `rating == "RED"` → **拒绝执行**，回复："目标地址未通过尽调（评级 RED），按合规前置原则，不能发行。依据：<列出 risk 项 evidence>。"
-- `rating == "YELLOW"` → 执行前额外提示风险，建议人工复核。
-- `rating == "GREEN"` → 正常进入发行流程。
+Before any issuance op (mint / registerIdentity for target / forcedTransfer to target), agent **must** read `state.diligence`:
+- `passed == false` or `rating == "RED"` → **refuse**, reply: "Target failed diligence (RED). Compliance-first: cannot issue. Basis: <list risk evidence>."
+- `rating == "YELLOW"` → extra risk warning before execute; suggest human review.
+- `rating == "GREEN"` → normal issuance flow.
 
-这把"合规前置"从一句口号，变成 agent 行为里**绕不过去的代码级闸门**。
+This turns "compliance first" from a slogan into a **non-bypassable code-level gate**.
 
 ---
 
-## 输出给用户的格式（带依据，可验证）
+## User-facing output format (with evidence)
 
 ```
-尽调结果：🟡 YELLOW（passed，建议复核）
-目标：0xABC...
+Diligence: 🟡 YELLOW (passed — review recommended)
+Target: 0xABC...
 
-依据：
-  ✓ [ok]   是否合约：cast code → 0x，确认为 EOA
-  ⚠ [warn] 活跃度：  cast nonce → 0，全新地址，无历史
-  ⚠ [warn] 余额：    cast balance → 0 PHRS，无 gas 付能力
+Evidence:
+  ✓ [ok]   is_contract: cast code → 0x, confirmed EOA
+  ⚠ [warn] activity:    cast nonce → 0, brand-new address
+  ⚠ [warn] balance:    cast balance → 0 PHRS, no gas
   
-评级逻辑：无 risk 项 + 2 项 warn → YELLOW
-建议：可发行，但目标为无历史新地址，建议确认其真实身份后再加白名单。
+Rating: no risk + 2 warn → YELLOW
+Recommendation: issuance allowed; confirm real identity before whitelisting.
 ```
 
-RED（闸门关闭，拒绝发行）示例：
+RED example (gate closed):
 
 ```
-尽调结果：🔴 RED（NOT passed，拒绝发行）
-目标：0xBAD...
+Diligence: 🔴 RED (NOT passed — issuance refused)
+Target: 0xBAD...
 
-依据：
-  ✗ [risk] 黑名单：  命中 state.config.denylist（发行方禁投名单）
-  ✓ [ok]   是否合约：cast code → 0x，确认为 EOA
+Evidence:
+  ✗ [risk] denylist:  hit state.config.denylist (issuer block list)
+  ✓ [ok]   is_contract: cast code → 0x, confirmed EOA
 
-评级逻辑：存在 1 项 risk → RED
-处置：写入 state.diligence.passed=false；按合规前置原则，拒绝对该地址的一切发行操作。
+Rating: 1 risk → RED
+Action: write state.diligence.passed=false; refuse all issuance to this address.
 ```

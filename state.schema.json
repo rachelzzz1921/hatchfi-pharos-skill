@@ -163,7 +163,10 @@
         "path": { "type": "string", "description": "生成的资产专属 skill 目录" },
         "generated_at": { "type": "string" },
         "sharing": { "type": "string", "enum": ["private", "shared"], "default": "private", "description": "默认 private（仅自用）；shared 需对应 consent.shares 记录" },
-        "permission_manifest": { "type": "string", "description": "权限清单文件路径（PERMISSIONS.md）：声明暴露面 vs 保留的私有数据" }
+        "permission_manifest": { "type": "string", "description": "权限清单文件路径（PERMISSIONS.md）：声明暴露面 vs 保留的私有数据" },
+        "version": { "type": "integer", "description": "spawn/refine 进化版本号（meta.json 同步）" },
+        "refined_at": { "type": "string", "description": "最近一次 personalization 精炼时间" },
+        "evolution_engine": { "type": "string", "description": "进化脚本标识，如 skill_spawn_lib" }
       }
     },
     "last_action": { "type": "string", "description": "最近一次操作，用于断点续作" },

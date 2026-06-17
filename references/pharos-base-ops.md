@@ -1,8 +1,8 @@
-# Pharos Base Operations（对齐 Skill Engine）
+# Pharos Base Operations (Skill Engine aligned)
 
-> 网络：`assets/networks.json` → `atlantic_testnet`（默认）或 `pacific_mainnet`。
-> 私钥：每条命令显式 `--private-key $PK`。
-> RWA 专有操作见 `rwa-issuance.md` / `rwa-dividend.md` / `onchain-diligence.md`。
+> Network: `assets/networks.json` → `atlantic_testnet` (default) or `pacific_mainnet`.
+> Private key: explicit `--private-key $PK` on every command.
+> RWA-specific ops: `rwa-issuance.md` / `rwa-dividend.md` / `onchain-diligence.md`.
 
 ---
 
@@ -16,8 +16,8 @@ cast balance $DEPLOYER --rpc-url $RPC --ether
 
 ### Agent Guidelines
 
-1. 只读，无需 Pre-checks 2–4（仍建议确认 RPC）。
-2. 输出单位为 ether（PHRS）。
+1. Read-only; pre-checks 2–4 optional (still confirm RPC).
+2. Output unit is ether (PHRS).
 
 ---
 
@@ -43,13 +43,13 @@ cast send <recipient> --value <amount>ether --private-key $PK --rpc-url $RPC
 
 | Error | Cause | Action |
 |---|---|---|
-| `insufficient funds` | 余额不足 | 查 balance，领测试 PHRS |
-| `connection refused` | 缺 `--rpc-url` | 设 `$RPC` 来自 networks.json |
+| `insufficient funds` | Insufficient balance | Check balance; request testnet PHRS |
+| `connection refused` | Missing `--rpc-url` | Set `$RPC` from networks.json |
 
 ### Agent Guidelines
 
-1. 完成 SKILL.md Write Operation Pre-checks。
-2. `cast receipt` 断言成功后再续作。
+1. Complete SKILL.md Write Operation Pre-checks.
+2. `cast receipt` assert success before continuing.
 
 ---
 
@@ -72,4 +72,4 @@ forge verify-contract <addr> src/CompliantRWAToken.sol:CompliantRWAToken \
   --verifier blockscout
 ```
 
-> 完整 Pharos 部署 runbook：→ `pharos-deploy-runbook.md`
+> Full Pharos deploy runbook: → `pharos-deploy-runbook.md`
