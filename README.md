@@ -12,6 +12,7 @@ Every RWA you hatch leaves *you* a private operating Skill — yours, and it com
 [![live](https://img.shields.io/badge/Pharos_Atlantic-LIVE-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
 [![skill](https://img.shields.io/badge/hatched_Skill-private_+_compounds-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
 [![audit](https://img.shields.io/badge/Production_Audit-Strong_88%2F100-c9a227?style=flat-square)](./docs/SECURITY.md)
+[![inspector](https://img.shields.io/badge/Skill_Inspector-8%2F100_LOW-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
 
 **🌐 English**  ·  [中文](./README.zh.md)  ·  📊 [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
@@ -51,21 +52,36 @@ Pharos sits at the intersection of **RealFi**, **protocol-native compliance**, a
 |---|---|
 | **RealFi / RWA** | ERC-3643-style `CompliantRWAToken` — identity, compliance caps, dividends, lifecycle. **Live on Atlantic.** |
 | **Protocol-native compliance** | `_update()` hook enforces `isVerified` + `canTransfer` on every transfer; **mint enforces the same caps** (compliance-critical fix, audit D2) |
-| **Agentic infrastructure** | `SKILL.md` capability index · risk tiers 🟢🟡🔴 · human confirm cards · `state.json` audit memory · consent gates 🔑 |
+| **Agentic infrastructure** | `SKILL.md` capability index · risk tiers 🟢🟡🔴 · human confirm cards · `state.json` audit memory · consent gates 🔑 · **pre-publish Skill Inspector gate** |
 | **Composable ecosystem** | **Skill→Skill flywheel**: each issuance → `skills/<SYMBOL>-asset/` — opt-in sharing seeds a permissioned RealFi network on Pharos |
 
 ## End-to-end pipeline — four phases, gates at every step
 
 ```
-Phase A  Diligence Gate     →  Phase B  Compliant Issuance  →  Phase C  Lifecycle Ops       →  Phase D  Skill Hatch
-         read-only cast            deploy ERC-3643 token             whitelist / freeze / mint        spawn skills/MPF-asset/
-         GREEN/YELLOW/RED          identity·compliance·freeze       dividends / recovery / audit     PERMISSIONS.md · private
-         RED blocks issuance       24 tests + 8-finding audit     cast logs (12 events)            personalization loop
+Phase A  Diligence Gate     →  Phase B  Compliant Issuance  →  Phase C  Lifecycle Ops       →  Phase D  Skill Hatch      →  Phase E  Security Gate
+         read-only cast            deploy ERC-3643 token             whitelist / freeze / mint        spawn skills/MPF-asset/        static-only inspector
+         GREEN/YELLOW/RED          identity·compliance·freeze       dividends / recovery / audit     PERMISSIONS.md · private       prompt/secret/Web3/Solidity
+         RED blocks issuance       24 tests + 8-finding audit     cast logs (12 events)            personalization loop           block critical/high
 ```
 
 **7 agent playbooks** in `references/`: `onchain-diligence` · `rwa-issuance` · `rwa-dividend` · `spawn-asset-skill` · `pharos-base-ops` · `pharos-deploy-runbook` · `pharos-verification`
 
 **Contract surface**: 20 external functions · 12 ERC-3643-aligned events · 5 typed errors · 24 Foundry tests (incl. fuzz invariant)
+
+## Security gate — scan before install, upload, publish, or share
+
+HatchFi now includes a local **Pharos Skill Inspector** inspired by open skill-vetting patterns (`ghost-scan-secrets`, `skill-vetter`, prompt-injection scanners) and adapted to the Pharos/Web3 threat model. It is **static-only**: it loads a directory/file/zip and never executes target code.
+
+It detects prompt injection, hidden Unicode/HTML comments, secret leakage, dangerous Python/JS/TS/shell/Solidity patterns, hardcoded keys, non-Pharos RPC endpoints, auto-broadcast writes, unlimited approvals, `tx.origin`, `selfdestruct`, `delegatecall`, and undeclared on-chain write capability.
+
+```bash
+npm run inspect:skill       # terminal report
+npm run inspect:skill:md    # docs/SKILL_SECURITY_REPORT.md
+npm run inspect:skill:json  # docs/SKILL_SECURITY_REPORT.json
+npm run publish:check       # inspector + full package check
+```
+
+Current result: [`docs/SKILL_SECURITY_REPORT.md`](./docs/SKILL_SECURITY_REPORT.md) — **8/100 LOW**, **0 critical / 0 high / 0 medium blockers**. Reports redact secrets so a scanner never prints keys back to the user.
 
 ## It compounds — for *you*
 
@@ -206,6 +222,7 @@ HatchFi is a Pharos **Skill**, not a script. The agent follows [`SKILL.md`](./SK
 - **Diligence-first** — RED rating or failed checks block issuance, with evidence
 - **Risk tiers** — 🟢 auto · 🟡 audit trail · 🔴 human confirm card before deploy/mint/dividend
 - **Consent gates** — 🔑 explicit consent before depositing personal data or sharing a Skill (with a permission manifest)
+- **Skill Inspector gate** — static scan before install/upload/publish/share; critical/high findings block release
 - **Receipt assertions** — every write verifies `status==1` before continuing
 - **Audit memory** — `state.json` records diligence, onboarding, dividends, and history — owner-private by default
 - **Key safety** — private key via env only, never committed
@@ -249,6 +266,7 @@ Detailed walkthroughs: [`QUICKSTART.md`](./docs/QUICKSTART.md) · [`WORKED_EXAMP
 | [`docs/COMPLETED_VALIDATION.md`](./docs/COMPLETED_VALIDATION.md) | Local + on-chain validation evidence |
 | [`DEPLOYMENT_RESULT.md`](./DEPLOYMENT_RESULT.md) | Deploy + smoke record (generated) |
 | [`docs/SECURITY.md`](./docs/SECURITY.md) | Audit findings & fixes |
+| [`docs/SKILL_SECURITY_REPORT.md`](./docs/SKILL_SECURITY_REPORT.md) | Pre-publish Pharos Skill Inspector report |
 | [`docs/PHAROS_VISION.md`](./docs/PHAROS_VISION.md) | RealFi / Agentic vision alignment |
 | [`docs/SUBMISSION.md`](./docs/SUBMISSION.md) | Hackathon submission write-up |
 | [`docs/BRAND.md`](./docs/BRAND.md) | HatchFi brand kit |
@@ -262,6 +280,7 @@ test/CompliantRWAToken.t.sol   24 tests (incl. fuzz invariant)
 script/Deploy.s.sol            Foundry deploy script
 references/                    7 cast/forge command references (the agent's playbooks)
 scripts/                       preflight / post-deploy / smoke / verify / spawn automation
+scripts/skill_inspector.py      static security gate before install / upload / publish / share
 skills/MPF-asset/              ← spawned asset Skill (the flywheel artifact)
 assets/                        brand logo + token/network registries + contract snapshot
 deployments/pharos.json        on-chain deployment record (generated)

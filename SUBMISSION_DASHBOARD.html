@@ -276,6 +276,7 @@
       <span class="badge gold"><span class="en">private Skill · compounds</span><span class="zh">私有 Skill · 复利</span></span>
       <span class="badge">ERC-3643 · chainId 688689</span>
       <span class="badge gold"><span class="en">Strong 88/100 audit</span><span class="zh">审计 Strong 88/100</span></span>
+      <span class="badge ok"><span class="en">Inspector 8/100 LOW</span><span class="zh">安全扫描 8/100 LOW</span></span>
     </div>
     <div class="cta-bar">
       <a class="primary" href="https://bit.ly/4xkU0Wx" target="_blank" rel="noopener"><span class="en">Register · Hackathon</span><span class="zh">立即报名</span></a>
@@ -334,7 +335,7 @@
       <div class="card">
         <div class="step">02 · AGENTIC</div>
         <h3><span class="en">Skill, not script</span><span class="zh">Skill，不是脚本</span></h3>
-        <p><span class="en"><code>SKILL.md</code> capability index · risk tiers 🟢🟡🔴 · human confirm cards · <code>state.json</code> audit memory · consent gates 🔑</span><span class="zh"><code>SKILL.md</code> 能力索引 · 风险分档 🟢🟡🔴 · 人工确认卡片 · <code>state.json</code> 审计记忆 · 同意闸 🔑</span></p>
+        <p><span class="en"><code>SKILL.md</code> capability index · risk tiers 🟢🟡🔴 · human confirm cards · <code>state.json</code> audit memory · consent gates 🔑 · pre-publish Skill Inspector</span><span class="zh"><code>SKILL.md</code> 能力索引 · 风险分档 🟢🟡🔴 · 人工确认卡片 · <code>state.json</code> 审计记忆 · 同意闸 🔑 · 发布前 Skill Inspector</span></p>
       </div>
       <div class="card">
         <div class="step">03 · COMPOSABLE</div>
@@ -348,12 +349,12 @@
   <section>
     <div class="kicker"><span class="en">End-to-end pipeline</span><span class="zh">端到端流水线</span></div>
     <h2><span class="en">Four phases an agent runs — with gates at every step</span><span class="zh">Agent 端到端四阶段——每步都有闸门</span></h2>
-    <pre class="ascii"><span class="gd">Phase A</span>  Diligence Gate          <span class="gd">Phase B</span>  Compliant Issuance       <span class="gd">Phase C</span>  Lifecycle Ops          <span class="gd">Phase D</span>  Skill Hatch
-─────────  ───────────────         ─────────  ──────────────────       ─────────  ───────────────         ─────────  ───────────
-read-only  GREEN/YELLOW/RED        deploy     ERC-3643 token           whitelist  register/freeze/mint    spawn      skills/MPF-asset/
-cast cmds  RED → block issuance    mint       identity·compliance·     dividends  deposit/claim/sweep     private    PERMISSIONS.md
-evidence   denylist + codesize     smoke      freeze triple gate       recovery   forcedTransfer/pause    refine     personalization loop
-           → state.diligence       preflight  24 tests + audit         audit      cast logs (12 events)   opt-in     consent.shares</pre>
+    <pre class="ascii"><span class="gd">Phase A</span>  Diligence Gate          <span class="gd">Phase B</span>  Compliant Issuance       <span class="gd">Phase C</span>  Lifecycle Ops          <span class="gd">Phase D</span>  Skill Hatch          <span class="gd">Phase E</span>  Security Gate
+─────────  ───────────────         ─────────  ──────────────────       ─────────  ───────────────         ─────────  ───────────          ─────────  ─────────────
+read-only  GREEN/YELLOW/RED        deploy     ERC-3643 token           whitelist  register/freeze/mint    spawn      skills/MPF-asset/     static     Skill Inspector
+cast cmds  RED → block issuance    mint       identity·compliance·     dividends  deposit/claim/sweep     private    PERMISSIONS.md        scan       prompt/secret/Web3
+evidence   denylist + codesize     smoke      freeze triple gate       recovery   forcedTransfer/pause    refine     personalization      reports    MD/JSON/SARIF-ready
+           → state.diligence       preflight  24 tests + audit         audit      cast logs (12 events)   opt-in     consent.shares       blocker   critical/high</pre>
     <div class="grid-2">
       <div class="card">
         <h3><span class="en">7 agent playbooks</span><span class="zh">7 份 Agent playbook</span></h3>
@@ -362,6 +363,10 @@ evidence   denylist + codesize     smoke      freeze triple gate       recovery 
       <div class="card">
         <h3><span class="en">Contract surface</span><span class="zh">合约能力面</span></h3>
         <p><span class="en"><strong>20</strong> external functions · <strong>12</strong> ERC-3643-aligned events · <strong>5</strong> typed errors · <strong>24</strong> Foundry tests incl. fuzz invariant</span><span class="zh"><strong>20</strong> 个外部函数 · <strong>12</strong> 个 ERC-3643 对齐事件 · <strong>5</strong> 个类型化错误 · <strong>24</strong> 项 Foundry 测试含 fuzz 不变量</span></p>
+      </div>
+      <div class="card">
+        <h3><span class="en">Security gate</span><span class="zh">上传前安全门</span></h3>
+        <p><span class="en"><code>scripts/skill_inspector.py</code> statically scans skills before install/upload/publish/share. Current report: <strong>8/100 LOW</strong>, no critical/high/medium blockers.</span><span class="zh"><code>scripts/skill_inspector.py</code> 在安装/上传/发布/分享前静态扫描 skill。当前报告：<strong>8/100 LOW</strong>，无 critical/high/medium blocker。</span></p>
       </div>
     </div>
   </section>
@@ -541,6 +546,7 @@ evidence   denylist + codesize     smoke      freeze triple gate       recovery 
       <li><span class="k"><span class="en">Diligence-first</span><span class="zh">尽调前置</span></span><span><span class="en">RED rating or failed checks block issuance, with evidence.</span><span class="zh">RED 评级或检查不过即拒绝发行，并给出 evidence。</span></span></li>
       <li><span class="k"><span class="en">Risk tiers</span><span class="zh">风险分档</span></span><span><span class="en">🟢 auto · 🟡 audit trail · 🔴 human confirm before deploy/mint/dividend.</span><span class="zh">🟢 自动 · 🟡 留痕 · 🔴 部署/mint/派息前人工确认。</span></span></li>
       <li><span class="k"><span class="en">Consent gates</span><span class="zh">同意闸</span></span><span><span class="en">🔑 explicit consent before depositing personal data or sharing a Skill (with a permission manifest).</span><span class="zh">🔑 沉淀个人数据或对外分享 Skill 前需显式同意（并附权限清单）。</span></span></li>
+      <li><span class="k"><span class="en">Skill Inspector</span><span class="zh">安全扫描</span></span><span><span class="en">Static scan before install/upload/publish/share; critical/high findings block release.</span><span class="zh">安装/上传/发布/分享前静态扫描；critical/high 直接阻断。</span></span></li>
       <li><span class="k"><span class="en">Receipt assertions</span><span class="zh">Receipt 断言</span></span><span><span class="en">Every write verifies status==1 before continuing.</span><span class="zh">每笔写操作验 status==1 才继续。</span></span></li>
       <li><span class="k"><span class="en">Audit memory</span><span class="zh">审计记忆</span></span><span><span class="en">state.json records diligence, onboarding, dividends, and history — owner-private by default.</span><span class="zh">state.json 记录尽调、准入、派息与操作历史——默认归你私有。</span></span></li>
       <li><span class="k"><span class="en">Key safety</span><span class="zh">私钥安全</span></span><span><span class="en">Private key via env only, never committed.</span><span class="zh">私钥仅走环境变量，绝不入库。</span></span></li>
@@ -651,6 +657,7 @@ evidence   denylist + codesize     smoke      freeze triple gate       recovery 
         <tr><td class="k"><span class="en">Compliance review</span><span class="zh">合规性审查</span></td><td><span style="color:var(--ok)"><span class="en">closed mint cap-bypass (compliance-critical)</span><span class="zh">堵上 mint 绕过上限（合规关键）</span></span></td></tr>
         <tr><td class="k"><span class="en">Production-readiness audit</span><span class="zh">生产就绪审计</span></td><td><span style="color:var(--gold)">Strong · 88/100</span></td></tr>
         <tr><td class="k"><span class="en">Adversarial (red-team) review</span><span class="zh">对抗式（红队）评审</span></td><td><span style="color:var(--ok)"><span class="en">issues resolved pre-submission</span><span class="zh">提交前问题全解决</span></span></td></tr>
+        <tr><td class="k"><span class="en">Pharos Skill Inspector</span><span class="zh">Pharos Skill Inspector</span></td><td><a class="ref" href="docs/SKILL_SECURITY_REPORT.md">8/100 LOW</a> · <span style="color:var(--ok)"><span class="en">0 critical/high/medium blockers</span><span class="zh">0 critical/high/medium blocker</span></span></td></tr>
         <tr><td class="k"><span class="en">On-chain deploy + smoke</span><span class="zh">链上部署 + smoke</span></td><td><a class="ref" href="https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de" target="_blank">0xfef7…Aa3DE</a> · <span style="color:var(--ok)">mint 1e18 · receipt status=1</span></td></tr>
         <tr><td class="k"><span class="en">Hatched Skill</span><span class="zh">孵化 Skill</span></td><td><a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a> <span class="en">spawned · private</span><span class="zh">已生成 · 私有</span></td></tr>
         <tr><td class="k"><span class="en">Key safety</span><span class="zh">私钥安全</span></td><td class="mono">.env · state.json <span class="en">gitignored</span><span class="zh">已忽略</span></td></tr>
@@ -701,8 +708,8 @@ evidence   denylist + codesize     smoke      freeze triple gate       recovery 
       </div>
     </div>
     <div class="highlight" style="margin-top:1rem;">
-      <p><span class="en"><strong>Why HatchFi for finals:</strong> live Atlantic deploy · ERC-3643 compliance + diligence gate · 24 tests + 8-finding audit all fixed · Skill→Skill flywheel proven (MPF-asset) · extends official Skill Engine · data sovereignty with opt-in ecosystem · production-readiness Strong 88/100.</span></p>
-      <p><span class="zh"><strong>为什么值得进决赛：</strong>Atlantic 真部署 · ERC-3643 合规 + 尽调闸门 · 24 测试 + 8 项审计全修复 · Skill→Skill 飞轮已实证（MPF-asset）· 扩展官方 Skill Engine · 数据主权 + opt-in 生态 · 生产就绪 Strong 88/100。</span></p>
+      <p><span class="en"><strong>Why HatchFi for finals:</strong> live Atlantic deploy · ERC-3643 compliance + diligence gate · 24 tests + 8-finding audit all fixed · Skill→Skill flywheel proven (MPF-asset) · extends official Skill Engine · data sovereignty with opt-in ecosystem · built-in Skill Inspector gate (8/100 LOW) · production-readiness Strong 88/100.</span></p>
+      <p><span class="zh"><strong>为什么值得进决赛：</strong>Atlantic 真部署 · ERC-3643 合规 + 尽调闸门 · 24 测试 + 8 项审计全修复 · Skill→Skill 飞轮已实证（MPF-asset）· 扩展官方 Skill Engine · 数据主权 + opt-in 生态 · 内置 Skill Inspector 安全门（8/100 LOW）· 生产就绪 Strong 88/100。</span></p>
     </div>
   </section>
 
@@ -715,6 +722,7 @@ forge install OpenZeppelin/openzeppelin-contracts@v5.1.0 && forge install foundr
 
 npm run build && npm run test          <span class="gd"># 24 passed · no wallet needed</span>
 npm run check                          <span class="gd"># no hardcoded keys</span>
+npm run inspect:skill                  <span class="gd"># static skill security gate · no high/critical</span>
 
 export PRIVATE_KEY=0x...               <span class="gd"># local only · never commit</span>
 export PHAROS_RPC_URL=https://atlantic.dplabs-internal.com

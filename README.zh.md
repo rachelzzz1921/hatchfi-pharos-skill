@@ -12,6 +12,7 @@
 [![live](https://img.shields.io/badge/Pharos_Atlantic-已部署-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
 [![skill](https://img.shields.io/badge/孵化Skill-私有+复利-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
 [![audit](https://img.shields.io/badge/生产就绪审计-Strong_88%2F100-c9a227?style=flat-square)](./docs/SECURITY.md)
+[![inspector](https://img.shields.io/badge/Skill安全扫描-8%2F100_LOW-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
 [![standard](https://img.shields.io/badge/ERC--3643-风格-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
 
 [English](./README.md)  ·  **🌐 中文**  ·  📊 [在线看板](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
@@ -51,21 +52,36 @@ Pharos 位于 **RealFi**、**协议原生合规**与 **Agent 链上基础设施*
 |---|---|
 | **RealFi / RWA** | ERC-3643 风格 `CompliantRWAToken`——身份、合规上限、派息、生命周期。**已在 Atlantic 部署。** |
 | **协议原生合规** | `_update()` 钩子强制 `isVerified` + `canTransfer`；**mint 强制同一套上限**（合规关键修复，审计 D2） |
-| **Agentic 基础设施** | `SKILL.md` 能力索引 · 风险分档 🟢🟡🔴 · 人工确认卡片 · `state.json` 审计记忆 · 同意闸 🔑 |
+| **Agentic 基础设施** | `SKILL.md` 能力索引 · 风险分档 🟢🟡🔴 · 人工确认卡片 · `state.json` 审计记忆 · 同意闸 🔑 · **发布前 Skill Inspector 安全门** |
 | **可组合生态** | **Skill 产 Skill 飞轮**：每次发行 → `skills/<SYMBOL>-asset/`——opt-in 分享培育 Pharos 上的带权限 RealFi 网络 |
 
 ## 端到端流水线——四阶段，每步都有闸门
 
 ```
-Phase A  尽调闸门          →  Phase B  合规发行           →  Phase C  生命周期运营        →  Phase D  Skill 孵化
-         只读 cast               部署 ERC-3643 代币              白名单 / 冻结 / mint              spawn skills/MPF-asset/
-         GREEN/YELLOW/RED        身份·合规·冻结三闸              派息 / 恢复 / 审计               PERMISSIONS.md · 私有
-         RED 拒绝发行            24 测试 + 8 项审计              cast logs（12 事件）             个性化精炼循环
+Phase A  尽调闸门          →  Phase B  合规发行           →  Phase C  生命周期运营        →  Phase D  Skill 孵化       →  Phase E  安全门
+         只读 cast               部署 ERC-3643 代币              白名单 / 冻结 / mint              spawn skills/MPF-asset/         静态 Inspector
+         GREEN/YELLOW/RED        身份·合规·冻结三闸              派息 / 恢复 / 审计               PERMISSIONS.md · 私有          prompt/secret/Web3/Solidity
+         RED 拒绝发行            24 测试 + 8 项审计              cast logs（12 事件）             个性化精炼循环                critical/high 阻断
 ```
 
 **7 份 Agent playbook**（`references/`）：`onchain-diligence` · `rwa-issuance` · `rwa-dividend` · `spawn-asset-skill` · `pharos-base-ops` · `pharos-deploy-runbook` · `pharos-verification`
 
 **合约能力面**：20 个外部函数 · 12 个 ERC-3643 对齐事件 · 5 个类型化错误 · 24 项 Foundry 测试（含 fuzz 不变量）
+
+## 安全门——安装、上传、发布、分享前自动扫描
+
+HatchFi 现在内置本地 **Pharos Skill Inspector**，参考开源 skill-vetting 模式（secret scanner、skill vetter、prompt-injection scanner），并迁移到 Pharos/Web3 的真实风险面。它是 **static-only**：只读取目录/文件/zip，不执行目标代码。
+
+它检测 prompt injection、隐藏 Unicode/HTML、secret 泄露、Python/JS/TS/shell/Solidity 危险模式、硬编码私钥、非 Pharos RPC、auto-broadcast、无限授权、`tx.origin`、`selfdestruct`、`delegatecall`、未声明链上写能力。
+
+```bash
+npm run inspect:skill       # 终端报告
+npm run inspect:skill:md    # docs/SKILL_SECURITY_REPORT.md
+npm run inspect:skill:json  # docs/SKILL_SECURITY_REPORT.json
+npm run publish:check       # inspector + 全量包检查
+```
+
+当前结果：[`docs/SKILL_SECURITY_REPORT.md`](./docs/SKILL_SECURITY_REPORT.md) — **8/100 LOW**，**0 critical / 0 high / 0 medium blocker**。报告会 redact secret，不把密钥打印回用户。
 
 ## 它会复利——为*你*而复利
 
@@ -206,6 +222,7 @@ HatchFi 是 Pharos **Skill**，不是脚本。Agent 按 [`SKILL.md`](./SKILL.md)
 - **尽调前置** — RED 评级或检查不过即拒绝发行，并给出 evidence
 - **风险分档** — 🟢 自动 · 🟡 留痕 · 🔴 部署/mint/派息前出人工确认卡片
 - **同意闸** — 🔑 沉淀个人数据或对外分享 Skill 前需显式同意（并附权限清单）
+- **Skill Inspector 安全门** — 安装/上传/发布/分享前静态扫描；critical/high 直接阻断
 - **Receipt 断言** — 每笔写操作验 `status==1` 才继续
 - **审计记忆** — `state.json` 记录尽调、准入、派息与操作历史——默认归你私有
 - **私钥安全** — 私钥仅走环境变量，绝不入库
@@ -249,6 +266,7 @@ npm run spawn:asset               # → skills/MPF-asset/（飞轮落点）
 | [`docs/COMPLETED_VALIDATION.md`](./docs/COMPLETED_VALIDATION.md) | 本地 + 链上验证证据 |
 | [`DEPLOYMENT_RESULT.md`](./DEPLOYMENT_RESULT.md) | 部署 + smoke 记录（自动生成）|
 | [`docs/SECURITY.md`](./docs/SECURITY.md) | 审计发现与修复 |
+| [`docs/SKILL_SECURITY_REPORT.md`](./docs/SKILL_SECURITY_REPORT.md) | 发布前 Pharos Skill Inspector 安全报告 |
 | [`docs/PHAROS_VISION.md`](./docs/PHAROS_VISION.md) | RealFi / Agentic 愿景对齐 |
 | [`docs/SUBMISSION.md`](./docs/SUBMISSION.md) | 黑客松提交说明 |
 | [`docs/BRAND.md`](./docs/BRAND.md) | HatchFi 品牌套件 |
@@ -262,6 +280,7 @@ test/CompliantRWAToken.t.sol   24 项测试（含 fuzz 不变量）
 script/Deploy.s.sol            Foundry 部署脚本
 references/                    7 份 cast/forge 操作指令（Agent 的 playbook）
 scripts/                       preflight / post-deploy / smoke / verify / spawn 自动化
+scripts/skill_inspector.py      安装 / 上传 / 发布 / 分享前静态安全门
 skills/MPF-asset/              ← 已 spawn 的资产 Skill（飞轮落点）
 assets/                        品牌 logo + 代币/网络注册表 + 合约快照
 deployments/pharos.json        链上部署记录（自动生成）

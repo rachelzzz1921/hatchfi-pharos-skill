@@ -75,14 +75,36 @@
 
 每次自然语言交互都是一次精炼机会：把发行人反复确认的偏好（常用司法辖区、默认持有人上限/持仓上限、派息节奏、披露模板、风险阈值）经**沉淀同意**后写入 `state.personalization`。下次发行/操作时 agent 先从 profile 预填、再与发行人确认差异——skill 随需求持续成长。偏好属主权数据，默认私有，分享需**开放同意**。
 
+## 安装 / 上传 / 发布前安全门（Pharos Skill Inspector）
+
+skill 不是普通文档：它能要求 agent 读 `$PRIVATE_KEY`、调用 `cast` / `forge`、广播交易、连接 RPC。因此在**安装、上传、发布、分享任何 skill 或功能包前**，必须先跑静态安全门：
+
+```bash
+npm run inspect:skill       # terminal report
+npm run inspect:skill:md    # docs/SKILL_SECURITY_REPORT.md
+npm run inspect:skill:json  # machine-readable report
+npm run publish:check       # inspect + full check.sh
+```
+
+本仓库内置 `scripts/skill_inspector.py`（零运行时依赖、static-only、不执行目标代码）。它检测：
+
+- **Prompt injection**：instruction override、pre-check bypass、role hijack、隐藏 HTML/Unicode。
+- **数据泄露**：硬编码私钥、env harvesting、secret logging、secret exfiltration。
+- **危险代码**：Python / JS / TS / shell 中的动态执行、危险 shell、外部脚本执行。
+- **Pharos/Web3 风险**：非 Pharos RPC、auto-broadcast、未声明写操作、无限 ERC20 approval、私钥/seed phrase。
+- **Solidity 风险**：`tx.origin`、`selfdestruct`、`delegatecall`、未保护提款、floating pragma。
+
+Gate 规则：`critical` / `high` 为 blocker，禁止上传/发布；报告必须 redact secret，不把密钥打印回用户。当前本仓库扫描结果写入 `docs/SKILL_SECURITY_REPORT.md` / `.json`。
+
 ## Agent 工作纪律（每次操作前遵守）
 
 1. **尽调前置**：对未尽调地址发行前，先跑尽调；`state.diligence.passed == false` 或评级 RED → 拒绝发行并说明依据。
 2. **高风险人确认**：🔴 操作执行前必须输出「确认卡片」（操作/对象/影响/前置检查/下一步预告），收到 `confirm` 才执行。
 3. **同意优先**：触发 🔑 沉淀 / 开放前，先出同意卡片（开放须附权限清单），收到 `consent` 才执行；记入 `state.consent`。默认私有——不确定时不沉淀、不分享。
-4. **操作后断言**：每笔 `cast send` 后 `cast receipt` 验 `status==1` 才续作；失败即停、报告，不蒙头往下。
-5. **全程留痕**：每个写操作回写 `state.json`（whitelist/dividends/history），高风险记 `confirmed_by_human`。
-6. **私钥安全**：私钥仅走环境变量 `$PRIVATE_KEY`，每条命令显式 `--private-key $PK`；绝不写入文件或提交仓库。
+4. **发布前安全门**：安装、上传、发布、分享任何 skill/function 包前必须跑 `npm run publish:check`；若 Skill Inspector 出现 critical/high，立即停止并修复。
+5. **操作后断言**：每笔 `cast send` 后 `cast receipt` 验 `status==1` 才续作；失败即停、报告，不蒙头往下。
+6. **全程留痕**：每个写操作回写 `state.json`（whitelist/dividends/history），高风险记 `confirmed_by_human`。
+7. **私钥安全**：私钥仅走环境变量 `$PRIVATE_KEY`，每条命令显式 `--private-key $PK`；绝不写入文件或提交仓库。
 
 ---
 
@@ -142,6 +164,7 @@
 | 查询链上事件（对账/取证） | cast logs（12 事件） | 🟢 | rwa-issuance#事件查询 |
 | 回收派息整除余数 dust | sweepUndistributedDividend | 🔴 | rwa-dividend |
 | 提交前分阶段验证 | staged verification loop | 🟢 | pharos-verification |
+| 上传/发布前扫描 skill | Pharos Skill Inspector static scan | 🟢/阻断 | scripts/skill_inspector.py |
 
 ### 沉淀与个性化（服务自己）
 | 意图 | 能力 | 档 | reference |

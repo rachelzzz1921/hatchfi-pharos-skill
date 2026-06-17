@@ -23,5 +23,11 @@ echo "== 6. 私钥泄露检查 =="
   --include='*.sh' --include='*.sol' --include='*.md' --include='*.json' 2>/dev/null && echo "✅ 无硬编码私钥"
 grep -q '^\.env$' .gitignore && echo "✅ .env 已被 .gitignore 忽略"
 
+echo "== 7. Pharos Skill Inspector（上传/发布前静态安全门）=="
+python3 scripts/skill_inspector.py . --format markdown --output docs/SKILL_SECURITY_REPORT.md --fail-on high
+python3 scripts/skill_inspector.py . --format json --output docs/SKILL_SECURITY_REPORT.json --fail-on high
+python3 scripts/skill_inspector.py . --format text --fail-on high
+
 echo ""
-echo "✅ 自检通过。部署: npm run preflight:pharos && npm run deploy:pharos && npm run smoke:pharos"
+echo "✅ 自检通过。发布前安全报告: docs/SKILL_SECURITY_REPORT.md"
+echo "部署: npm run preflight:pharos && npm run deploy:pharos && npm run smoke:pharos"

@@ -72,7 +72,7 @@ contract CompliantRWATokenTest is Test {
         // 验证 bob 后可转
         token.registerIdentity(bob, SG);
         vm.prank(alice);
-        token.transfer(bob, 10e18);
+        assertTrue(token.transfer(bob, 10e18));
         assertEq(token.balanceOf(bob), 10e18);
     }
 
@@ -95,11 +95,11 @@ contract CompliantRWATokenTest is Test {
 
         // 转给 bob 1e18 没问题
         vm.prank(alice);
-        token.transfer(bob, 1e18);
+        assertTrue(token.transfer(bob, 1e18));
 
         // alice 把剩余 999e18 转给 bob → bob 正好到上限 1000e18
         vm.prank(alice);
-        token.transfer(bob, 999e18);
+        assertTrue(token.transfer(bob, 999e18));
 
         // 再给 bob 转 1e18 会超过单人上限 → canTransfer 在 _update 内拦截
         token.mint(alice, 1e18);
@@ -141,7 +141,7 @@ contract CompliantRWATokenTest is Test {
 
         // alice 全部转给 bob → alice 归零移出、bob 计入，持有人数仍为 1
         vm.prank(alice);
-        token.transfer(bob, 100e18);
+        assertTrue(token.transfer(bob, 100e18));
         assertEq(token.holderCount(), 1);
         assertEq(token.balanceOf(alice), 0);
     }
@@ -160,7 +160,7 @@ contract CompliantRWATokenTest is Test {
 
         token.setAddressFrozen(alice, false);
         vm.prank(alice);
-        token.transfer(bob, 10e18);
+        assertTrue(token.transfer(bob, 10e18));
         assertEq(token.balanceOf(bob), 10e18);
     }
 
@@ -178,7 +178,7 @@ contract CompliantRWATokenTest is Test {
 
         // 转可用范围内 OK
         vm.prank(alice);
-        token.transfer(bob, 40e18);
+        assertTrue(token.transfer(bob, 40e18));
         assertEq(token.balanceOf(bob), 40e18);
     }
 
@@ -240,7 +240,7 @@ contract CompliantRWATokenTest is Test {
 
         // alice 转一半给 bob —— 转账时自动结算 alice 已得分红
         vm.prank(alice);
-        token.transfer(bob, 50e18);
+        assertTrue(token.transfer(bob, 50e18));
 
         // alice 之前的 1 PHRS 应已锁定，bob 此后才开始计分红
         assertEq(token.dividendOf(alice), 1 ether);
@@ -395,7 +395,7 @@ contract CompliantRWATokenTest is Test {
 
         token.unpause();
         vm.prank(alice);
-        token.transfer(bob, 10e18);
+        assertTrue(token.transfer(bob, 10e18));
         assertEq(token.balanceOf(bob), 10e18);
     }
 
