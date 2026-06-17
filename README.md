@@ -1,4 +1,10 @@
-# Compliant RWA Issuance Agent — Pharos Skill
+# HatchFi
+
+**Where compliant RWAs hatch into Agent Skills.**
+
+Pharos Skill-to-Agent package · live on Atlantic · Skill→Skill flywheel proven with `skills/MPF-asset/`
+
+> Technical name: Compliant RWA Issuance Agent · Brand kit: `BRAND.md`
 
 一个面向 **Pharos** 的合规 RWA（现实世界资产）发行 Skill。它把"发行一支受监管的链上资产"这件事，做成一条 AI agent 可以端到端驱动的流水线：
 
