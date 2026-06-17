@@ -1,7 +1,6 @@
 # Quickstart · 5 Minutes to Reproduce
 
-> **English pack**: `../submission-build/pharos-rwa-skill-en/QUICKSTART.md`  
-> **Already deployed on Atlantic**: MPF @ [`0xfef7519bebda6c47af49583dbc9e60801f8aa3de`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) · spawned skill `skills/MPF-asset/`
+> **Already deployed on Atlantic**: MPF @ [`0xfef7519bebda6c47af49583dbc9e60801f8aa3de`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) · spawned skill `../skills/MPF-asset/`
 
 ## 1. Local proof (no wallet needed)
 

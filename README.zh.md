@@ -8,7 +8,7 @@
 
 每孵化一支 RWA，就留下一个可复用 Skill。
 
-[![tests](https://img.shields.io/badge/Foundry-24_passed-3dd68c?style=flat-square)](./COMPLETED_VALIDATION.md)
+[![tests](https://img.shields.io/badge/Foundry-24_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
 [![live](https://img.shields.io/badge/Pharos_Atlantic-已部署-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
 [![flywheel](https://img.shields.io/badge/Skill产Skill-飞轮已实证-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
 [![standard](https://img.shields.io/badge/ERC--3643-风格-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
@@ -88,7 +88,7 @@ transfer / mint / forcedTransfer
 - **mint** → 身份 **+** 合规上限（一级发行同样受持有人/额度约束）
 - **forcedTransfer** → 监管路径；仅校验收款方已验证，绕过全局规则
 
-背后是 **24 项 Foundry 测试**（含 fuzz 不变量）+ [`SECURITY.md`](./SECURITY.md) 审计记录，已修复 burn 下溢、派息余数、冻结份额等边界问题。
+背后是 **24 项 Foundry 测试**（含 fuzz 不变量）+ [`SECURITY.md`](./docs/SECURITY.md) 审计记录，已修复 burn 下溢、派息余数、冻结份额等边界问题。
 
 ## 为 Agent 运营而设计
 
@@ -117,7 +117,7 @@ npm run smoke:pharos
 npm run spawn:asset               # → skills/MPF-asset/（飞轮落点）
 ```
 
-详细流程：[`QUICKSTART.md`](./QUICKSTART.md) · [`WORKED_EXAMPLE.md`](./WORKED_EXAMPLE.md) · [`VALIDATION_PLAN.md`](./VALIDATION_PLAN.md)
+详细流程：[`QUICKSTART.md`](./docs/QUICKSTART.md) · [`WORKED_EXAMPLE.md`](./docs/WORKED_EXAMPLE.md) · [`VALIDATION_PLAN.md`](./docs/VALIDATION_PLAN.md)
 
 ## 文档导航
 
@@ -125,11 +125,12 @@ npm run spawn:asset               # → skills/MPF-asset/（飞轮落点）
 |---|---|
 | [`SKILL.md`](./SKILL.md) | Agent 入口——能力索引、预检纪律、风险分档 |
 | [在线看板](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html) | 可视化看板，含 EN/中文 切换 |
-| [`COMPLETED_VALIDATION.md`](./COMPLETED_VALIDATION.md) | 本地 + 链上验证证据 |
-| [`DEPLOYMENT_RESULT.md`](./DEPLOYMENT_RESULT.md) | 部署 + smoke 记录 |
-| [`SECURITY.md`](./SECURITY.md) | 审计发现与修复 |
-| [`PHAROS_VISION.md`](./PHAROS_VISION.md) | RealFi / Agentic 愿景对齐 |
-| [`BRAND.md`](./BRAND.md) | HatchFi 品牌套件 |
+| [`docs/COMPLETED_VALIDATION.md`](./docs/COMPLETED_VALIDATION.md) | 本地 + 链上验证证据 |
+| [`DEPLOYMENT_RESULT.md`](./DEPLOYMENT_RESULT.md) | 部署 + smoke 记录（自动生成）|
+| [`docs/SECURITY.md`](./docs/SECURITY.md) | 审计发现与修复 |
+| [`docs/PHAROS_VISION.md`](./docs/PHAROS_VISION.md) | RealFi / Agentic 愿景对齐 |
+| [`docs/SUBMISSION.md`](./docs/SUBMISSION.md) | 黑客松提交说明 |
+| [`docs/BRAND.md`](./docs/BRAND.md) | HatchFi 品牌套件 |
 
 ## 仓库结构
 
@@ -137,10 +138,15 @@ npm run spawn:asset               # → skills/MPF-asset/（飞轮落点）
 SKILL.md                       Agent 入口：意图 → 能力 → 风险 → reference
 src/CompliantRWAToken.sol      ERC-3643 风格 RWA 代币（20 外部函数 / 12 事件 / 5 错误）
 test/CompliantRWAToken.t.sol   24 项测试（含 fuzz 不变量）
-references/                    7 份 cast/forge 操作指令
-script/ · scripts/             部署脚本 + preflight/smoke/verify/spawn 自动化
+script/Deploy.s.sol            Foundry 部署脚本
+references/                    7 份 cast/forge 操作指令（Agent 的 playbook）
+scripts/                       preflight / post-deploy / smoke / verify / spawn 自动化
 skills/MPF-asset/              ← 已 spawn 的资产 Skill（飞轮落点）
+assets/                        品牌 logo + 代币/网络注册表 + 合约快照
+deployments/pharos.json        链上部署记录（自动生成）
 state.schema.json              跨步骤 Agent 记忆 + 审计留痕 schema
+docs/                          叙事与提交文档（见上方表格）
+SUBMISSION_DASHBOARD.html      可视化看板，含 EN/中文 切换
 ```
 
 ---

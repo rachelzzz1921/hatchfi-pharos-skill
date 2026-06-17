@@ -8,7 +8,7 @@
 
 Every RWA you hatch leaves a reusable Skill behind.
 
-[![tests](https://img.shields.io/badge/Foundry-24_passed-3dd68c?style=flat-square)](./COMPLETED_VALIDATION.md)
+[![tests](https://img.shields.io/badge/Foundry-24_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
 [![live](https://img.shields.io/badge/Pharos_Atlantic-LIVE-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
 [![flywheel](https://img.shields.io/badge/Skill→Skill-flywheel_proven-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
@@ -88,7 +88,7 @@ transfer / mint / forcedTransfer
 - **mint** → identity **and** compliance caps (primary issuance respects holder/balance limits)
 - **forcedTransfer** → regulatory path; verified recipient only, bypasses global rules
 
-Backed by **24 Foundry tests** (including a fuzz invariant) and a [`SECURITY.md`](./SECURITY.md) audit trail with fixes for burn underflow, dividend dust, and frozen-token edge cases.
+Backed by **24 Foundry tests** (including a fuzz invariant) and a [`SECURITY.md`](./docs/SECURITY.md) audit trail with fixes for burn underflow, dividend dust, and frozen-token edge cases.
 
 ## Built to be operated by an agent
 
@@ -117,7 +117,7 @@ npm run smoke:pharos
 npm run spawn:asset               # → skills/MPF-asset/  (the flywheel)
 ```
 
-Detailed walkthroughs: [`QUICKSTART.md`](./QUICKSTART.md) · [`WORKED_EXAMPLE.md`](./WORKED_EXAMPLE.md) · [`VALIDATION_PLAN.md`](./VALIDATION_PLAN.md)
+Detailed walkthroughs: [`QUICKSTART.md`](./docs/QUICKSTART.md) · [`WORKED_EXAMPLE.md`](./docs/WORKED_EXAMPLE.md) · [`VALIDATION_PLAN.md`](./docs/VALIDATION_PLAN.md)
 
 ## Documentation
 
@@ -125,11 +125,12 @@ Detailed walkthroughs: [`QUICKSTART.md`](./QUICKSTART.md) · [`WORKED_EXAMPLE.md
 |---|---|
 | [`SKILL.md`](./SKILL.md) | Agent entry — capability index, pre-checks, risk tiers |
 | [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html) | Visual overview with EN/中文 toggle |
-| [`COMPLETED_VALIDATION.md`](./COMPLETED_VALIDATION.md) | Local + on-chain validation evidence |
-| [`DEPLOYMENT_RESULT.md`](./DEPLOYMENT_RESULT.md) | Deploy + smoke record |
-| [`SECURITY.md`](./SECURITY.md) | Audit findings & fixes |
-| [`PHAROS_VISION.md`](./PHAROS_VISION.md) | RealFi / Agentic vision alignment |
-| [`BRAND.md`](./BRAND.md) | HatchFi brand kit |
+| [`docs/COMPLETED_VALIDATION.md`](./docs/COMPLETED_VALIDATION.md) | Local + on-chain validation evidence |
+| [`DEPLOYMENT_RESULT.md`](./DEPLOYMENT_RESULT.md) | Deploy + smoke record (generated) |
+| [`docs/SECURITY.md`](./docs/SECURITY.md) | Audit findings & fixes |
+| [`docs/PHAROS_VISION.md`](./docs/PHAROS_VISION.md) | RealFi / Agentic vision alignment |
+| [`docs/SUBMISSION.md`](./docs/SUBMISSION.md) | Hackathon submission write-up |
+| [`docs/BRAND.md`](./docs/BRAND.md) | HatchFi brand kit |
 
 ## Repository layout
 
@@ -137,10 +138,15 @@ Detailed walkthroughs: [`QUICKSTART.md`](./QUICKSTART.md) · [`WORKED_EXAMPLE.md
 SKILL.md                       Agent entry: intent → capability → risk → reference
 src/CompliantRWAToken.sol      ERC-3643-style RWA token (20 external fns / 12 events / 5 errors)
 test/CompliantRWAToken.t.sol   24 tests (incl. fuzz invariant)
-references/                    7 cast/forge command references
-script/ · scripts/             deploy script + preflight/smoke/verify/spawn automation
+script/Deploy.s.sol            Foundry deploy script
+references/                    7 cast/forge command references (the agent's playbooks)
+scripts/                       preflight / post-deploy / smoke / verify / spawn automation
 skills/MPF-asset/              ← spawned asset Skill (the flywheel artifact)
+assets/                        brand logo + token/network registries + contract snapshot
+deployments/pharos.json        on-chain deployment record (generated)
 state.schema.json              cross-step agent memory + audit trail schema
+docs/                          narrative & submission docs (see table above)
+SUBMISSION_DASHBOARD.html      visual dashboard with EN/中文 toggle
 ```
 
 ---

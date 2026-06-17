@@ -1,7 +1,5 @@
 # Pharos Vision Alignment · RealFi · Agentic · Composable
 
-> **English pack**: `../submission-build/pharos-rwa-skill-en/PHAROS_VISION.md`
-
 ## Why this skill exists on Pharos
 
 Pharos positions itself at the intersection of **RealFi** (real-world asset value flows), **protocol-native compliance**, and **agentic on-chain infrastructure**. Generic token minting does not satisfy regulated RWA issuance — agents need diligence gates, identity-bound transfers, lifecycle controls, and auditable yield distribution.

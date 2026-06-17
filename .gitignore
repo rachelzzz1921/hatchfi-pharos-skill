@@ -22,6 +22,6 @@ skills/*
 # Python
 scripts/__pycache__/
 .DS_Store
-DECISIONS.md
-CLAUDE_CODE_PROMPT.md
-DEMO.md
+
+# Local dev notes (planning, internal prompts, demo scripts) — never published
+.dev/
