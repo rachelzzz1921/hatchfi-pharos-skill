@@ -1,85 +1,118 @@
-# HatchFi
+<div align="center">
+
+# HatchFi · 链孵
 
 **Where compliant RWAs hatch into Agent Skills.**
+**把合规 RWA 孵化成可复用 Agent Skill。**
 
-Pharos Skill-to-Agent package · live on Atlantic · Skill→Skill flywheel proven with `skills/MPF-asset/`
+Pharos Skill-to-Agent package · live on Atlantic · Skill→Skill flywheel
 
-> Technical name: Compliant RWA Issuance Agent · Brand kit: `BRAND.md`
+[![tests](https://img.shields.io/badge/Foundry_tests-24_passed-3dd68c)](./COMPLETED_VALIDATION.md)
+[![network](https://img.shields.io/badge/Pharos_Atlantic-chainId_688689-2dd4bf)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
+[![status](https://img.shields.io/badge/status-deployed_%26_smoke_passed-c9a227)](./DEPLOYMENT_RESULT.md)
+[![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e)](./src/CompliantRWAToken.sol)
 
-一个面向 **Pharos** 的合规 RWA（现实世界资产）发行 Skill。它把"发行一支受监管的链上资产"这件事，做成一条 AI agent 可以端到端驱动的流水线：
+**📊 [Submission Dashboard (rendered)](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)**  ·  [Markdown 版](./SUBMISSION_DASHBOARD.md)
+
+</div>
+
+---
+
+HatchFi is an agent-native issuance layer for compliant RealFi on Pharos. It turns regulated RWA launch operations into verifiable Agent Skills, then turns **each issued asset into a reusable capability** for the next agent.
+
+> 一个面向 **Pharos** 的合规 RWA 发行 Skill：把"发行一支受监管的链上资产"做成一条 AI agent 可端到端驱动的流水线。
 
 ```
-① 尽调闸门  →  ② 合规发行（ERC-3643）  →  ③ 自我繁殖
-  只读风险画像     发行/转账/冻结/派息全生命周期    产出该资产专属可复用 skill
+① Diligence Gate  →  ② Compliant Issuance (ERC-3643)  →  ③ Skill Hatch
+   read-only risk        deploy / transfer / freeze / dividend     spawn reusable asset Skill
+   尽调闸门               合规发行全生命周期                          产出资产专属可复用 Skill
 ```
 
-## 解决什么真实问题
+## ⛓ Live on Pharos Atlantic · 链上证据
 
-RWA 上链的核心障碍不是"发个代币"，而是**合规**：只有通过 KYC 的合格投资者才能持有、转账要受监管规则约束、要能冻结/强制划转/追溯。标准 ERC-20 做不到这些。本 skill 基于 **ERC-3643（T-REX）** 标准实现"默认禁止转账、每笔转移强制通过身份验证 + 合规规则两道检查"，并配套发行前尽调与收益派息——正是 Pharos「RealFi / 协议层原生合规」愿景所需的底层能力。
+| Item | Value |
+|---|---|
+| Asset | Manhattan Property Fund · `MPF` |
+| Contract | [`0xfef7519bebda6c47af49583dbc9e60801f8aa3de`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) |
+| Deploy tx | [`0x71ebe5…17e4d`](https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d) |
+| Smoke mint tx | [`0x7ece3b…b5541`](https://atlantic.pharosscan.xyz/tx/0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541) |
+| Network | Pharos Atlantic Testnet · chainId `688689` |
+| Spawned Skill | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) |
 
-## 三个特点
+## What problem it solves · 解决什么
 
-- **合规优先**：ERC-3643 标准的身份注册、受限转账、冻结、强制转移、钱包恢复，函数与事件命名严格对齐标准。
-- **可信尽调闸门**：发行前对相关方做只读链上尽调，红黄绿评级**每条结论可追溯到具体 cast 命令与返回值**；评级为 RED 时拒绝发行。
-- **自我繁殖飞轮（已实证）**：MPF 已在 Atlantic 部署（[`0xfef7…Aa3DE`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)），并 spawn 出 `skills/MPF-asset/`——其他 agent 可直接复用，无需重新部署。
+RWA issuance is not just "deploying a token." A compliant real-world asset needs investor eligibility, restricted transfers, lifecycle controls, auditable yield, and pre-issuance diligence — none of which standard ERC-20 provides.
 
-## 怎么跑
+> RWA 上链的核心障碍不是"发个代币"，而是**合规**：只有合格投资者能持有、转账受监管规则约束、要能冻结/强制划转/追溯。HatchFi 基于 **ERC-3643（T-REX）** 标准实现"默认禁止转账、每笔转移强制通过身份验证 + 合规规则两道检查"，并配套发行前尽调与收益派息。
 
-完整验证流程见 `VALIDATION_PLAN.md`。最小命令如下：
+## Three highlights · 三个特点
+
+- **Compliance-first** · ERC-3643 identity registry, restricted transfer, freeze, forced transfer, wallet recovery — names aligned with the standard.
+- **Evidence-backed diligence** · every GREEN/YELLOW/RED rating traces to a specific read-only `cast` call; RED blocks issuance.
+- **Self-spawning flywheel (proven)** · every issued asset auto-generates `skills/<SYMBOL>-asset/` with the contract address and command set baked in — other agents reuse it without redeploying.
+
+## Quickstart · 怎么跑
 
 ```bash
-# 1. 装 Foundry
+# 1. Foundry
 curl -L https://foundry.paradigm.xyz | bash && foundryup
-
-# 2. 装依赖
 forge install OpenZeppelin/openzeppelin-contracts@v5.1.0
 forge install foundry-rs/forge-std
 
-# 3. 自检（编译 + 测试 + checklist）
+# 2. Build + test + self-check
 npm run build
-npm run test
-npm run check
+npm run test     # 24 passed
+npm run check    # no hardcoded keys
 
-# 4. 部署到 Pharos atlantic 测试网（私钥走环境变量，绝不入库）
+# 3. Deploy to Atlantic (key via env, never committed)
 export PRIVATE_KEY=0x...
 export PHAROS_RPC_URL=https://atlantic.dplabs-internal.com
 npm run preflight:pharos
 npm run deploy:pharos
 npm run smoke:pharos
-npm run spawn:asset   # → skills/MPF-asset/（飞轮落点）
+npm run spawn:asset   # → skills/MPF-asset/
 ```
 
-**Atlantic 链上证据**：MPF @ `0xfef7519bebda6c47af49583dbc9e60801f8aa3de` · 24 Foundry tests passed · 详见 `COMPLETED_VALIDATION.md` · `DEPLOYMENT_RESULT.md`
+More: [`QUICKSTART.md`](./QUICKSTART.md) · [`WORKED_EXAMPLE.md`](./WORKED_EXAMPLE.md) · [`VALIDATION_PLAN.md`](./VALIDATION_PLAN.md)
 
-网络：Pharos atlantic 测试网（RPC `https://atlantic.dplabs-internal.com`，chainId `688689`）。
+## Documentation · 文档导航
 
-## 结构
+| Doc | 内容 |
+|---|---|
+| [`SKILL.md`](./SKILL.md) | Agent entry — capability index, pre-checks, risk tiers |
+| [`SUBMISSION_DASHBOARD.html`](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html) | 可视化看板（渲染版） |
+| [`COMPLETED_VALIDATION.md`](./COMPLETED_VALIDATION.md) | Local + on-chain validation evidence |
+| [`DEPLOYMENT_RESULT.md`](./DEPLOYMENT_RESULT.md) | Deploy + smoke record |
+| [`SECURITY.md`](./SECURITY.md) | Audit findings & fixes |
+| [`PHAROS_VISION.md`](./PHAROS_VISION.md) | RealFi / Agentic vision alignment |
+| [`BRAND.md`](./BRAND.md) | HatchFi brand kit |
+
+## Structure · 结构
 
 ```
-SKILL.md                 # 能力索引内核（agent 入口）：意图 → 能力 → 风险档 → reference
-state.schema.json        # agent 跨步骤状态记忆 schema（尽调→发行→派息全流程 + 审计留痕）
-src/CompliantRWAToken.sol # ERC-3643 合规 RWA 代币（20 外部函数 / 12 事件 / 5 错误）
-references/
-  onchain-diligence.md   # 尽调闸门（可验证 evidence + 写死评级规则）
-  rwa-issuance.md        # 发行主干（风险三档 + 确认卡片 + 操作后断言）
-  rwa-dividend.md        # 收益派息（按比例，gas 安全）
-  spawn-asset-skill.md   # 自我繁殖（确定性模板填充）
-  pharos-deploy-runbook.md # Pharos 部署/冒烟 runbook
-  pharos-verification.md # 分阶段验证循环
-script/Deploy.s.sol      # 部署脚本
-scripts/                 # preflight / post-deploy / smoke / verify
-test/CompliantRWAToken.t.sol # 22 个测试（含 fuzz，forge test 验证）
-check.sh / DEMO.md       # 自检脚本 / 演示大纲
-SUBMISSION.md            # 比赛提交摘要：亮点、文件、demo narrative
-VALIDATION_PLAN.md       # 本地验证、Pharos 部署、冒烟测试与自我繁殖计划
+SKILL.md                       Agent entry: intent → capability → risk tier → reference
+state.schema.json              Cross-step state memory (diligence → issue → dividend + audit)
+src/CompliantRWAToken.sol      ERC-3643-style RWA token (20 external fns / 12 events / 5 errors)
+references/                    7 cast/forge command references
+script/Deploy.s.sol            Deploy script
+scripts/                       preflight / post-deploy / smoke / verify / spawn
+test/CompliantRWAToken.t.sol   24 tests (incl. fuzz)
+skills/MPF-asset/              Spawned asset Skill (flywheel artifact)
 ```
 
-## 操作风险三档
+## Risk tiers · 操作风险三档
 
-| 档 | 操作 | agent 行为 |
+| Tier | Operations | Agent behavior |
 |---|---|---|
-| 🟢 低 | 所有 view / 尽调 / 繁殖 | 全自动 |
-| 🟡 中 | 注册 / 冻结 / 规则调整 / 授权 | 自动 + 审计留痕 |
-| 🔴 高 | deploy / mint / burn / 派息 / 强制划转 / 钱包恢复 | 出确认卡片，人 confirm 才执行 |
+| 🟢 Low | all views / diligence / spawn | fully automatic |
+| 🟡 Medium | register / freeze / rule changes / agents | auto + audit trail |
+| 🔴 High | deploy / mint / burn / dividend / forcedTransfer / recovery | confirm card required |
 
-> Phase 2 展望：本 skill 本身即一个完整 agent 的内核；其自我繁殖产出的资产专属 skill，可作为 Agent Arena 中其他 agent 的可复用能力单元。
+---
+
+<div align="center">
+
+Built by **Zhiwei Chen (陈知维)** · researcher at The Chinese University of Hong Kong
+Pharos Skill-to-Agent Hackathon · 2026
+
+</div>
