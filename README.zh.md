@@ -11,6 +11,7 @@
 [![tests](https://img.shields.io/badge/Foundry-24_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
 [![eval](https://img.shields.io/badge/skill_eval-52%2F52-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
 [![live](https://img.shields.io/badge/Pharos_Atlantic_Testnet-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
+[![oracle](https://img.shields.io/badge/Mock_OFAC_预言机-已部署-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400)
 [![skill](https://img.shields.io/badge/hatched_Skill-private-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
 [![inspector](https://img.shields.io/badge/Skill_Inspector-8%2F100_LOW-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
@@ -31,14 +32,26 @@ HatchFi 是面向 Pharos 合规 RealFi 的 **Agent 原生发行层**。它将一
 
 ```
 ①  尽调闸门   →   ②  合规发行   →   ③  Skill 孵化（归你）
-   只读风险画像       ERC-3643 代币，已部署     spawn skills/<SYMBOL>-asset/
-   绿/黄/红           运行于 Atlantic            默认私有 · 先服务你
-   红档拒绝发行       身份·合规·冻结             对话中持续精炼
+   三阶段 evidence      ERC-3643 代币，已部署     spawn skills/<SYMBOL>-asset/
+   制裁+链上+链下       运行于 Atlantic            默认私有 · 4 份尽调 ref
+   绿/黄/红 → 红档拒绝  身份·合规·冻结             对话中持续精炼
 ```
 
 它扩展官方 [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide)——保留 `assets/networks.json`、写操作预检与 `pharos-base-ops.md`，并在此基础上增加 RWA 专有 playbook、spawn/refine 流水线、合约能力面生成器、eval 套件与静态安全门。
 
 > 扩展官方 [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide)。提交概览与验证证据：[Live Dashboard](./SUBMISSION_DASHBOARD.html) · [`docs/SUBMISSION.md`](./docs/SUBMISSION.md)。
+
+## 项目进度
+
+| 里程碑 | 状态 | 证据 |
+|---|---|---|
+| 核心合约 + Atlantic 部署 | 已完成 | MPF @ [`0xfef7…Aa3DE`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) · smoke mint receipt `status==1` |
+| 三阶段尽调流水线 | 已完成 | 4 份 playbook · [`docs/diligence/INTEGRATION.md`](./docs/diligence/INTEGRATION.md) |
+| OFAC denylist 同步 | 已完成 | 93 个 ETH 地址 · `npm run diligence:sync` · 快照 2026-06-18 |
+| Mock OFAC 预言机（Atlantic） | 已完成 | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · 演示 RED @ `0x7F36…be1B` |
+| Skill eval 套件 | 已完成 | **52/52** · `npm run eval:skill` |
+| MPF 资产 Skill spawn | 已完成 | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) v5 · 子 Skill 含 4 份尽调 ref |
+| GitHub main | 已完成 | [`hatchfi-pharos-skill`](https://github.com/rachelzzz1921/hatchfi-pharos-skill) · commit `ed19e9e` |
 
 ---
 
@@ -129,9 +142,9 @@ HatchFi 通过 `npm` 脚本封装 Foundry、`cast` 与 Agent 工具链，按用�
 
 ```
 Phase A  尽调闸门     →  Phase B  合规发行      →  Phase C  生命周期运营    →  Phase D  Skill 孵化       →  Phase E  安全门
-         只读 cast            部署 ERC-3643 代币         白名单 / 冻结 / mint        spawn skills/MPF-asset/      静态 inspector
-         绿/黄/红             身份·合规·冻结             派息 / 恢复 / 审计          refine · version · rollback prompt/secret/Web3
-         红档拒绝发行         24 测试 + 审计留痕         cast logs（12 events）      PERMISSIONS.md · 私有       critical/high 阻断
+         三阶段 evidence        部署 ERC-3643 代币         白名单 / 冻结 / mint        spawn skills/MPF-asset/      静态 inspector
+         制裁+链上+链下         身份·合规·冻结             派息 / 恢复 / 审计          4 份尽调 ref · 私有          prompt/secret/Web3
+         绿/黄/红 · 红档拒绝    24 测试 + 审计留痕         cast logs（12 events）      refine · version · rollback critical/high 阻断
 ```
 
 **10 份 Agent playbook**（`references/`）：`onchain-diligence` · `offchain-diligence` · `sanctions-screening` · `compliance-knowledge` · `rwa-issuance` · `rwa-dividend` · `spawn-asset-skill` · `pharos-base-ops` · `pharos-deploy-runbook` · `pharos-verification`
@@ -263,8 +276,9 @@ HatchFi **已部署在 Pharos Atlantic 测试网并通过 smoke 测试**，下�
 | **合约（MPF）** | [`0xfef7519bebda6c47af49583dbc9e60801f8aa3de`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) |
 | **Deploy tx** | [`0x71ebe5…17e4d`](https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d) |
 | **Smoke mint tx** | [`0x7ece3b…b5541`](https://atlantic.pharosscan.xyz/tx/0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541) |
+| **Mock OFAC 预言机** | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · 部署 [`0x7ae012…a8fa`](https://atlantic.pharosscan.xyz/tx/0x7ae012f2ac8d388faa808005145054e9db338157a20be2c6f091eba5fa3fa8fa) |
 | **网络** | Pharos Atlantic 测试网 · chainId `688689` |
-| **Spawned Skill** | [`skills/MPF-asset/SKILL.md`](./skills/MPF-asset/SKILL.md) —— 子 Skill，`TOKEN=0xfef7…` 已写死 |
+| **Spawned Skill** | [`skills/MPF-asset/SKILL.md`](./skills/MPF-asset/SKILL.md) —— 子 Skill v5 · `TOKEN=0xfef7…` · 4 份尽调 ref |
 
 Smoke 路径：若 deployer 已通过验证则跳过 `registerIdentity`；下方记录的是 **mint + receipt 断言** 的执行路径。
 
@@ -274,7 +288,7 @@ Smoke 路径：若 deployer 已通过验证则跳过 `registerIdentity`；下方
 
 ## 包含内容
 
-- Atlantic 测试网上已部署的 ERC-3643 风格 RWA 合约，带可阻断发行的只读尽调闸门
+- Atlantic 测试网上已部署的 ERC-3643 风格 RWA 合约，带**三阶段尽调闸门**（制裁 + 链上 + 链下），可阻断发行
 - 扩展官方 Pharos Skill Engine 的完整 Agent Skill（`SKILL.md` + **10 份** references）
 - 确定性 spawn → refine → version 流水线，为发行人留下可进化的私有运营 Skill
 - 与 Solidity 源保持同步的自动生成合约能力面 reference
@@ -307,6 +321,9 @@ src/CompliantRWAToken.sol      ERC-3643 风格 RWA 代币
 test/CompliantRWAToken.t.sol   24 项测试（含 fuzz 不变量）
 script/Deploy.s.sol            Foundry 部署脚本
 references/                    10 份 cast/forge playbook（含 4 份尽调）
+docs/diligence/              集成说明 · OFAC 同步 · Claude/Gemini 来源
+assets/knowledge/              OFAC denylist 快照 · 红旗 · 制裁样例
+deployments/mock_ofac_atlantic.json  Mock OFAC 预言机记录（生成）
 references/generated/          自动生成的合约能力面（refs:generate）
 eval/skill_behavior_cases.json eval 用例定义
 scripts/                       preflight / smoke / spawn / refine / refs / eval / inspector

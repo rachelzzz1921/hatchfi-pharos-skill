@@ -11,6 +11,7 @@ Issue a compliant RWA on Pharos with an AI agent — and keep a private operatin
 [![tests](https://img.shields.io/badge/Foundry-24_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
 [![eval](https://img.shields.io/badge/skill_eval-52%2F52-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
 [![live](https://img.shields.io/badge/Pharos_Atlantic_Testnet-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
+[![oracle](https://img.shields.io/badge/Mock_OFAC_Oracle-live-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400)
 [![skill](https://img.shields.io/badge/hatched_Skill-private-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
 [![inspector](https://img.shields.io/badge/Skill_Inspector-8%2F100_LOW-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
@@ -31,14 +32,27 @@ When an asset is issued, HatchFi also **spawns a private operating Skill for tha
 
 ```
 ①  Diligence Gate   →   ②  Compliant Issuance   →   ③  Skill Hatch (yours)
-   read-only risk          ERC-3643 token, deployed     spawn skills/<SYMBOL>-asset/
-   GREEN/YELLOW/RED         on Pharos Atlantic           private-by-default · serves you
-   RED blocks issuance      identity·compliance·freeze   refine via conversation
+   3-stage evidence        ERC-3643 token, deployed     spawn skills/<SYMBOL>-asset/
+   sanctions+onchain+      on Pharos Atlantic           private-by-default · serves you
+   offchain → GREEN/       identity·compliance·freeze   4 diligence refs · refine
+   YELLOW/RED · RED blocks issuance
 ```
 
 It extends the official [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide) — keeping `assets/networks.json`, write pre-checks, and `pharos-base-ops.md`, and adding RWA-specific playbooks, a spawn/refine pipeline, a contract-surface generator, an eval harness, and a static security gate on top.
 
 > Extends the official [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide). Submission overview and verification evidence: [Live Dashboard](./SUBMISSION_DASHBOARD.html) · [`docs/SUBMISSION.md`](./docs/SUBMISSION.md).
+
+## Project progress
+
+| Milestone | Status | Evidence |
+|---|---|---|
+| Core contract + Atlantic deploy | Done | MPF @ [`0xfef7…Aa3DE`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) · smoke mint receipt `status==1` |
+| Three-stage diligence pipeline | Done | 4 playbooks · [`docs/diligence/INTEGRATION.md`](./docs/diligence/INTEGRATION.md) |
+| OFAC denylist sync | Done | 93 ETH addresses · `npm run diligence:sync` · snapshot 2026-06-18 |
+| Mock OFAC oracle (Atlantic) | Done | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · demo RED @ `0x7F36…be1B` |
+| Skill eval harness | Done | **52/52** · `npm run eval:skill` |
+| MPF asset Skill spawn | Done | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) v5 · 4 diligence refs per child |
+| GitHub main | Done | [`hatchfi-pharos-skill`](https://github.com/rachelzzz1921/hatchfi-pharos-skill) · commit `ed19e9e` |
 
 ---
 
@@ -137,9 +151,10 @@ HatchFi is operated through `npm` scripts that wrap Foundry, `cast`, and the age
 
 ```
 Phase A  Diligence Gate     →  Phase B  Compliant Issuance  →  Phase C  Lifecycle Ops     →  Phase D  Skill Hatch        →  Phase E  Security Gate
-         read-only cast            deploy ERC-3643 token            whitelist / freeze / mint     spawn skills/MPF-asset/     static-only inspector
-         GREEN/YELLOW/RED          identity·compliance·freeze       dividends / recovery / audit  refine · version · rollback prompt/secret/Web3/Solidity
-         RED blocks issuance       24 tests + audit trail           cast logs (12 events)         PERMISSIONS.md · private    block critical/high
+         3-stage evidence          deploy ERC-3643 token            whitelist / freeze / mint     spawn skills/MPF-asset/     static-only inspector
+         sanctions+onchain+        identity·compliance·freeze       dividends / recovery / audit  4 diligence refs · private  prompt/secret/Web3/Solidity
+         offchain → GREEN/         24 tests + audit trail           cast logs (12 events)         refine · version · rollback block critical/high
+         YELLOW/RED · RED blocks
 ```
 
 **10 agent playbooks** in `references/`: `onchain-diligence` · `offchain-diligence` · `sanctions-screening` · `compliance-knowledge` · `rwa-issuance` · `rwa-dividend` · `spawn-asset-skill` · `pharos-base-ops` · `pharos-deploy-runbook` · `pharos-verification`
@@ -271,8 +286,9 @@ HatchFi is deployed and smoke-tested on **Pharos Atlantic Testnet**.
 | **Contract (MPF)** | [`0xfef7519bebda6c47af49583dbc9e60801f8aa3de`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) |
 | **Deploy tx** | [`0x71ebe5…17e4d`](https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d) |
 | **Smoke mint tx** | [`0x7ece3b…b5541`](https://atlantic.pharosscan.xyz/tx/0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541) |
+| **Mock OFAC oracle** | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · deploy [`0x7ae012…a8fa`](https://atlantic.pharosscan.xyz/tx/0x7ae012f2ac8d388faa808005145054e9db338157a20be2c6f091eba5fa3fa8fa) |
 | **Network** | Pharos Atlantic Testnet · chainId `688689` |
-| **Spawned Skill** | [`skills/MPF-asset/SKILL.md`](./skills/MPF-asset/SKILL.md) — child skill with `TOKEN=0xfef7…` baked in |
+| **Spawned Skill** | [`skills/MPF-asset/SKILL.md`](./skills/MPF-asset/SKILL.md) — child skill v5 · `TOKEN=0xfef7…` · 4 diligence refs |
 
 Smoke path: `registerIdentity` is skipped when the deployer is already verified; **mint + receipt assert** is the executed write path recorded below.
 
@@ -286,7 +302,7 @@ Anyone can verify independently in ~2 minutes: `git clone` → `npm run build &&
 - A full agent Skill (`SKILL.md` + **10 references**) that extends the official Pharos Skill Engine
 - A deterministic spawn → refine → version pipeline that leaves the issuer a private, evolving operating Skill
 - An auto-generated contract-surface reference kept in sync with the Solidity source
-- A 50-check eval harness and a static Skill Inspector security gate
+- A 52-check eval harness and a static Skill Inspector security gate
 - 24 Foundry tests, a security review with all findings addressed, and data sovereignty with opt-in sharing
 
 ---
@@ -314,7 +330,10 @@ SKILL.md                       Agent entry: intent → capability → risk → r
 src/CompliantRWAToken.sol      ERC-3643-style RWA token
 test/CompliantRWAToken.t.sol   24 tests (incl. fuzz invariant)
 script/Deploy.s.sol            Foundry deploy script
-references/                    7 cast/forge command playbooks for the agent
+references/                    10 cast/forge playbooks (incl. 4 diligence)
+docs/diligence/              integration notes · OFAC sync · Claude/Gemini sources
+assets/knowledge/              OFAC denylist snapshot · red flags · sanctions samples
+deployments/mock_ofac_atlantic.json  Mock OFAC oracle record (generated)
 references/generated/          auto-generated contract surface (refs:generate)
 eval/skill_behavior_cases.json eval harness case definitions
 scripts/                       preflight / smoke / verify / spawn / refine / refs / eval / inspector

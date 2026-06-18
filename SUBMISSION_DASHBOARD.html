@@ -272,8 +272,9 @@
     </p>
     <div class="badges">
       <span class="badge ok">24 Foundry tests</span>
-      <span class="badge ok"><span class="en">skill eval 50/50</span><span class="zh">skill eval 50/50</span></span>
+      <span class="badge ok"><span class="en">skill eval 52/52</span><span class="zh">skill eval 52/52</span></span>
       <span class="badge live"><span class="en">Atlantic testnet</span><span class="zh">Atlantic 测试网</span></span>
+      <span class="badge live"><span class="en">Mock OFAC oracle</span><span class="zh">Mock OFAC 预言机</span></span>
       <span class="badge gold"><span class="en">private Skill · refines</span><span class="zh">私有 Skill · 可精炼</span></span>
       <span class="badge">ERC-3643 · chainId 688689</span>
       <span class="badge ok"><span class="en">Inspector 8/100 LOW</span><span class="zh">安全扫描 8/100 LOW</span></span>
@@ -290,6 +291,7 @@
       <a class="nav-brand" href="#top">HatchFi</a>
       <span class="nav-jump"><span class="en">Jump to</span><span class="zh">跳转</span></span>
       <div class="nav-links" role="navigation">
+        <a href="#progress" data-section="progress"><span class="en">Progress</span><span class="zh">进度</span></a>
         <a href="#live" data-section="live"><span class="en">Live</span><span class="zh">链上</span></a>
         <a href="#ecosystem" data-section="ecosystem"><span class="en">Ecosystem</span><span class="zh">生态</span></a>
         <a href="#compliance" data-section="compliance"><span class="en">Compliance</span><span class="zh">合规</span></a>
@@ -459,12 +461,39 @@ evidence   offchain → state         smoke      freeze triple gate       recove
       <div class="card">
         <div class="step"><span class="en">CHILD SKILL · LIVE</span><span class="zh">子 SKILL · 已落地</span></div>
         <h3><a class="ref" href="skills/MPF-asset/SKILL.md" style="font-size:0.95rem;">skills/MPF-asset/</a></h3>
-        <p><span class="en">Manhattan Property Fund · <code>TOKEN=0xfef7…Aa3DE</code> · 3 bound references · spawned &amp; operable today.</span><span class="zh">Manhattan Property Fund · <code>TOKEN=0xfef7…Aa3DE</code> · 3 份绑定 reference · 已 spawn、今日可运营。</span></p>
+        <p><span class="en">Manhattan Property Fund · <code>TOKEN=0xfef7…Aa3DE</code> · 4 diligence refs · spawned v5 &amp; operable today.</span><span class="zh">Manhattan Property Fund · <code>TOKEN=0xfef7…Aa3DE</code> · 4 份尽调 reference · 已 spawn v5、今日可运营。</span></p>
       </div>
       <div class="card">
         <div class="step"><span class="en">NEXT RWA</span><span class="zh">下一支 RWA</span></div>
         <h3><code>skills/&lt;NEXT&gt;-asset/</code></h3>
         <p><span class="en">Same spawn pipeline — deterministic template fill from <code>state.asset</code>, zero LLM hallucination.</span><span class="zh">同一 spawn 流水线——从 <code>state.asset</code> 确定性模板填充，零 LLM 幻觉。</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROGRESS -->
+  <section id="progress">
+    <div class="kicker"><span class="en">Project progress</span><span class="zh">项目进度</span></div>
+    <h2><span class="en">Where HatchFi stands today</span><span class="zh">HatchFi 当前进度</span></h2>
+    <p class="lead">
+      <span class="en">Core issuance is live on Atlantic. Round 7 expanded diligence from a single read-only gate into a <strong>three-stage pipeline</strong> (sanctions · on-chain · off-chain), synced OFAC data, deployed a Mock oracle, respawned MPF v5, and pushed everything to GitHub.</span>
+      <span class="zh">核心发行已在 Atlantic 落地。第 7 轮将尽调从单一只读闸门扩展为<strong>三阶段流水线</strong>（制裁 · 链上 · 链下），同步 OFAC 数据、部署 Mock 预言机、重新 spawn MPF v5，并推送至 GitHub。</span>
+    </p>
+    <div class="timeline">
+      <div class="item">
+        <div class="t">Rounds 1–6 · <span class="en">foundation</span><span class="zh">基础</span></div>
+        <h4><span class="en">Contract · deploy · smoke · spawn · eval · inspector</span><span class="zh">合约 · 部署 · smoke · spawn · eval · inspector</span></h4>
+        <p><span class="en">ERC-3643-style <code>CompliantRWAToken</code> · MPF @ Atlantic · 24 Foundry tests · Skill Inspector 8/100 LOW · private <code>skills/MPF-asset/</code>.</span><span class="zh">ERC-3643 风格 <code>CompliantRWAToken</code> · MPF @ Atlantic · 24 项 Foundry 测试 · Skill Inspector 8/100 LOW · 私有 <code>skills/MPF-asset/</code>。</span></p>
+      </div>
+      <div class="item">
+        <div class="t">Round 7 · <span class="en">diligence expansion</span><span class="zh">尽调扩展</span></div>
+        <h4><span class="en">4 playbooks · OFAC sync · Mock oracle · spawn v5 · 52/52 eval</span><span class="zh">4 份 playbook · OFAC 同步 · Mock 预言机 · spawn v5 · 52/52 eval</span></h4>
+        <p><span class="en"><code>onchain-diligence</code> · <code>offchain-diligence</code> · <code>sanctions-screening</code> · <code>compliance-knowledge</code> · <a class="ref" href="docs/diligence/INTEGRATION.md">INTEGRATION.md</a> · 93-address OFAC snapshot · <a class="ref" href="deployments/mock_ofac_atlantic.json">MockOFACRegistry</a> @ <a class="ref" href="https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400" target="_blank">0x4FD3…F400</a>.</span><span class="zh"><code>onchain-diligence</code> · <code>offchain-diligence</code> · <code>sanctions-screening</code> · <code>compliance-knowledge</code> · <a class="ref" href="docs/diligence/INTEGRATION.md">INTEGRATION.md</a> · 93 地址 OFAC 快照 · <a class="ref" href="deployments/mock_ofac_atlantic.json">MockOFACRegistry</a> @ <a class="ref" href="https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400" target="_blank">0x4FD3…F400</a>。</span></p>
+      </div>
+      <div class="item">
+        <div class="t"><span class="en">Shipped</span><span class="zh">已发布</span></div>
+        <h4><span class="en">GitHub main · commit ed19e9e</span><span class="zh">GitHub main · commit ed19e9e</span></h4>
+        <p><a class="ref" href="https://github.com/rachelzzz1921/hatchfi-pharos-skill" target="_blank">github.com/rachelzzz1921/hatchfi-pharos-skill</a></p>
       </div>
     </div>
   </section>
@@ -482,6 +511,7 @@ evidence   offchain → state         smoke      freeze triple gate       recove
         <tr><td class="k"><span class="en">Contract (MPF)</span><span class="zh">合约（MPF）</span></td><td><a class="ref" href="https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de" target="_blank">0xfef7519bebda6c47af49583dbc9e60801f8aa3de</a></td></tr>
         <tr><td class="k">Deploy tx</td><td><a class="ref" href="https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d" target="_blank">0x71ebe5…17e4d</a></td></tr>
         <tr><td class="k">Smoke mint tx</td><td><a class="ref" href="https://atlantic.pharosscan.xyz/tx/0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541" target="_blank">0x7ece3b…b5541</a></td></tr>
+        <tr><td class="k"><span class="en">Mock OFAC oracle</span><span class="zh">Mock OFAC 预言机</span></td><td><a class="ref" href="https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400" target="_blank">0x4FD3…F400</a> · <a class="ref" href="https://atlantic.pharosscan.xyz/tx/0x7ae012f2ac8d388faa808005145054e9db338157a20be2c6f091eba5fa3fa8fa" target="_blank">deploy tx</a> · <span class="en">demo RED</span><span class="zh">演示 RED</span> <code>0x7F36…be1B</code></td></tr>
         <tr><td class="k"><span class="en">Network</span><span class="zh">网络</span></td><td>Pharos Atlantic Testnet · chainId 688689</td></tr>
       </tbody>
     </table>
@@ -528,16 +558,16 @@ evidence   offchain → state         smoke      freeze triple gate       recove
 
     <h3><span class="en">Pre-issuance diligence gate (Phase A)</span><span class="zh">发行前尽调闸门（Phase A）</span></h3>
     <p class="lead" style="font-size:0.92rem;">
-      <span class="en">Before any deploy/mint, the agent runs <strong>read-only, zero-gas</strong> <code>cast</code> checks on the target address. Every conclusion is evidence-backed — command, raw result, inference, flag — written to <code>state.diligence</code>. <strong>RED blocks all issuance.</strong></span>
-      <span class="zh">任何 deploy/mint 之前，agent 对目标地址跑<strong>只读、零 gas</strong> 的 <code>cast</code> 检查。每条结论都有 evidence——命令、原始返回值、推断、flag——写入 <code>state.diligence</code>。<strong>RED 拒绝一切发行。</strong></span>
+      <span class="en">Before any deploy/mint, the agent runs a <strong>three-stage, read-only</strong> pipeline: sanctions screening (denylist + optional oracle) → on-chain checks (#2–#10) → off-chain background (ISS/CUS/INT roles, consent-gated). Every conclusion is evidence-backed — written to <code>state.diligence</code>. <strong>RED blocks all issuance.</strong></span>
+      <span class="zh">任何 deploy/mint 之前，agent 跑<strong>三阶段只读</strong>流水线：制裁筛查（denylist + 可选预言机）→ 链上检查（#2–#10）→ 链下背景（ISS/CUS/INT 角色、同意闸）。每条结论写入 <code>state.diligence</code> 并附 evidence。<strong>RED 拒绝一切发行。</strong></span>
     </p>
     <table style="margin-top:0.6rem;">
-      <thead><tr><th><span class="en">Check</span><span class="zh">检查项</span></th><th><span class="en">Command</span><span class="zh">命令</span></th><th><span class="en">RED trigger</span><span class="zh">RED 触发</span></th></tr></thead>
+      <thead><tr><th><span class="en">Stage</span><span class="zh">阶段</span></th><th><span class="en">Playbook</span><span class="zh">Playbook</span></th><th><span class="en">RED trigger (examples)</span><span class="zh">RED 触发（示例）</span></th></tr></thead>
       <tbody>
-        <tr><td class="k">denylist</td><td class="mono">state.config.denylist match</td><td><span class="en">hit → risk → RED</span><span class="zh">命中 → risk → RED</span></td></tr>
-        <tr><td class="k">code_size</td><td class="mono">cast codesize &lt;target&gt;</td><td><span class="en">contract self-destructed (size==0) → RED</span><span class="zh">合约已自毁（size==0）→ RED</span></td></tr>
-        <tr><td class="k">is_contract</td><td class="mono">cast code &lt;target&gt;</td><td><span class="en">bytecode present → warn (review)</span><span class="zh">有字节码 → warn（复核）</span></td></tr>
-        <tr><td class="k">balance / tx_count</td><td class="mono">cast balance · cast nonce</td><td><span class="en">zero balance or zero nonce → warn</span><span class="zh">零余额或零 nonce → warn</span></td></tr>
+        <tr><td class="k"><span class="en">Sanctions</span><span class="zh">制裁</span></td><td class="mono">sanctions-screening</td><td><span class="en">denylist hit · oracle <code>isSanctioned==true</code> · stale list flag</span><span class="zh">denylist 命中 · 预言机 <code>isSanctioned==true</code> · 名单过期 flag</span></td></tr>
+        <tr><td class="k"><span class="en">On-chain</span><span class="zh">链上</span></td><td class="mono">onchain-diligence</td><td><span class="en">self-destructed contract · deterministic risk flags (#2–#10)</span><span class="zh">合约自毁 · 确定性 risk flag（#2–#10）</span></td></tr>
+        <tr><td class="k"><span class="en">Off-chain</span><span class="zh">链下</span></td><td class="mono">offchain-diligence</td><td><span class="en">red flags in background · <code>erc3643_conformance</code> fail</span><span class="zh">背景红旗 · <code>erc3643_conformance</code> 失败</span></td></tr>
+        <tr><td class="k"><span class="en">Knowledge</span><span class="zh">知识库</span></td><td class="mono">compliance-knowledge</td><td><span class="en">rating pure function: any <code>risk</code> → RED; ≥2 warn → YELLOW</span><span class="zh">评级纯函数：任一 <code>risk</code> → RED；≥2 warn → YELLOW</span></td></tr>
       </tbody>
     </table>
 
@@ -669,14 +699,16 @@ evidence   offchain → state         smoke      freeze triple gate       recove
     <table>
       <tbody>
         <tr><td class="k">forge build / test</td><td><span style="color:var(--ok)">24 passed · 0 failed</span> <span class="en">(incl. fuzz invariant: dividends never over-distribute)</span><span class="zh">（含 fuzz 不变量：派息绝不超发）</span></td></tr>
-        <tr><td class="k"><span class="en">Skill eval suite</span><span class="zh">Skill eval 套件</span></td><td><a class="ref" href="eval/skill_behavior_cases.json">50/50 passed</a> · <span class="en">gates · risk tiers · consent · spawn structure</span><span class="zh">闸门 · 风险档 · 同意闸 · spawn 结构</span></td></tr>
+        <tr><td class="k"><span class="en">Skill eval suite</span><span class="zh">Skill eval 套件</span></td><td><a class="ref" href="eval/skill_behavior_cases.json">52/52 passed</a> · <span class="en">gates · risk tiers · consent · spawn structure · diligence refs</span><span class="zh">闸门 · 风险档 · 同意闸 · spawn 结构 · 尽调 ref</span></td></tr>
+        <tr><td class="k"><span class="en">Diligence expansion</span><span class="zh">尽调扩展</span></td><td><a class="ref" href="docs/diligence/INTEGRATION.md">INTEGRATION.md</a> · <span class="en">4 playbooks · OFAC sync · 93-address snapshot</span><span class="zh">4 份 playbook · OFAC 同步 · 93 地址快照</span></td></tr>
         <tr><td class="k"><span class="en">Security audit</span><span class="zh">安全审计</span></td><td><a class="ref" href="docs/SECURITY.md">SECURITY.md</a> · <span class="en">fixes pinned by regression tests</span><span class="zh">修复对应回归测试</span></td></tr>
         <tr><td class="k"><span class="en">Compliance review</span><span class="zh">合规性审查</span></td><td><span style="color:var(--ok)"><span class="en">closed mint cap-bypass (compliance-critical)</span><span class="zh">堵上 mint 绕过上限（合规关键）</span></span></td></tr>
         <tr><td class="k"><span class="en">Production-readiness review</span><span class="zh">生产就绪审查</span></td><td><span class="en">documented in project review notes</span><span class="zh">见项目审查记录</span></td></tr>
         <tr><td class="k"><span class="en">Adversarial (red-team) review</span><span class="zh">对抗式（红队）评审</span></td><td><span style="color:var(--ok)"><span class="en">issues resolved pre-release</span><span class="zh">发布前问题全解决</span></span></td></tr>
         <tr><td class="k"><span class="en">Pharos Skill Inspector</span><span class="zh">Pharos Skill Inspector</span></td><td><a class="ref" href="docs/SKILL_SECURITY_REPORT.md">8/100 LOW</a> · <span style="color:var(--ok)"><span class="en">0 critical/high/medium blockers</span><span class="zh">0 critical/high/medium blocker</span></span></td></tr>
         <tr><td class="k"><span class="en">On-chain deploy + smoke</span><span class="zh">链上部署 + smoke</span></td><td><a class="ref" href="https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de" target="_blank">0xfef7…Aa3DE</a> · Atlantic Testnet · <span style="color:var(--ok)">mint 1e18 · receipt status=1</span></td></tr>
-        <tr><td class="k"><span class="en">Hatched Skill</span><span class="zh">孵化 Skill</span></td><td><a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a> <span class="en">spawned · private</span><span class="zh">已生成 · 私有</span></td></tr>
+        <tr><td class="k"><span class="en">Mock OFAC oracle</span><span class="zh">Mock OFAC 预言机</span></td><td><a class="ref" href="https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400" target="_blank">0x4FD3…F400</a> · <span class="en">deploy tx</span><span class="zh">部署 tx</span> <a class="ref" href="https://atlantic.pharosscan.xyz/tx/0x7ae012f2ac8d388faa808005145054e9db338157a20be2c6f091eba5fa3fa8fa" target="_blank">0x7ae012…a8fa</a></td></tr>
+        <tr><td class="k"><span class="en">Hatched Skill</span><span class="zh">孵化 Skill</span></td><td><a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/</a> <span class="en">spawned v5 · 4 diligence refs · private</span><span class="zh">已 spawn v5 · 4 份尽调 ref · 私有</span></td></tr>
         <tr><td class="k"><span class="en">Key safety</span><span class="zh">私钥安全</span></td><td class="mono">.env · state.json <span class="en">gitignored</span><span class="zh">已忽略</span></td></tr>
       </tbody>
     </table>
@@ -703,6 +735,11 @@ evidence   offchain → state         smoke      freeze triple gate       recove
         <p><span class="en">Tests: <code>test_DividendDustSwept</code>, <code>test_RecoveryMigratesPendingDividend</code>, fuzz invariant on over-distribution.</span><span class="zh">测试：<code>test_DividendDustSwept</code>、<code>test_RecoveryMigratesPendingDividend</code>、超发 fuzz 不变量。</span></p>
       </div>
       <div class="item">
+        <div class="t">Round 7 · <span class="en">diligence v2</span><span class="zh">尽调 v2</span></div>
+        <h4><span class="en">Three-stage pipeline + OFAC oracle + spawn v5</span><span class="zh">三阶段流水线 + OFAC 预言机 + spawn v5</span></h4>
+        <p><span class="en">Expanded from 5 cast checks to 4 playbooks · <code>npm run diligence:sync</code> · MockOFACRegistry on Atlantic · eval 52/52.</span><span class="zh">从 5 项 cast 检查扩展为 4 份 playbook · <code>npm run diligence:sync</code> · Atlantic 部署 MockOFACRegistry · eval 52/52。</span></p>
+      </div>
+      <div class="item">
         <div class="t">D1 · <span class="en">gate design</span><span class="zh">闸门设计</span></div>
         <h4><span class="en">diligence could never reach RED</span><span class="zh">尽调闸门永远到不了 RED</span></h4>
         <p><span class="en">Fixed: deterministic risk triggers (denylist hit, self-destructed contract). RED now actually blocks issuance.</span><span class="zh">修复：确定性 risk 触发（denylist 命中、合约自毁）。RED 现在真能拒绝发行。</span></p>
@@ -717,16 +754,16 @@ evidence   offchain → state         smoke      freeze triple gate       recove
     <div class="grid-2">
       <div class="card">
         <h3><span class="en">On-chain (no setup)</span><span class="zh">链上（零配置）</span></h3>
-        <p>1. <a class="ref" href="https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de" target="_blank">PharosScan · MPF contract</a><br/>2. <a class="ref" href="https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d" target="_blank">Deploy tx</a> · <a class="ref" href="https://atlantic.pharosscan.xyz/tx/0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541" target="_blank">Smoke mint</a><br/>3. <a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/SKILL.md</a> — spawned child skill</p>
+        <p>1. <a class="ref" href="https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de" target="_blank">PharosScan · MPF contract</a><br/>2. <a class="ref" href="https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d" target="_blank">Deploy tx</a> · <a class="ref" href="https://atlantic.pharosscan.xyz/tx/0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541" target="_blank">Smoke mint</a><br/>3. <a class="ref" href="https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400" target="_blank">Mock OFAC oracle</a><br/>4. <a class="ref" href="skills/MPF-asset/SKILL.md">skills/MPF-asset/SKILL.md</a> — spawned child skill v5</p>
       </div>
       <div class="card">
         <h3><span class="en">Local (2 minutes)</span><span class="zh">本地（2 分钟）</span></h3>
-        <p class="mono" style="font-size:0.78rem;line-height:1.55;color:var(--text-2);">git clone hatchfi-pharos-skill<br/>npm run build && npm run test<br/># → 24 passed · 0 failed</p>
+        <p class="mono" style="font-size:0.78rem;line-height:1.55;color:var(--text-2);">git clone hatchfi-pharos-skill<br/>npm run build && npm run test<br/>npm run eval:skill<br/># → 24 passed · 52/52 eval</p>
       </div>
     </div>
     <div class="highlight" style="margin-top:1rem;">
-      <p><span class="en"><strong>Submission scope:</strong> ERC-3643-style RWA on Atlantic Testnet (diligence gate) · agent Skill extending the Pharos Skill Engine · spawn → refine → version pipeline · auto-generated contract surface · 50-check eval harness · Skill Inspector gate · Foundry tests · security review documented · data sovereignty with opt-in sharing.</span></p>
-      <p><span class="zh"><strong>提交范围：</strong>Atlantic 测试网上 ERC-3643 风格 RWA（尽调闸门）· 扩展 Pharos Skill Engine 的 agent Skill · spawn → refine → version 流水线 · 自动生成合约能力面 · 50 项 eval · Skill Inspector 门 · Foundry 测试 · 安全审查已文档化 · 数据主权 + opt-in 分享。</span></p>
+      <p><span class="en"><strong>Submission scope:</strong> ERC-3643-style RWA on Atlantic Testnet (three-stage diligence gate) · agent Skill extending the Pharos Skill Engine · 10 playbooks · spawn → refine → version pipeline · auto-generated contract surface · 52-check eval harness · Skill Inspector gate · Foundry tests · Mock OFAC oracle · security review documented · data sovereignty with opt-in sharing.</span></p>
+      <p><span class="zh"><strong>提交范围：</strong>Atlantic 测试网上 ERC-3643 风格 RWA（三阶段尽调闸门）· 扩展 Pharos Skill Engine 的 agent Skill · 10 份 playbook · spawn → refine → version 流水线 · 自动生成合约能力面 · 52 项 eval · Skill Inspector 门 · Foundry 测试 · Mock OFAC 预言机 · 安全审查已文档化 · 数据主权 + opt-in 分享。</span></p>
     </div>
   </section>
 
@@ -738,7 +775,8 @@ evidence   offchain → state         smoke      freeze triple gate       recove
 forge install OpenZeppelin/openzeppelin-contracts@v5.1.0 && forge install foundry-rs/forge-std
 
 npm run build && npm run test          <span class="gd"># 24 passed · no wallet needed</span>
-npm run eval:skill                     <span class="gd"># 50/50 deterministic skill checks</span>
+npm run eval:skill                     <span class="gd"># 52/52 deterministic skill checks</span>
+npm run diligence:sync                 <span class="gd"># OFAC snapshot → state.json denylist</span>
 npm run refs:generate                  <span class="gd"># contract → references/generated/contract-surface.*</span>
 npm run inspect:skill                  <span class="gd"># static skill security gate · no high/critical</span>
 npm run check                          <span class="gd"># full local gate (build · test · refs · eval · inspector)</span>
@@ -747,6 +785,7 @@ export PRIVATE_KEY=0x...               <span class="gd"># local only · never co
 export PHAROS_RPC_URL=https://atlantic.dplabs-internal.com
 npm run preflight:pharos               <span class="gd"># chainId 688689 · balance check</span>
 npm run deploy:pharos                  <span class="gd"># → deployments/pharos.json</span>
+npm run deploy:mock-ofac               <span class="gd"># → deployments/mock_ofac_atlantic.json</span>
 npm run smoke:pharos                   <span class="gd"># mint + receipt assert (registerIdentity if needed)</span>
 npm run spawn:asset                    <span class="gd"># → skills/&lt;SYMBOL&gt;-asset/ + PERMISSIONS.md</span>
 npm run refine:asset                   <span class="gd"># refine PREFERENCES.md from state.personalization</span></pre>
