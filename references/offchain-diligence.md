@@ -10,10 +10,13 @@
 ## Pipeline position
 
 ```
-Stage 0  Background + consent     ← THIS FILE
-Stage 1  checks_run / skipped     ← role matrix (INTEGRATION.md §6)
-Stage 2  Execute + rate           ← onchain + sanctions + off-chain evidence merged
+Stage −1 Distribution eligibility (cheap pre-gate)  ← no PII; run first for address targets
+Stage 0  Background + deposit consent               ← THIS FILE (from §Checks by role)
+Stage 1  checks_run / skipped                       ← role matrix (INTEGRATION.md §4)
+Stage 2  Execute + rate                             ← onchain + sanctions + off-chain evidence merged
 ```
+
+**Order**: `distribution_eligibility` → (if pass) consent / background → remaining off-chain → on-chain layers.
 
 ---
 
@@ -45,8 +48,34 @@ Almost all fields here are **PII or commercially sensitive** (directors, UBO, KY
 
 - Write to `state.diligence.background` only after **deposit consent** → record in `state.consent.deposits[]`.
 - Store KYC as **reference/hash only**, not plaintext (ERC-3643 ONCHAINID pattern).
-- **`consent_granted == false`**: skip all off-chain checks; each expected check → `skipped_checks{ reason: "consent_not_granted" }`. **Do not auto-RED** — rating may still proceed from on-chain + sanctions layers only.
+- **`consent_granted == false`**: skip all off-chain checks **except** `distribution_eligibility` and any public-fact fields already in `state.config`; each other expected check → `skipped_checks{ reason: "consent_not_granted" }`. **Do not auto-RED** — rating may still proceed from on-chain + sanctions layers only.
 - Spawn sub-skills **never** bundle `background`; only desensitized `checks_run` summary + `rating`.
+
+---
+
+## KYC depth by role (tiered — not one-size-fits-all)
+
+| Tier | Roles | What to collect | Where enforced |
+|---|---|---|---|
+| **A · enhanced** | `issuer_self`, `custodian`, `large_subscriber`, on-chain **Agent** wallets | Entity docs, UBO, license ids, source-of-funds (SUB), attestation refs | Off-chain evidence + human review; AgentRole on-chain |
+| **B · standard** | `investor`, `intermediary` (when onboarding) | KYC ref / expiry, jurisdiction, suitability questionnaire | `registerIdentity` + `isVerified` + off-chain `kyc_expiry_check` |
+| **C · address** | Post-issuance secondary holders | Sanctions + on-chain health only | `sanctions-screening` + `onchain-diligence` — no repeat full entity pack |
+
+Privileged or high-liability roles get **Tier A** before any mint / Agent grant. Retail investors get **Tier B** at whitelist. Tier C assumes identity already on-chain.
+
+---
+
+## Stage −1: distribution eligibility (all address targets)
+
+Cheap pre-gate before PII collection. Uses declared geography only — no passport upload required at this step.
+
+| check | Source | flag rules |
+|---|---|---|
+| `distribution_eligibility` | `background.jurisdiction` or issuer-declared `allowed_jurisdictions[]`; optional `config.blocked_jurisdictions[]` | jurisdiction in blocked list → **risk**; not in `allowed_jurisdictions[]` when list non-empty → **risk**; jurisdiction undeclared → **warn**; pass → ok |
+
+Evidence `cmd` example: `questionnaire:distribution_eligibility; verified_by=questionnaire`
+
+If **risk** here, stop pipeline — do not request deposit consent for deeper PII.
 
 ---
 
@@ -57,9 +86,20 @@ Almost all fields here are **PII or commercially sensitive** (directors, UBO, KY
 | check | Background source | flag rules |
 |---|---|---|
 | `issuer_background` | Questionnaire: directors, UBO, financials, license id | critical field missing → **warn**; claimed license not found in public regulator DB → **risk** |
-| `legal_wrapper` | Prospectus, holder rights, redemption terms | no legal wrapper → **risk** |
+| `legal_wrapper_profile` | Prospectus, holder rights, wrapper type, target regime | missing wrapper doc → **risk**; `wrapper_type` undeclared → **warn**; `target_regime` undeclared → **warn**; wrapper contradicts on-chain transfer model → **risk** (see `compliance-knowledge.md` §Transferability) |
+| `tokenization_rights` | Issuer attestation, SPV deed, underlying-asset consent letter | no documented right to tokenize underlying → **risk**; rights limited to specific regime only but `target_regime` mismatches → **risk** |
 | `audit_recency` | Smart-contract audit report date | no audit or &gt; 12 months → **warn** |
 | `kyc_expiry_check` | `background.kyc_expiry` | expired → **risk**; missing → **warn** |
+
+**`legal_wrapper_profile` fields** (write to `state.diligence.background` after consent):
+
+| field | values |
+|---|---|
+| `wrapper_type` | `permissioned_token` · `derivative_reference` · `closed_custodial` · `fund_unit` · `freely_transferable` |
+| `target_regime` | `mica_eu` · `reg_d_us` · `reg_s_us` · `reg_a_plus` · `private_placement` · `sandbox` · `other` |
+| `holder_rights_documented` | boolean — prospectus / offering memo on file |
+
+Legacy check id `legal_wrapper` maps to this row (same #14).
 
 ### Custodian (`custodian` / CUS)
 
@@ -70,13 +110,14 @@ Almost all fields here are **PII or commercially sensitive** (directors, UBO, KY
 
 ### Intermediary (`intermediary` / INT)
 
-- Run ISS checks #12-equivalent (`issuer_background`) + #14 (`legal_wrapper`) when INT acts as issuer.
+- Run ISS checks #12-equivalent (`issuer_background`) + #14 (`legal_wrapper_profile`) + #17 (`tokenization_rights`) when INT acts as issuer.
 - License verification: **independent regulator DB lookup** — never trust self-reported website alone.
 
 ### Investor / large subscriber (INV / SUB)
 
 | check | flag rules |
 |---|---|
+| `distribution_eligibility` | same Stage −1 rules (always first for INV/SUB) |
 | `kyc_expiry_check` | expired → **risk**; missing → **warn** |
 | `jurisdiction_match` | not in `state.personalization.allowed_jurisdictions[]` → **risk**; list empty → **warn** |
 | `large_fiat_source` (SUB only) | not declared → **warn** |
@@ -86,6 +127,8 @@ Almost all fields here are **PII or commercially sensitive** (directors, UBO, KY
 | check | flag rules |
 |---|---|
 | `asset_lien_status` | `encumbered` → **risk**; `unknown` → **warn**; `clear` → ok |
+| `tokenization_rights` | underlying issuer did not authorize tokenization → **risk**; attestation stale / missing → **warn** |
+| `legal_wrapper_profile` | same as ISS when asset is the diligence target |
 
 Red-flag knowledge base: `compliance-knowledge.md` §3 · `assets/knowledge/rwa_red_flags.json`.
 
@@ -98,6 +141,43 @@ Red-flag knowledge base: `compliance-knowledge.md` §3 · `assets/knowledge/rwa_
 ---
 
 ## Evidence examples
+
+```json
+{
+  "check": "legal_wrapper_profile",
+  "cmd": "questionnaire:legal_wrapper_profile; verified_by=document",
+  "verified_by": "document",
+  "result": {
+    "wrapper_type": "permissioned_token",
+    "target_regime": "private_placement",
+    "holder_rights_documented": true
+  },
+  "infer": "Permissioned on-chain transfer aligned with ERC-3643 issuance path; regime declared.",
+  "flag": "ok"
+}
+```
+
+```json
+{
+  "check": "tokenization_rights",
+  "cmd": "questionnaire:tokenization_rights; verified_by=document",
+  "verified_by": "document",
+  "result": { "underlying_consent": false, "issuer_attestation": null },
+  "infer": "No documented authorization to tokenize the underlying asset — cannot proceed to mint.",
+  "flag": "risk"
+}
+```
+
+```json
+{
+  "check": "distribution_eligibility",
+  "cmd": "questionnaire:distribution_eligibility; verified_by=questionnaire",
+  "verified_by": "questionnaire",
+  "result": { "jurisdiction": "US", "allowed_jurisdictions": ["SG", "CH"] },
+  "infer": "Declared jurisdiction not in issuer allowed list for this offering.",
+  "flag": "risk"
+}
+```
 
 ```json
 {

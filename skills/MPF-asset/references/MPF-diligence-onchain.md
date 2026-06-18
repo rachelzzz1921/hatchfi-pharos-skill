@@ -18,9 +18,10 @@ Set `RPC=$PHAROS_RPC` or `$RPC` — append `--rpc-url $RPC` to every cast comman
 ## Pipeline
 
 ```
-Stage 0  offchain-diligence.md
-Stage 1  checks_run / skipped_checks
-Stage 2  sanctions-screening → THIS FILE (#2–#10) → merge evidence → rate
+Stage −1  distribution_eligibility (offchain)  →  offchain-diligence.md
+Stage 0   offchain-diligence.md
+Stage 1   checks_run / skipped_checks
+Stage 2   sanctions-screening → THIS FILE (#2–#10, #10b) → merge evidence → rate
 ```
 
 ---
@@ -45,6 +46,9 @@ Stage 2  sanctions-screening → THIS FILE (#2–#10) → merge evidence → rat
 | 8 | `contract_verified` ‡ | Pharos explorer verified-source API | unverified → **warn** | no |
 | 9 | `privileged_powers` | `cast call <a> "owner()(address)"` + storage reads | single EOA owner + unbounded mint + no timelock → **risk** (stacked); else **warn** | **yes** (stacked) |
 | 10 | `proxy_upgradeable` | `cast storage <a> 0x360894…bbc` (EIP-1967 impl slot) | impl set, no timelock gov → **warn** | no |
+| 10b | `market_flow_integrity` † | `cast logs` scan: round-trip volume, same-block in/out, thin-book spikes | coordinated round-trip or spoofing pattern → **warn**; stacked with denylist hit → **risk** | no (warn; stacked yes) |
+
+**† #10b Market-flow integrity**: scan recent `Transfer` logs for the target token or wallet. Signals: (a) same counterparty both sides within short window, (b) volume spike with &lt;3 unique holders, (c) price-insensitive round lots. Evidence `source` same as #6/#7. Does not replace licensed market-surveillance — conservative **warn** only unless stacked with sanctions/denylist.
 
 **† History-bound checks (honest boundary)**: pure RPC gives current nonce only, not full history. `account_age` and `counterparty_set` need explorer/indexer or bounded `cast logs`. If unavailable on Pharos, evidence must set `source: "cast_logs_scan" | "explorer" | "unavailable"` — **never pretend full chain verification**. Lookup failure → **warn**, not silent ok.
 

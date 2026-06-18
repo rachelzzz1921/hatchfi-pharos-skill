@@ -21,6 +21,7 @@ Under `skills/<symbol>-asset/`:
 skills/<SYMBOL>-asset/
 ├── SKILL.md                      # Asset-specific capability index (address baked in)
 ├── PERMISSIONS.md                # Manifest: exposed (address+commands) vs withheld private data
+├── COMPLIANCE_MODULE.md          # Regime + transferability + on-chain bindings (no PII)
 └── references/
     ├── <symbol>-diligence-onchain.md
     ├── <symbol>-diligence-offchain.md
@@ -64,7 +65,7 @@ After generation, write state (private by default + pending share consent):
 "consent": {
   "shares": [
     { "artifact": "skills/MPF-asset/", "granted": false,
-      "exposed": ["contract_address", "operation_commands", "public_compliance_constants"],
+      "exposed": ["contract_address", "operation_commands", "public_compliance_constants", "compliance_module"],
       "withheld": ["investor_pii", "diligence_evidence", "dividend_detail", "personalization"],
       "at": "<ISO8601>" }
   ]

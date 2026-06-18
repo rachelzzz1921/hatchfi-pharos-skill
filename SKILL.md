@@ -65,12 +65,15 @@ The spawned skill serves the issuer first; external reuse is an **explicit, scop
 Before any cast in Phase ①, run the three-stage diligence workflow:
 
 ```
+Stage −1  distribution_eligibility (cheap geo gate)  →  offchain-diligence.md
 Stage 0  Background + deposit consent  →  offchain-diligence.md
 Stage 1  checks_run / skipped_checks  →  role matrix in docs/diligence/INTEGRATION.md
 Stage 2  cast + local compares + rating →  onchain-diligence.md · sanctions-screening.md
 ```
 
 - Set `state.diligence.target_role` — see role map in `offchain-diligence.md` (role aliases ISS/CUS/INT/INV/SUB map to HatchFi enum values).
+- **ISS / underlying**: capture `legal_wrapper_profile` (wrapper type + `target_regime`) and `tokenization_rights` before mint.
+- **INV / SUB**: run `distribution_eligibility` first — fail fast before PII collection.
 - Off-chain PII (e.g. `kyc_expiry`) requires **deposit consent** before writing `state.diligence.background`.
 - All on-chain + off-chain evidence merges into one `state.diligence.evidence[]`; rating remains pure function of flags.
 - Compliance infer citations → `compliance-knowledge.md` · integration archive → `docs/diligence/INTEGRATION.md`.

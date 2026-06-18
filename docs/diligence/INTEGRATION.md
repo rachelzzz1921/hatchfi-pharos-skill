@@ -20,7 +20,7 @@
 | 主题 | 最终增量 | 落地位置 |
 |---|---|---|
 | 链上 5→11 项 | `account_age`, `counterparty_set`, `contract_verified`, `privileged_powers`, `proxy_upgradeable` | `onchain-diligence.md` |
-| 链下 ISS/CUS/INT | `issuer_background`, `legal_wrapper`, `audit_recency`, `custodian_attestation` | `offchain-diligence.md` |
+| 链下 ISS/CUS/INT | `issuer_background`, `legal_wrapper_profile`, `tokenization_rights`, `audit_recency`, `custodian_attestation`, `distribution_eligibility` | `offchain-diligence.md` |
 | 制裁层 #1/#11 | `sanctions_screen` + `sanctions_list_stale` + 0xB10C OFAC JSON | `sanctions-screening.md` + `scripts/refresh_ofac_denylist.sh` |
 | 合规知识 #16 | `erc3643_conformance` + 六合约对照 + modular spawn 建议 | `compliance-knowledge.md` |
 | 角色码 | ISS/CUS/INT/INV/SUB | 映射为 HatchFi `target_role` enum |
@@ -46,12 +46,12 @@
 
 | target_role | Alias | 必跑（摘要） |
 |---|---|---|
-| `issuer_self` | ISS | sanctions + onchain #2–10 + issuer_background, legal_wrapper, audit_recency |
-| `custodian` | CUS | sanctions + onchain + custodian_attestation, audit_recency |
-| `intermediary` | INT | sanctions + issuer_background, legal_wrapper（若承担发行） |
-| `investor` | INV | sanctions + onchain + kyc_expiry, jurisdiction_match |
-| `large_subscriber` | SUB | INV 全集 + large_fiat_source |
-| `underlying_asset` | — | asset_lien_status, jurisdiction_match |
+| `issuer_self` | ISS | distribution_eligibility + sanctions + onchain #2–10,#10b + issuer_background, legal_wrapper_profile, tokenization_rights, audit_recency |
+| `custodian` | CUS | distribution_eligibility + sanctions + onchain + custodian_attestation, audit_recency |
+| `intermediary` | INT | distribution_eligibility + sanctions + issuer_background, legal_wrapper_profile, tokenization_rights（若承担发行） |
+| `investor` | INV | distribution_eligibility + sanctions + onchain + kyc_expiry, jurisdiction_match |
+| `large_subscriber` | SUB | INV 全集 + large_fiat_source（Tier A KYC） |
+| `underlying_asset` | — | asset_lien_status, tokenization_rights, legal_wrapper_profile, jurisdiction_match |
 
 完整规则见各 reference 检查表。
 
@@ -79,8 +79,11 @@
 | 2–5 | is_contract, code_size, balance, tx_count | onchain | #3 yes |
 | 5b | wallet_maturity | onchain | no |
 | 6–10 | account_age … proxy_upgradeable | onchain | #7, #9 yes |
+| 10b | market_flow_integrity | onchain | no (warn; stacked) |
 | 11 | ofac_sanctioned (oracle) | sanctions | yes |
 | 12–15 | issuer_background … audit_recency | offchain | #12, #14 yes |
+| 17 | tokenization_rights | offchain | yes |
+| 18 | distribution_eligibility | offchain | yes |
 | 16 | erc3643_conformance | knowledge | rare yes |
 
 评级纯函数不变：`any risk → RED` · `≥2 warn → YELLOW` · `≤1 warn → GREEN`.

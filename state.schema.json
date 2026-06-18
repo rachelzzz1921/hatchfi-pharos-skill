@@ -98,6 +98,11 @@
         "denylist_source": {
           "type": "string",
           "description": "denylist 来源说明，如 assets/knowledge/denylist_ofac_eth.json"
+        },
+        "blocked_jurisdictions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "ISO 3166 alpha-2 禁止认购/分销的司法辖区（Stage −1 distribution_eligibility）"
         }
       }
     },
@@ -111,7 +116,34 @@
         "deployed_at": { "type": "string", "description": "部署时间 ISO8601" },
         "deploy_tx": { "type": "string", "description": "部署交易哈希，可审计" },
         "max_holders": { "type": "integer", "description": "合规规则：最大持有人数" },
-        "max_balance_per_investor": { "type": "string", "description": "合规规则：单投资者持仓上限" }
+        "max_balance_per_investor": { "type": "string", "description": "合规规则：单投资者持仓上限" },
+        "compliance_module": {
+          "type": "object",
+          "description": "发行完成后固化的合规模块摘要（spawn 写入 COMPLIANCE_MODULE.md；不含 PII）",
+          "properties": {
+            "wrapper_type": {
+              "type": "string",
+              "enum": ["permissioned_token", "derivative_reference", "closed_custodial", "fund_unit", "freely_transferable"]
+            },
+            "target_regime": {
+              "type": "string",
+              "enum": ["mica_eu", "reg_d_us", "reg_s_us", "reg_a_plus", "private_placement", "sandbox", "other"]
+            },
+            "transferability": {
+              "type": "string",
+              "enum": ["permissioned_onchain", "closed_custodial", "derivative_reference", "free_transfer_legal_gate"]
+            },
+            "kyc_placement": {
+              "type": "string",
+              "enum": ["onchain_identity_registry", "mint_redeem_only", "platform_custodial"]
+            },
+            "regime_bindings": {
+              "type": "object",
+              "description": "声明的 target_regime 与链上 CompliantRWAToken 字段映射",
+              "additionalProperties": { "type": "string" }
+            }
+          }
+        }
       }
     },
     "diligence": {
@@ -138,6 +170,16 @@
           "properties": {
             "jurisdiction": { "type": "string", "description": "ISO 3166 alpha-2" },
             "entity_type": { "type": "string", "enum": ["individual", "corporate", "multisig"] },
+            "wrapper_type": {
+              "type": "string",
+              "enum": ["permissioned_token", "derivative_reference", "closed_custodial", "fund_unit", "freely_transferable"]
+            },
+            "target_regime": {
+              "type": "string",
+              "enum": ["mica_eu", "reg_d_us", "reg_s_us", "reg_a_plus", "private_placement", "sandbox", "other"]
+            },
+            "holder_rights_documented": { "type": "boolean" },
+            "tokenization_rights_verified": { "type": "boolean", "description": "底层资产代币化授权已核验" },
             "kyc_expiry": { "type": "string", "description": "YYYY-MM-DD" },
             "asset_lien_status": { "type": "string", "enum": ["clear", "encumbered", "unknown"] },
             "large_fiat_source_declared": { "type": "boolean" },

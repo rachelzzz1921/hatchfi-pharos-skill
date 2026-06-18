@@ -1,3 +1,9 @@
+# MPF-bound reference
+
+> Asset: `Manhattan Property Fund` (`MPF`)
+> Token: `0xfef7519bebda6c47af49583dbc9e60801f8aa3de`
+> This file was generated from `references/compliance-knowledge.md`.
+
 # Reference: Compliance knowledge base (compliance-knowledge)
 
 > **Capability**: Static frameworks for `evidence.infer` citations and spawn rule templates — **not** an execution layer.
@@ -47,46 +53,7 @@ Privileged actions via `IAgentRole` + ERC-173: mint / burn / **forcedTransfer** 
 | Rule changes | redeploy / patch contract | add/remove modules |
 | Best for | stable simple rules | multi-jurisdiction, reusable issuance |
 
-**Spawn recommendation**: asset-specific caps/jurisdictions/lockups → **modular** pattern in sub-skill rules even when parent token is monolithic today. Each spawn emits `COMPLIANCE_MODULE.md` — see below.
-
-### Transferability models (pick at diligence — binds spawn)
-
-| Model | `wrapper_type` | On-chain transfer | KYC / admission gate | Composability |
-|---|---|---|---|---|
-| Closed custody | `closed_custodial` | None (custody-bound) | Platform / custodian | None |
-| **Permissioned token** | `permissioned_token` | `isVerified` + `canTransfer` only | On-chain registry + off-chain Tier B | High — DeFi with guardrails |
-| Derivative reference | `derivative_reference` | None or synthetic ledger | Contract / app layer | Low |
-| Free transfer + legal gate | `freely_transferable` | ERC-20 open | Mint / redeem only | Highest — relies on off-chain law |
-
-**HatchFi default**: `permissioned_token` — composable yet enforceable on every transfer.
-
-**Hard rule**: if diligence declares `closed_custodial` or `derivative_reference` but deployed token exposes open `transfer()` without freeze → `legal_wrapper_profile` **risk** (wrapper / chain mismatch).
-
-### Regime binding (declared `target_regime` → on-chain knobs)
-
-After `legal_wrapper_profile` passes, map `target_regime` to concrete `CompliantRWAToken` + spawn module fields:
-
-| `target_regime` | Typical caps | Jurisdiction handling | Notes |
-|---|---|---|---|
-| `mica_eu` | conservative `max_holders` | `allowed_jurisdictions` EEA subset | CASP alignment off-chain |
-| `reg_d_us` | accredited investor caps | US persons rules in off-chain Tier A/B | Reg D disclosure in wrapper doc |
-| `reg_s_us` | offshore distribution | non-US `distribution_eligibility` | no US persons in allowed list |
-| `private_placement` | low holder count | issuer-defined `allowed_jurisdictions` | default for testnet demos |
-| `sandbox` | experimental limits | explicit waiver doc | warn if waiver missing |
-
-Persist binding in `state.asset.compliance_module.regime_bindings` — spawn copies desensitized summary only.
-
-### Modular Compliance Module (spawn artifact)
-
-On `npm run spawn:asset`, write `COMPLIANCE_MODULE.md` beside `PERMISSIONS.md`:
-
-```
-wrapper_type · target_regime · transferability · kyc_placement
-regime_bindings → isVerified / canTransfer / maxHolders / maxBalance / freeze policy
-diligence_checks_run (ids only) · rating — NO background PII
-```
-
-Child skill agents read this module before mint / whitelist — modular rules per asset, not a monolithic parent policy.
+**Spawn recommendation**: asset-specific caps/jurisdictions/lockups → **modular** pattern in sub-skill rules even when parent token is monolithic today.
 
 ### Known attack surfaces (risk notes)
 
@@ -101,15 +68,11 @@ Sources: [EIP-3643](https://eips.ethereum.org/EIPS/eip-3643) · [ERC-3643 docs](
 
 | Red flag | Severity | check id |
 |---|---|---|
-| No legal wrapper for holder rights | **risk** | `legal_wrapper_profile` (#14) |
-| Wrapper type contradicts on-chain transfer model | **risk** | `legal_wrapper_profile` (#14) |
-| No documented right to tokenize underlying asset | **risk** | `tokenization_rights` (#17) |
-| Subscriber outside declared distribution geography | **risk** | `distribution_eligibility` (#18) |
+| No legal wrapper for holder rights | **risk** | `legal_wrapper` (#14) |
 | Claimed license not in public regulator DB | **risk** | `issuer_background` (#12) |
 | Self-reported reserves, no independent oracle | warn | `custodian_attestation` (#13) |
 | No smart-contract audit or &gt; 12 months | warn | `audit_recency` (#15) |
-| Unclear geographic restrictions | warn | `legal_wrapper_profile` / ClaimTopics |
-| Thin-liquidity flow anomaly (round-trip / wash pattern) | warn | `market_flow_integrity` (#10b) |
+| Unclear geographic restrictions | warn | `legal_wrapper` / ClaimTopics |
 | Opaque mint/burn vs reserves | warn→**risk** (stacked) | `privileged_powers` (#9) + PoR |
 | Unverified / obfuscated source | warn | `contract_verified` (#8) |
 | Sanctioned address | **risk** | `sanctions_screen` (#1) |

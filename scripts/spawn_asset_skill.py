@@ -6,6 +6,7 @@ from __future__ import annotations
 from skill_spawn_lib import (
     archive_version,
     bump_meta,
+    default_compliance_module,
     load_asset,
     load_state,
     record_history,
@@ -13,6 +14,7 @@ from skill_spawn_lib import (
     upsert_spawn_consent,
     utc_now,
     validate_no_placeholders,
+    write_compliance_module,
     write_permission_manifest,
     write_preferences,
     write_reference_templates,
@@ -42,6 +44,11 @@ def main() -> None:
     write_permission_manifest(asset, out_dir)
 
     state = load_state()
+    module = default_compliance_module(asset, state)
+    write_compliance_module(asset, out_dir, state)
+    state.setdefault("asset", {})
+    state["asset"]["compliance_module"] = module
+
     personalization = state.get("personalization") or {}
     if write_preferences(asset, out_dir, personalization):
         print("  Included PREFERENCES.md from state.personalization")

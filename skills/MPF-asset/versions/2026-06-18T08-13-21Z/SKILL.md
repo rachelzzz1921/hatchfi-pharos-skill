@@ -27,7 +27,6 @@ description: Asset-specific operations for Manhattan Property Fund (MPF) on Phar
 | Sanctions screening | denylist + oracle | low | `references/MPF-sanctions.md` |
 | Compliance infer citations | knowledge mapping | low | `references/MPF-compliance-knowledge.md` |
 | Apply owner defaults before operations | read `PREFERENCES.md` | low | `PREFERENCES.md` |
-| Asset compliance module (regime + transferability) | read `COMPLIANCE_MODULE.md` | low | `COMPLIANCE_MODULE.md` |
 
 ## Asset Constants
 

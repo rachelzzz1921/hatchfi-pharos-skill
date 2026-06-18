@@ -228,6 +228,7 @@ description: Asset-specific operations for {asset['name']} ({symbol}) on Pharos 
 | Sanctions screening | denylist + oracle | low | `{sanctions_ref}` |
 | Compliance infer citations | knowledge mapping | low | `{compliance_ref}` |
 | Apply owner defaults before operations | read `PREFERENCES.md` | low | `PREFERENCES.md` |
+| Asset compliance module (regime + transferability) | read `COMPLIANCE_MODULE.md` | low | `COMPLIANCE_MODULE.md` |
 
 ## Asset Constants
 
@@ -239,6 +240,98 @@ description: Asset-specific operations for {asset['name']} ({symbol}) on Pharos 
 """,
         encoding="utf-8",
     )
+
+
+def default_compliance_module(asset: dict, state: dict) -> dict:
+    """Build compliance module from diligence background or sane defaults."""
+    diligence = state.get("diligence") or {}
+    background = diligence.get("background") or {}
+    existing = (asset.get("compliance_module") or {}) if isinstance(asset, dict) else {}
+
+    wrapper_type = existing.get("wrapper_type") or background.get("wrapper_type") or "permissioned_token"
+    target_regime = existing.get("target_regime") or background.get("target_regime") or "private_placement"
+
+    transferability_map = {
+        "permissioned_token": "permissioned_onchain",
+        "closed_custodial": "closed_custodial",
+        "derivative_reference": "derivative_reference",
+        "freely_transferable": "free_transfer_legal_gate",
+        "fund_unit": "permissioned_onchain",
+    }
+    kyc_map = {
+        "permissioned_token": "onchain_identity_registry",
+        "closed_custodial": "platform_custodial",
+        "derivative_reference": "platform_custodial",
+        "freely_transferable": "mint_redeem_only",
+        "fund_unit": "onchain_identity_registry",
+    }
+
+    regime_bindings = existing.get("regime_bindings") or {
+        "identity_gate": "isVerified",
+        "transfer_gate": "canTransfer",
+        "max_holders": str(asset.get("max_holders", "")),
+        "max_balance_per_investor": str(asset.get("max_balance", "")),
+        "freeze_policy": "per-wallet frozenTokens",
+        "target_regime": target_regime,
+    }
+
+    return {
+        "wrapper_type": wrapper_type,
+        "target_regime": target_regime,
+        "transferability": existing.get("transferability")
+        or transferability_map.get(wrapper_type, "permissioned_onchain"),
+        "kyc_placement": existing.get("kyc_placement") or kyc_map.get(wrapper_type, "onchain_identity_registry"),
+        "regime_bindings": regime_bindings,
+        "diligence_rating": diligence.get("rating"),
+        "checks_run": diligence.get("checks_run") or [],
+    }
+
+
+def write_compliance_module(asset: dict, out_dir: Path, state: dict) -> Path:
+    symbol = asset["symbol"]
+    module = default_compliance_module(asset, state)
+    checks = module.get("checks_run") or []
+    checks_line = ", ".join(checks) if checks else "(none recorded — run diligence before spawn)"
+
+    content = f"""# Compliance Module · {symbol}
+
+> Modular per-asset compliance profile — generated at spawn. **No PII.**
+> Agent must read this before mint, whitelist, or dividend operations.
+
+## Profile
+
+| Field | Value |
+|---|---|
+| `wrapper_type` | `{module['wrapper_type']}` |
+| `target_regime` | `{module['target_regime']}` |
+| `transferability` | `{module['transferability']}` |
+| `kyc_placement` | `{module['kyc_placement']}` |
+| Last diligence rating | `{module.get('diligence_rating') or 'UNCHECKED'}` |
+
+## Regime bindings (on-chain)
+
+```
+identity_gate          → {module['regime_bindings'].get('identity_gate', 'isVerified')}
+transfer_gate          → {module['regime_bindings'].get('transfer_gate', 'canTransfer')}
+max_holders            → {module['regime_bindings'].get('max_holders', '')}
+max_balance_per_investor → {module['regime_bindings'].get('max_balance_per_investor', '')}
+freeze_policy          → {module['regime_bindings'].get('freeze_policy', 'per-wallet frozenTokens')}
+target_regime          → {module['regime_bindings'].get('target_regime', module['target_regime'])}
+```
+
+## Diligence checks recorded at spawn
+
+`{checks_line}`
+
+## Withheld (never in this file)
+
+Issuer background, KYC refs, tokenization source documents, investor PII — remain in owner `state.json` only.
+
+See parent `references/compliance-knowledge.md` for transferability models and regime tables.
+"""
+    path = out_dir / "COMPLIANCE_MODULE.md"
+    path.write_text(content, encoding="utf-8")
+    return path
 
 
 def write_permission_manifest(asset: dict, out_dir: Path) -> None:
@@ -255,6 +348,7 @@ def write_permission_manifest(asset: dict, out_dir: Path) -> None:
 - Contract address: `{asset['address']}`
 - Operation commands & references (whitelist check, mint, transfer-check, dividends, diligence)
 - Public compliance constants: MAX_HOLDERS={asset['max_holders']}, MAX_BALANCE_PER_INVESTOR={asset['max_balance']}
+- Compliance module: `COMPLIANCE_MODULE.md` (wrapper type, target regime, transferability — no PII)
 
 ## Withheld (owner's sovereign data — never bundled)
 
@@ -440,7 +534,12 @@ def upsert_spawn_consent(state: dict, skill_rel: str, manifest_rel: str, now: st
     shares = state.setdefault("consent", {}).setdefault("shares", [])
     for entry in shares:
         if entry.get("artifact") == skill_rel:
-            entry.setdefault("exposed", ["contract_address", "operation_commands", "public_compliance_constants"])
+            entry.setdefault("exposed", [
+                "contract_address",
+                "operation_commands",
+                "public_compliance_constants",
+                "compliance_module",
+            ])
             entry.setdefault(
                 "withheld",
                 [
@@ -457,7 +556,12 @@ def upsert_spawn_consent(state: dict, skill_rel: str, manifest_rel: str, now: st
         {
             "artifact": skill_rel,
             "granted": False,
-            "exposed": ["contract_address", "operation_commands", "public_compliance_constants"],
+            "exposed": [
+                "contract_address",
+                "operation_commands",
+                "public_compliance_constants",
+                "compliance_module",
+            ],
             "withheld": [
                 "investor_pii",
                 "diligence_evidence",
