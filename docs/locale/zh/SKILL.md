@@ -60,6 +60,10 @@
 三段是一条流水线，也是一个完整 agent：准入（尽调）→ 执行（合规发行）→ **为发行人沉淀私有运营资产**。
 产出的 skill 首先服务发行人自己；对外复用是发行人**显式、限定范围**的 opt-in，而非默认行为。
 
+### 尽调子流水线（Stage 0 → 1 → 2）
+
+Phase ① 执行 cast 前先走三阶段尽调：背景搜集（`offchain-diligence`）→ 检查选型 → 制裁 + 链上 + 链下 evidence 合并评级（`onchain-diligence` · `sanctions-screening`）。链下 PII 须 deposit consent。详见英文母版 `SKILL.md` 与同目录 `references/`。
+
 ---
 
 ## 数据主权与同意闸（默认私有，分享/沉淀需显式同意）
@@ -126,7 +130,10 @@ Gate 规则：`critical` / `high` 为 blocker，禁止上传/发布；报告必�
 ### 合规与准入
 | 意图 | 能力 | 档 | reference |
 |---|---|---|---|
-| 发行前尽调 | onchain diligence | 🟢 | onchain-diligence |
+| 发行前尽调（全流程） | Stage 0–2 | 🟢 | offchain-diligence · onchain-diligence |
+| 链上地址检查 | cast 只读 + oracle | 🟢 | onchain-diligence · sanctions-screening |
+| 链下背景 / KYC 字段 | 背景搜集 + 比对 | 🟢 | offchain-diligence |
+| 合规规则与 infer 引用 | 静态知识库 | 🟢 | compliance-knowledge |
 | 核验持有资格 | isVerified | 🟢 | rwa-issuance |
 | 注册合规投资者 | registerIdentity | 🟡 | rwa-issuance |
 | 批量注册投资者 | batchRegisterIdentity | 🟡 | rwa-issuance |

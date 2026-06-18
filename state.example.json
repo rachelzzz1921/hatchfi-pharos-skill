@@ -1,6 +1,8 @@
 {
   "config": {
-    "denylist": []
+    "denylist": [],
+    "denylist_source": "assets/knowledge/denylist_ofac_eth.json — run npm run diligence:sync",
+    "ofac_oracle": "0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400"
   },
   "asset": {
     "name": "Manhattan Property Fund",
@@ -13,6 +15,8 @@
   },
   "diligence": {
     "target": "0xA54A3C2766a80d3AFe7C4Bf00D5bcfF9e1892bc4",
+    "target_role": "investor",
+    "list_snapshots": { "ofac_eth": "2026-06-18" },
     "rating": "GREEN",
     "passed": true,
     "checked_at": "2026-06-17T06:20:00Z",

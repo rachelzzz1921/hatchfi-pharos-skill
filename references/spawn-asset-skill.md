@@ -22,12 +22,15 @@ skills/<SYMBOL>-asset/
 ├── SKILL.md                      # Asset-specific capability index (address baked in)
 ├── PERMISSIONS.md                # Manifest: exposed (address+commands) vs withheld private data
 └── references/
-    ├── <symbol>-diligence.md     # Diligence (inherits gate; target defaults to asset-related parties)
+    ├── <symbol>-diligence-onchain.md
+    ├── <symbol>-diligence-offchain.md
+    ├── <symbol>-sanctions.md
+    ├── <symbol>-compliance-knowledge.md
     ├── <symbol>-issuance.md      # Issuance + lifecycle (mint/freeze/forced transfer/recovery; token filled)
     └── <symbol>-dividend.md      # Dividends (depositDividend/claim/query; address filled)
 ```
 
-> Full package, not commands-only — issuer (or authorized agent) gets diligence, issuance, dividends, lifecycle **out of the box** without returning to parent skill. `PERMISSIONS.md` lists **public surface only**; private ledger stays out of package.
+> Full package — diligence (4 playbooks), issuance, dividends, lifecycle **out of the box**. `PERMISSIONS.md` lists **public surface only**; private ledger stays out of package.
 
 ---
 
@@ -35,7 +38,7 @@ skills/<SYMBOL>-asset/
 
 **Not** "have the model write a skill" — **parent template + state placeholder replacement**, deterministic, reproducible, zero hallucination:
 
-Parent templates: `references/rwa-issuance.md`, `onchain-diligence.md`, `rwa-dividend.md`.
+Parent templates: `onchain-diligence.md`, `offchain-diligence.md`, `sanctions-screening.md`, `compliance-knowledge.md`, `rwa-issuance.md`, `rwa-dividend.md`.
 Replacement map (from `state.asset`):
 
 | Placeholder | Replaced with | Source |
@@ -133,7 +136,7 @@ Cases: `eval/skill_behavior_cases.json` (currently 50 checks).
 | Freeze / unfreeze | setAddressFrozen | 🟡 | references/MPF-issuance.md |
 | Distribute dividend | depositDividend | 🔴 | references/MPF-dividend.md |
 | Query / claim dividend | dividendOf/claim | 🟢 | references/MPF-dividend.md |
-| Pre-issuance diligence | onchain diligence | 🟢 | references/MPF-diligence.md |
+| Pre-issuance diligence (Stage 0–2) | diligence pipeline | 🟢 | references/MPF-diligence-offchain.md · MPF-diligence-onchain.md · MPF-sanctions.md |
 (Contract 0xABC... baked in — no token param needed)
 ```
 

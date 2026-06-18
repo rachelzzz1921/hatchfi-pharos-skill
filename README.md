@@ -9,7 +9,7 @@
 Issue a compliant RWA on Pharos with an AI agent — and keep a private operating Skill for that asset that improves as you use it.
 
 [![tests](https://img.shields.io/badge/Foundry-24_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
-[![eval](https://img.shields.io/badge/skill_eval-50%2F50-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
+[![eval](https://img.shields.io/badge/skill_eval-52%2F52-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
 [![live](https://img.shields.io/badge/Pharos_Atlantic_Testnet-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
 [![skill](https://img.shields.io/badge/hatched_Skill-private-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
 [![inspector](https://img.shields.io/badge/Skill_Inspector-8%2F100_LOW-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
@@ -51,7 +51,7 @@ forge install OpenZeppelin/openzeppelin-contracts@v5.1.0 && forge install foundr
 
 # 2 · build + verify locally (no wallet needed)
 npm run build && npm run test       # 24 Foundry tests
-npm run eval:skill                  # 50 deterministic skill checks
+npm run eval:skill                  # 52 deterministic skill checks
 npm run inspect:skill               # static security scan
 npm run check                       # full local gate (build · test · refs · eval · inspector)
 ```
@@ -112,7 +112,7 @@ HatchFi is operated through `npm` scripts that wrap Foundry, `cast`, and the age
 
 | Command | What it does |
 |---|---|
-| `npm run eval:skill` | 50 deterministic checks: diligence gate, risk tiers, consent gates, spawn structure |
+| `npm run eval:skill` | 52 deterministic checks: diligence gate, risk tiers, consent gates, spawn structure |
 | `npm run eval:skill:json` | Same suite, machine-readable JSON |
 
 ### Security gate (before install / upload / publish / share)
@@ -122,6 +122,14 @@ HatchFi is operated through `npm` scripts that wrap Foundry, `cast`, and the age
 | `npm run inspect:skill` | Static-only scan — prompt injection, secrets, dangerous patterns, Web3/Solidity risks |
 | `npm run inspect:skill:md` / `:json` | Write report to `docs/SKILL_SECURITY_REPORT.{md,json}` |
 | `npm run publish:check` | Inspector + full `check.sh` — run this before sharing |
+
+### Diligence (sanctions + background + on-chain)
+
+| Command | What it does |
+|---|---|
+| `npm run diligence:sync` | Refresh OFAC ETH JSON + merge into local `state.json` |
+| `npm run deploy:mock-ofac` | Deploy `MockOFACRegistry` on Atlantic (needs `PRIVATE_KEY`) |
+| `npm run sync:zh-diligence` | Regenerate zh locale diligence reference mirrors |
 
 ---
 
@@ -134,7 +142,7 @@ Phase A  Diligence Gate     →  Phase B  Compliant Issuance  →  Phase C  Life
          RED blocks issuance       24 tests + audit trail           cast logs (12 events)         PERMISSIONS.md · private    block critical/high
 ```
 
-**7 agent playbooks** in `references/`: `onchain-diligence` · `rwa-issuance` · `rwa-dividend` · `spawn-asset-skill` · `pharos-base-ops` · `pharos-deploy-runbook` · `pharos-verification`
+**10 agent playbooks** in `references/`: `onchain-diligence` · `offchain-diligence` · `sanctions-screening` · `compliance-knowledge` · `rwa-issuance` · `rwa-dividend` · `spawn-asset-skill` · `pharos-base-ops` · `pharos-deploy-runbook` · `pharos-verification`
 
 **Auto-generated contract surface** (`npm run refs:generate`): 30 callable entries (external/public functions + public getters) · 12 ERC-3643-aligned events · 5 typed errors · 24 Foundry tests including a fuzz invariant.
 
@@ -163,16 +171,15 @@ transfer / mint / forcedTransfer
 
 ### Pre-issuance diligence gate (Phase A)
 
-Before any deploy/mint, the agent runs **read-only, zero-gas** `cast` checks. Each conclusion is evidence-backed — command, raw result, inference, flag — written to `state.diligence`. **A RED rating blocks all issuance.**
+Before any deploy/mint, the agent runs a **three-stage diligence pipeline** (background → check selection → sanctions + on-chain + off-chain evidence). Each conclusion is evidence-backed — command, raw result, inference, flag — written to `state.diligence`. **A RED rating blocks all issuance.**
 
-| Check | Command | RED trigger |
+| Layer | Checks (summary) | RED trigger |
 |---|---|---|
-| `denylist` | `state.config.denylist` match | hit → **risk → RED** |
-| `code_size` | `cast codesize <target>` | contract self-destructed (size==0) → **RED** |
-| `is_contract` | `cast code <target>` | bytecode present → warn (review) |
-| `balance` / `tx_count` | `cast balance` · `cast nonce` | zero balance or zero nonce → warn |
+| Sanctions (#1/#11) | `state.config.denylist` · optional Mock Oracle · snapshot staleness → warn | denylist / oracle hit → **risk → RED** |
+| On-chain (#2–#10) | `cast code` · `codesize` · `balance` · `nonce` · logs/history · proxy slot | self-destruct · denylist counterparty · stacked centralization |
+| Off-chain (#12–#15) | issuer/custodian questionnaire · KYC expiry · jurisdiction | fake license · no legal wrapper · expired KYC |
 
-Full playbook: [`references/onchain-diligence.md`](./references/onchain-diligence.md)
+Sync OFAC snapshot: `npm run diligence:sync` · Full playbooks: [`references/onchain-diligence.md`](./references/onchain-diligence.md) · [`offchain-diligence.md`](./references/offchain-diligence.md) · [`sanctions-screening.md`](./references/sanctions-screening.md)
 
 ### Four modules in one contract (future-split ready)
 
@@ -240,7 +247,7 @@ Before release, HatchFi went through a layered review loop. Issues found were fi
 | Review gate | Outcome |
 |---|---|
 | **TDD test suite** | 24 Foundry tests, 0 failed, including a fuzz invariant proving dividends can't over-distribute (`claimable + dust ≤ deposit`) |
-| **Skill eval suite** | `npm run eval:skill` — 50/50 deterministic checks on gates, risk tiers, consent, and spawn structure |
+| **Skill eval suite** | `npm run eval:skill` — 52/52 deterministic checks on gates, risk tiers, consent, and spawn structure |
 | **Security review** ([`docs/SECURITY.md`](./docs/SECURITY.md)) | Findings documented; fixes pinned by named regression tests |
 | **Compliance review** | Found and closed a compliance-critical gap (`mint` bypassing holder/balance caps) — issuance now enforces the same `canTransfer` rules as transfers |
 | **Production-readiness review** | Documented in project review notes (see validation docs) |
@@ -269,14 +276,14 @@ HatchFi is deployed and smoke-tested on **Pharos Atlantic Testnet**.
 
 Smoke path: `registerIdentity` is skipped when the deployer is already verified; **mint + receipt assert** is the executed write path recorded below.
 
-Anyone can verify independently in ~2 minutes: `git clone` → `npm run build && npm run test` (24 passed) → `npm run eval:skill` (50/50) → open the contract on PharosScan (Atlantic Testnet).
+Anyone can verify independently in ~2 minutes: `git clone` → `npm run build && npm run test` (24 passed) → `npm run eval:skill` (52/52) → open the contract on PharosScan (Atlantic Testnet).
 
 ---
 
 ## What's included
 
-- ERC-3643-style RWA contract deployed on Pharos Atlantic, with a read-only diligence gate that can block issuance
-- A full agent Skill (`SKILL.md` + 7 references) that extends the official Pharos Skill Engine
+- ERC-3643-style RWA contract deployed on Pharos Atlantic, with a **three-stage diligence pipeline** (sanctions + on-chain + off-chain) that can block issuance
+- A full agent Skill (`SKILL.md` + **10 references**) that extends the official Pharos Skill Engine
 - A deterministic spawn → refine → version pipeline that leaves the issuer a private, evolving operating Skill
 - An auto-generated contract-surface reference kept in sync with the Solidity source
 - A 50-check eval harness and a static Skill Inspector security gate

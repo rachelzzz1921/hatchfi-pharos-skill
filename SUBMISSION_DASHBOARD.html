@@ -351,13 +351,13 @@
     <pre class="ascii"><span class="gd">Phase A</span>  Diligence Gate          <span class="gd">Phase B</span>  Compliant Issuance       <span class="gd">Phase C</span>  Lifecycle Ops          <span class="gd">Phase D</span>  Skill Hatch          <span class="gd">Phase E</span>  Security Gate
 ─────────  ───────────────         ─────────  ──────────────────       ─────────  ───────────────         ─────────  ───────────          ─────────  ─────────────
 read-only  GREEN/YELLOW/RED        deploy     ERC-3643 token           whitelist  register/freeze/mint    spawn      skills/MPF-asset/     static     Skill Inspector
-cast cmds  RED → block issuance    mint       identity·compliance·     dividends  deposit/claim/sweep     private    PERMISSIONS.md        scan       prompt/secret/Web3
-evidence   denylist + codesize     smoke      freeze triple gate       recovery   forcedTransfer/pause    refine     personalization      reports    MD/JSON/SARIF-ready
+3-stage    sanctions+onchain+       mint       identity·compliance·     dividends  deposit/claim/sweep     private    4 diligence refs      scan       prompt/secret/Web3
+evidence   offchain → state         smoke      freeze triple gate       recovery   forcedTransfer/pause    refine     PERMISSIONS.md        reports    MD/JSON/SARIF-ready
            → state.diligence       preflight  24 tests + audit         audit      cast logs (12 events)   opt-in     consent.shares       blocker   critical/high</pre>
     <div class="grid-2">
       <div class="card">
-        <h3><span class="en">7 agent playbooks</span><span class="zh">7 份 Agent playbook</span></h3>
-        <p><code>onchain-diligence</code> · <code>rwa-issuance</code> · <code>rwa-dividend</code> · <code>spawn-asset-skill</code> · <code>pharos-base-ops</code> · <code>pharos-deploy-runbook</code> · <code>pharos-verification</code></p>
+        <h3><span class="en">10 agent playbooks</span><span class="zh">10 份 Agent playbook</span></h3>
+        <p><code>onchain-diligence</code> · <code>offchain-diligence</code> · <code>sanctions-screening</code> · <code>compliance-knowledge</code> · <code>rwa-issuance</code> · <code>rwa-dividend</code> · <code>spawn-asset-skill</code> · <code>pharos-base-ops</code> · <code>pharos-deploy-runbook</code> · <code>pharos-verification</code></p>
       </div>
       <div class="card">
         <h3><span class="en">Contract surface (auto-generated)</span><span class="zh">合约能力面（自动生成）</span></h3>

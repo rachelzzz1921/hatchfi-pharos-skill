@@ -38,7 +38,7 @@ Compliant RWA Issuance Agent (parent skill)
 
 | Layer | Package | Reuse |
 |---|---|---|
-| Parent skill | `SKILL.md` + 7 references | Any Pharos agent can drive the full RWA issuance pipeline |
+| Parent skill | `SKILL.md` + 10 references | Any Pharos agent can drive the full RWA issuance pipeline |
 | Child skill (generated) | `skills/MPF-asset/` | Operates **Manhattan Property Fund** at `0xfef7…Aa3DE` |
 | Contract | `CompliantRWAToken` @ Atlantic | Foundry tests + on-chain smoke prove compliant mint/verification |
 
@@ -82,7 +82,10 @@ flowchart TD
 |---|---|
 | `SKILL.md` | Agent entry and capability index |
 | `SUBMISSION_DASHBOARD.html` | **Project overview** (pipeline + capabilities + submission package) |
-| `references/onchain-diligence.md` | Verifiable pre-issuance diligence gate |
+| `references/onchain-diligence.md` | On-chain diligence (#2–#10) |
+| `references/offchain-diligence.md` | Off-chain background (#12–#15) |
+| `references/sanctions-screening.md` | Sanctions layer (#1/#11) |
+| `references/compliance-knowledge.md` | ERC-3643 mapping + red flags |
 | `references/rwa-issuance.md` | Compliant issuance and lifecycle ops |
 | `references/rwa-dividend.md` | Yield distribution reference |
 | `references/spawn-asset-skill.md` | Spawn / refine / version design |

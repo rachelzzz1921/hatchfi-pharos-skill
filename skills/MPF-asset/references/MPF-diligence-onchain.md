@@ -1,7 +1,10 @@
-> 中文 locale · 与 `references/onchain-diligence.md` 同步维护。
-> 命令与 JSON 保持英文以便 agent 直接执行；章节标题与表格说明为中文。
+# MPF-bound reference
 
-# Reference: 链上尽调（#2–#10）（onchain-diligence）
+> Asset: `Manhattan Property Fund` (`MPF`)
+> Token: `0xfef7519bebda6c47af49583dbc9e60801f8aa3de`
+> This file was generated from `references/onchain-diligence.md`.
+
+# Reference: On-chain diligence gate (onchain-diligence)
 
 > **Capability**: Layer **#2–#10** — read-only chain diligence on Pharos Atlantic (standard EVM + cast).
 > **Risk tier**: 🟢 Low (read-only; agent auto-runs; no human confirm).

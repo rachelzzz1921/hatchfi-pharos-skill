@@ -192,7 +192,10 @@ def rollback(skill_dir: Path, version_id: str) -> None:
 def write_skill(asset: dict, out_dir: Path) -> None:
     symbol = asset["symbol"]
     issuance_ref = f"references/{symbol}-issuance.md"
-    diligence_ref = f"references/{symbol}-diligence.md"
+    diligence_onchain = f"references/{symbol}-diligence-onchain.md"
+    diligence_offchain = f"references/{symbol}-diligence-offchain.md"
+    sanctions_ref = f"references/{symbol}-sanctions.md"
+    compliance_ref = f"references/{symbol}-compliance-knowledge.md"
     dividend_ref = f"references/{symbol}-dividend.md"
 
     (out_dir / "SKILL.md").write_text(
@@ -221,7 +224,9 @@ description: Asset-specific operations for {asset['name']} ({symbol}) on Pharos 
 | Force transfer or recover wallet | lifecycle functions | high | `{issuance_ref}` |
 | Deposit asset dividends | `depositDividend` | high | `{dividend_ref}` |
 | Check or claim dividends | `dividendOf` / `claimDividend` | low | `{dividend_ref}` |
-| Run diligence on related addresses | onchain diligence | low | `{diligence_ref}` |
+| Pre-issuance diligence (full pipeline) | Stage 0–2 | low | `{diligence_offchain}` · `{diligence_onchain}` |
+| Sanctions screening | denylist + oracle | low | `{sanctions_ref}` |
+| Compliance infer citations | knowledge mapping | low | `{compliance_ref}` |
 | Apply owner defaults before operations | read `PREFERENCES.md` | low | `PREFERENCES.md` |
 
 ## Asset Constants
@@ -338,11 +343,18 @@ def write_reference_templates(asset: dict, out_dir: Path) -> list[Path]:
     refs_dir.mkdir(parents=True, exist_ok=True)
 
     templates = {
-        ROOT / "references" / "onchain-diligence.md": refs_dir / f"{symbol}-diligence.md",
+        ROOT / "references" / "onchain-diligence.md": refs_dir / f"{symbol}-diligence-onchain.md",
+        ROOT / "references" / "offchain-diligence.md": refs_dir / f"{symbol}-diligence-offchain.md",
+        ROOT / "references" / "sanctions-screening.md": refs_dir / f"{symbol}-sanctions.md",
+        ROOT / "references" / "compliance-knowledge.md": refs_dir / f"{symbol}-compliance-knowledge.md",
         ROOT / "references" / "rwa-issuance.md": refs_dir / f"{symbol}-issuance.md",
         ROOT / "references" / "rwa-dividend.md": refs_dir / f"{symbol}-dividend.md",
     }
     generated: list[Path] = []
+    legacy = refs_dir / f"{symbol}-diligence.md"
+    if legacy.exists():
+        legacy.unlink()
+
     for src, dst in templates.items():
         content = src.read_text(encoding="utf-8")
         header = (

@@ -6,7 +6,7 @@
 > Source: `src/CompliantRWAToken.sol` — **do not edit by hand**.
 > Regenerate: `npm run refs:generate`
 
-Counts: 30 external/public functions · 12 events · 5 errors
+Counts: 25 external/public functions · 12 events · 5 errors
 
 ## Function index (agent risk tiers)
 
@@ -37,11 +37,6 @@ Counts: 30 external/public functions · 12 events · 5 errors
 | `isAgent(address)` | 🟢 low | view | `cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "isAgent(address)(bool)" <account> --rpc-url $RPC` |
 | `pause()` | 🟡 medium | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "pause()" --rpc-url $RPC --private-key $PK` |
 | `unpause()` | 🟡 medium | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "unpause()" --rpc-url $RPC --private-key $PK` |
-| `maxHolders()` | 🟢 low | view | `cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "maxHolders()(uint256)" --rpc-url $RPC` |
-| `maxBalancePerInvestor()` | 🟢 low | view | `cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "maxBalancePerInvestor()(uint256)" --rpc-url $RPC` |
-| `holderCount()` | 🟢 low | view | `cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "holderCount()(uint256)" --rpc-url $RPC` |
-| `dividendPerShareCumulative()` | 🟢 low | view | `cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "dividendPerShareCumulative()(...)" --rpc-url $RPC` |
-| `undistributedDividend()` | 🟢 low | view | `cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "undistributedDividend()(uint256)" --rpc-url $RPC` |
 
 ## Events (cast logs)
 

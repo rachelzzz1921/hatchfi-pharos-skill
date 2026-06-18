@@ -1,0 +1,11 @@
+{
+  "network": "pharos_atlantic",
+  "chainId": 688689,
+  "contract": "MockOFACRegistry",
+  "contractAddress": "0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400",
+  "deployTx": "0x7ae012f2ac8d388faa808005145054e9db338157a20be2c6f091eba5fa3fa8fa",
+  "deployer": "0xA54A3C2766a80d3AFe7C4Bf00D5bcfF9e1892bc4",
+  "deployedAt": "2026-06-18",
+  "explorer": "https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400",
+  "sampleSanctionedAddress": "0x7F367cC41522cE07553e823bf3be79A889DEbe1B"
+}

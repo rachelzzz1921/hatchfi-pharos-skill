@@ -161,3 +161,48 @@ npm run preflight:pharos
 ```
 
 These commands reproduce the completed validation evidence above.
+
+## Diligence expansion (2026-06-18)
+
+### Skill eval
+
+```bash
+npm run eval:skill
+# Skill eval: 52/52 passed
+```
+
+### OFAC snapshot + local state merge
+
+```bash
+npm run diligence:sync
+# assets/knowledge/denylist_ofac_eth.json (93 ETH addresses, snapshot 2026-06-18)
+```
+
+### MockOFACRegistry (Atlantic live)
+
+```bash
+npm run deploy:mock-ofac
+```
+
+| Field | Value |
+|---|---|
+| Contract | `0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400` |
+| Deploy tx | `0x7ae012f2ac8d388faa808005145054e9db338157a20be2c6f091eba5fa3fa8fa` |
+| Sample sanctioned | `0x7F367cC41522cE07553e823bf3be79A889DEbe1B` → `isSanctioned == true` |
+
+Verification:
+
+```bash
+export RPC=https://atlantic.dplabs-internal.com
+export ORACLE=0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400
+cast call $ORACLE "isSanctioned(address)(bool)" 0x7F367cC41522cE07553e823bf3be79A889DEbe1B --rpc-url $RPC
+```
+
+### Spawn v5 (4 diligence references)
+
+```bash
+npm run spawn:asset
+# skills/MPF-asset/ — MPF-diligence-onchain/offchain/sanctions/compliance-knowledge
+```
+
+See `docs/diligence/CHANGELOG.md` and `docs/WORKED_EXAMPLE.md` for the full three-stage diligence flow.

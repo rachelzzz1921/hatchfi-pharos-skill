@@ -1,111 +1,138 @@
 # Reference: On-chain diligence gate (onchain-diligence)
 
-> **Capability**: Before issuing any RWA asset, run **read-only, zero-gas** on-chain diligence on target addresses (custodian / issuer / large subscriber) and produce a red/yellow/green risk profile. **Every conclusion must be verifiable** — each line traces to a specific `cast` command and return value.
-> **Risk tier**: 🟢 Low (read-only only; agent runs automatically; no human confirm).
-> **Gate behavior**: On RED rating, agent must refuse all subsequent issuance ops (`state.diligence.passed = false`).
+> **Capability**: Layer **#2–#10** — read-only chain diligence on Pharos Atlantic (standard EVM + cast).
+> **Risk tier**: 🟢 Low (read-only; agent auto-runs; no human confirm).
+> **Gate**: RED → `state.diligence.passed = false` → refuse issuance.
+> **Order**: Run `sanctions-screening.md` (#1/#11) first, then this table.
+
+Set `RPC=$PHAROS_RPC` or `$RPC` — append `--rpc-url $RPC` to every cast command.
+
+---
+
+## Pipeline
+
+```
+Stage 0  offchain-diligence.md
+Stage 1  checks_run / skipped_checks
+Stage 2  sanctions-screening → THIS FILE (#2–#10) → merge evidence → rate
+```
 
 ---
 
 ## When to trigger
 
-User intent includes: "check this address first", "is this custodian trustworthy", "pre-issuance diligence", "can we issue tokens to it" — **mandatory** diligence before `mint` / `registerIdentity` / `forcedTransfer` to that address.
+`target_address` known and read-only health check required. Mandatory before `mint` / `registerIdentity` / `forcedTransfer` to that address.
 
 ---
 
-## Checks & commands (all read-only; target = address under review; RPC = pharos_atlantic)
+## Check table (#2–#10)
 
-Each check yields deterministic `flag ∈ {ok, warn, risk}`. **risk is a hard veto for the gate** — RED → refuse issuance is reachable, not decorative.
+| # | check | cast cmd | flag rules | Can produce risk? |
+|---|---|---|---|---|
+| 2 | `is_contract` | `cast code <a>` | `0x` → ok (EOA); bytecode → **warn** | no |
+| 3 | `code_size` | `cast codesize <a>` | was contract, now `0` (self-destructed) → **risk**; else ok/warn | **yes** |
+| 4 | `balance` | `cast balance <a>` | `0` → **warn**; &gt;0 → ok | no |
+| 5 | `tx_count` | `cast nonce <a>` | `0` → **warn**; &gt;0 → ok | no |
+| 5b | `wallet_maturity` | `cast nonce <a>` | nonce &lt; 5 → **warn**; ≥5 → ok | no |
+| 6 | `account_age` † | explorer first-tx timestamp or `cast logs` scan | &lt;7d → **warn**; lookup fail → **warn**(`age_unknown`) | no |
+| 7 | `counterparty_set` † | `cast logs` scan from/to; cross denylist | any denylist counterparty → **risk**; high concentration → **warn** | **yes** |
+| 8 | `contract_verified` ‡ | Pharos explorer verified-source API | unverified → **warn** | no |
+| 9 | `privileged_powers` | `cast call <a> "owner()(address)"` + storage reads | single EOA owner + unbounded mint + no timelock → **risk** (stacked); else **warn** | **yes** (stacked) |
+| 10 | `proxy_upgradeable` | `cast storage <a> 0x360894…bbc` (EIP-1967 impl slot) | impl set, no timelock gov → **warn** | no |
 
-| check | cast command | Meaning | flag rules (deterministic) |
-|---|---|---|---|
-| `denylist` | Compare against `state.config.denylist[]` (issuer-maintained block/sanctions list) | Is target blocked? | Hit → **risk**; miss → ok |
-| `is_contract` | `cast code <target> --rpc-url $RPC` | EOA vs contract | `0x` (EOA) → ok; bytecode present → warn (investors usually KYC'd EOAs; issuing to opaque contracts needs review) |
-| `code_size` | `cast codesize <target> --rpc-url $RPC` | Contract bytecode size | Not a contract → ok; contract with `> 0` → warn; **contract with codesize `== 0` (self-destructed) → risk** |
-| `balance` | `cast balance <target> --rpc-url $RPC` | Native PHRS balance | `> 0` → ok; `== 0` → warn (empty address, no gas) |
-| `tx_count` | `cast nonce <target> --rpc-url $RPC` | Outbound tx count (activity) | `> 0` → ok; `== 0` → warn (brand-new address, no history) |
+**† History-bound checks (honest boundary)**: pure RPC gives current nonce only, not full history. `account_age` and `counterparty_set` need explorer/indexer or bounded `cast logs`. If unavailable on Pharos, evidence must set `source: "cast_logs_scan" | "explorer" | "unavailable"` — **never pretend full chain verification**. Lookup failure → **warn**, not silent ok.
 
-> Commands follow Foundry `cast`. `$RPC` = `https://atlantic.dplabs-internal.com` (Pharos Atlantic testnet, chainId 688689).
-> On-chain checks are view/read-only RPC — **no txs, no gas, zero risk**; `denylist` is local list comparison — overall 🟢 low, agent auto-runs.
->
-> **risk triggers (any one → RED, gate closed)**:
-> 1. `denylist` hit on issuer block/sanctions list;
-> 2. target is a contract with `codesize == 0` (was deployed, now self-destructed — code untrusted).
->
-> Issuer can maintain `state.config.denylist` for blocked addresses — gives compliance-first a real refuse path.
+**‡ #8 default 📋**: if Pharos has no verified-source endpoint, treat as manual/off-chain attestation per `offchain-diligence.md`; evidence `verified_by: "manual"`.
+
+**EIP-1967 slots** (#10):
+- implementation: `0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc`
+- admin: `0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103`
+
+Legacy checks retained: `denylist` local compare (also in sanctions layer as `sanctions_screen`).
 
 ---
 
-## evidence structure (written to state.diligence.evidence — verifiable)
-
-Each check produces one evidence record:
+## Evidence examples
 
 ```json
 {
-  "check": "is_contract",
-  "cmd": "cast code 0xABC... --rpc-url $RPC",
-  "result": "0x",
-  "infer": "Target is EOA (externally owned account), not a contract",
-  "flag": "ok"
+  "check": "code_size",
+  "cmd": "cast codesize 0xabc… --rpc-url $RPC",
+  "result": "0",
+  "infer": "Contract self-destructed (codesize=0); code no longer accountable.",
+  "flag": "risk"
 }
 ```
 
-`flag` values: `ok` / `warn` / `risk`.
-
----
-
-## Rating rules (fixed — not agent subjective judgment)
-
-From all evidence flags, **deterministic and reproducible**:
-
-- **🔴 RED**: any flag = `risk`. → `passed = false`, **gate closed**, refuse issuance.
-- **🟡 YELLOW**: no risk, but ≥ 2 flags = `warn`. → `passed = true` but surface risk; recommend human review.
-- **🟢 GREEN**: no risk, and warn ≤ 1. → `passed = true`, proceed to issuance.
-
-> Rating is a pure function of evidence: `rating = f(evidence[].flag)`. Same chain data → same rating — that's why it's trustworthy.
-
----
-
-## Gate enforcement (1-C)
-
-After diligence, agent writes `state.json`:
 ```json
-"diligence": { "target": "0x...", "rating": "GREEN", "passed": true, "evidence": [...] }
+{
+  "check": "counterparty_set",
+  "cmd": "cast logs --from-block X --to-block latest … --rpc-url $RPC",
+  "source": "cast_logs_scan",
+  "result": { "counterparties": 3, "denylist_hits": 1 },
+  "infer": "Historical counterparty hit denylist.",
+  "flag": "risk"
+}
 ```
 
-Before any issuance op (mint / registerIdentity for target / forcedTransfer to target), agent **must** read `state.diligence`:
-- `passed == false` or `rating == "RED"` → **refuse**, reply: "Target failed diligence (RED). Compliance-first: cannot issue. Basis: <list risk evidence>."
-- `rating == "YELLOW"` → extra risk warning before execute; suggest human review.
-- `rating == "GREEN"` → normal issuance flow.
+```json
+{
+  "check": "account_age",
+  "cmd": "cast logs (first tx lookup) --rpc-url $RPC",
+  "source": "unavailable",
+  "result": null,
+  "infer": "No indexer; first-tx age unknown — conservative warn.",
+  "flag": "warn"
+}
+```
 
-This turns "compliance first" from a slogan into a **non-bypassable code-level gate**.
+```json
+{
+  "check": "privileged_powers",
+  "cmd": "cast call 0xabc… \"owner()(address)\" --rpc-url $RPC",
+  "result": { "owner": "0xEOA…", "timelock": false, "mint_unbounded": true },
+  "infer": "Single EOA owner + unbounded mint + no timelock — stacked centralization risk.",
+  "flag": "risk"
+}
+```
 
 ---
 
-## User-facing output format (with evidence)
+## Rating (pure function — unchanged)
+
+Input = **all** evidence (sanctions + onchain + offchain):
 
 ```
-Diligence: 🟡 YELLOW (passed — review recommended)
-Target: 0xABC...
-
-Evidence:
-  ✓ [ok]   is_contract: cast code → 0x, confirmed EOA
-  ⚠ [warn] activity:    cast nonce → 0, brand-new address
-  ⚠ [warn] balance:    cast balance → 0 PHRS, no gas
-  
-Rating: no risk + 2 warn → YELLOW
-Recommendation: issuance allowed; confirm real identity before whitelisting.
+any(flag == risk)           → 🔴 RED,   passed=false
+no risk & warn_count >= 2   → 🟡 YELLOW, passed=true (+ human review)
+no risk & warn_count <= 1   → 🟢 GREEN,  passed=true
 ```
 
-RED example (gate closed):
+On-chain checks that can produce **risk**: `#3 self-destruct`, `#7 denylist counterparty`, `#9 privileged_powers (stacked)` — plus sanctions layer #1/#11.
+
+---
+
+## User-facing output
 
 ```
-Diligence: 🔴 RED (NOT passed — issuance refused)
-Target: 0xBAD...
-
-Evidence:
-  ✗ [risk] denylist:  hit state.config.denylist (issuer block list)
-  ✓ [ok]   is_contract: cast code → 0x, confirmed EOA
-
-Rating: 1 risk → RED
-Action: write state.diligence.passed=false; refuse all issuance to this address.
+[onchain-diligence] target=0xabc… role=issuer_self
+  ├─ is_contract       : bytecode present              → warn
+  ├─ code_size         : 14820 bytes                   → ok
+  ├─ balance           : 2.1 PHRS                      → ok
+  ├─ tx_count          : 318                           → ok
+  ├─ account_age       : first tx 410d ago             → ok
+  ├─ counterparty_set  : 42 cp, 0 denylist hits        → ok
+  ├─ contract_verified : verified_by=manual (📋)       → ok
+  ├─ privileged_powers : multisig owner, timelock on   → ok
+  └─ proxy_upgradeable : impl set, timelock gov        → warn
+→ risk=0, warn=2 → 🟡 YELLOW, passed=true — review proxy upgrade path
 ```
+
+---
+
+## Related
+
+- Sanctions (#1/#11): `sanctions-screening.md`
+- Off-chain: `offchain-diligence.md`
+- Infer citations: `compliance-knowledge.md`
+- Integration: `docs/diligence/INTEGRATION.md`

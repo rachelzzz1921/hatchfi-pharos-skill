@@ -106,7 +106,7 @@ skills/<SYMBOL>-asset/
 | 冻结/解冻 | setAddressFrozen | 🟡 | references/MPF-issuance.md |
 | 派息 | depositDividend | 🔴 | references/MPF-dividend.md |
 | 查/领分红 | dividendOf/claim | 🟢 | references/MPF-dividend.md |
-| 发行前尽调 | onchain diligence | 🟢 | references/MPF-diligence.md |
+| 发行前尽调（Stage 0–2） | diligence 全流程 | 🟢 | references/MPF-diligence-offchain.md · MPF-diligence-onchain.md · MPF-sanctions.md |
 （合约地址 0xABC... 已写死，无需再传 token 参数）
 ```
 

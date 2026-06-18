@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "description": "RWA red flags — Claude R2 numbering aligned with compliance-knowledge.md",
+  "flags": [
+    { "id": 1, "check": "sanctions_screen", "layer": "sanctions", "severity": "critical", "flag": "risk" },
+    { "id": 3, "check": "code_size", "layer": "onchain", "trigger": "self_destructed", "flag": "risk" },
+    { "id": 7, "check": "counterparty_set", "layer": "onchain", "trigger": "denylist_hit", "flag": "risk" },
+    { "id": 9, "check": "privileged_powers", "layer": "onchain", "trigger": "stacked_centralization", "flag": "risk" },
+    { "id": 12, "check": "issuer_background", "layer": "offchain", "trigger": "fake_license", "flag": "risk" },
+    { "id": 14, "check": "legal_wrapper", "layer": "offchain", "trigger": "no_prospectus", "flag": "risk" },
+    { "id": 13, "check": "custodian_attestation", "layer": "offchain", "trigger": "no_por", "flag": "warn" },
+    { "id": 15, "check": "audit_recency", "layer": "offchain", "trigger": "audit_stale_12mo", "flag": "warn" },
+    { "id": 8, "check": "contract_verified", "layer": "onchain", "trigger": "unverified_source", "flag": "warn" },
+    { "id": 10, "check": "proxy_upgradeable", "layer": "onchain", "trigger": "upgrade_no_timelock", "flag": "warn" },
+    { "id": "kyc_expiry_check", "check": "kyc_expiry_check", "layer": "offchain", "trigger": "expired", "flag": "risk" },
+    { "id": "sanctions_list_stale", "check": "sanctions_list_stale", "layer": "sanctions", "trigger": "snapshot_age_gt_30d", "flag": "warn" }
+  ]
+}

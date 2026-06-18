@@ -60,6 +60,21 @@ After passing, run the write command; then **must** `cast receipt <txhash>` and 
 Three stages are one pipeline and one complete agent: admission (diligence) → execution (compliant issuance) → **private operating asset for the issuer**.
 The spawned skill serves the issuer first; external reuse is an **explicit, scoped opt-in**, not the default.
 
+### Diligence sub-pipeline (Stage 0 → 1 → 2)
+
+Before any cast in Phase ①, run the three-stage diligence workflow:
+
+```
+Stage 0  Background + deposit consent  →  offchain-diligence.md
+Stage 1  checks_run / skipped_checks  →  role matrix in docs/diligence/INTEGRATION.md
+Stage 2  cast + local compares + rating →  onchain-diligence.md · sanctions-screening.md
+```
+
+- Set `state.diligence.target_role` — see role map in `offchain-diligence.md` (Claude codes ISS/CUS/INT/INV/SUB = HatchFi enum values).
+- Off-chain PII (e.g. `kyc_expiry`) requires **deposit consent** before writing `state.diligence.background`.
+- All on-chain + off-chain evidence merges into one `state.diligence.evidence[]`; rating remains pure function of flags.
+- Compliance infer citations → `compliance-knowledge.md` · integration archive → `docs/diligence/INTEGRATION.md`.
+
 ---
 
 ## Data sovereignty & consent gates (private by default)
@@ -126,7 +141,10 @@ Gate rule: `critical` / `high` block upload/publish; reports must redact secrets
 ### Compliance & admission
 | Intent | Capability | Tier | Reference |
 |---|---|---|---|
-| Pre-issuance diligence | onchain diligence | 🟢 | onchain-diligence |
+| Pre-issuance diligence (full pipeline) | Stage 0–2 diligence | 🟢 | offchain-diligence · onchain-diligence |
+| On-chain address checks | cast read-only + oracle | 🟢 | onchain-diligence · sanctions-screening |
+| Off-chain background / KYC fields | background gather + compare | 🟢 | offchain-diligence |
+| Compliance rules & infer citations | static knowledge | 🟢 | compliance-knowledge |
 | Verify holding eligibility | isVerified | 🟢 | rwa-issuance |
 | Register compliant investor | registerIdentity | 🟡 | rwa-issuance |
 | Batch register investors | batchRegisterIdentity | 🟡 | rwa-issuance |

@@ -17,9 +17,10 @@ This skill is built **for that stack**:
 
 ```text
 Agent A: Compliant RWA Issuance Agent
-  ├─ diligence gate (read-only cast, RED blocks issuance)
+  ├─ diligence pipeline (sanctions + on-chain + off-chain, RED blocks issuance)
+  ├─ MockOFACRegistry @ 0x4FD3…F400 (Atlantic)
   ├─ deploy + smoke on Atlantic (PROVEN: MPF @ 0xfef7…Aa3DE)
-  └─ spawn skills/MPF-asset/
+  └─ spawn skills/MPF-asset/ (4 diligence refs)
 
 Agent B, C, … : import MPF-asset skill
   └─ manage whitelist / mint / dividends without redeploying

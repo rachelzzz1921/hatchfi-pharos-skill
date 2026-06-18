@@ -1,33 +1,64 @@
 # Worked Example · Full Issuance Flow (Atlantic · MPF)
 
-> Example state: `state.example.json` · Spawned child: `skills/MPF-asset/`  
-> **Live contract**: [`0xfef7519bebda6c47af49583dbc9e60801f8aa3de`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
+> Example state: `state.example.json` · Spawned child: `skills/MPF-asset/` (v5)  
+> **Live contract**: [`0xfef7519bebda6c47af49583dbc9e60801f8aa3de`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)  
+> **Mock OFAC oracle**: [`0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400)
 
-This is the **exact flow** the submission package ran on Pharos Atlantic Testnet.
+This is the **exact flow** the submission package runs on Pharos Atlantic Testnet.
 
 ## Setup
 
 ```bash
-cd pharos-rwa-skill
+cd pharos-rwa-skill   # or: cd "/Users/chenzhiwei/Desktop/skill to anything/pharos-rwa-skill"
 export PATH="$HOME/.foundry/bin:$PATH"
-export PRIVATE_KEY=0x...   # local only
+export PRIVATE_KEY=0x...   # local shell only — never commit
 export PHAROS_RPC_URL=https://atlantic.dplabs-internal.com
 export RPC=$PHAROS_RPC_URL
 export PK=$PRIVATE_KEY
 export DEPLOYER=$(cast wallet address --private-key $PK)
+export ORACLE=0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400
 ```
 
-## Step 1 · Diligence gate (read-only)
+## Step 0 · Sync sanctions snapshot (once per clone)
 
 ```bash
-# Example checks from references/onchain-diligence.md
-cast code $DEPLOYER --rpc-url $RPC          # 0x → EOA
-cast balance $DEPLOYER --rpc-url $RPC --ether
-cast nonce $DEPLOYER --rpc-url $RPC
+npm run diligence:sync
+# → assets/knowledge/denylist_ofac_eth.json
+# → merges into local state.json (gitignored)
 ```
 
-Agent writes evidence → `state.json` → `diligence.rating=GREEN`, `passed=true`.  
-See `state.example.json` for the full shape.
+## Step 1 · Diligence gate (Stage 0–2)
+
+### Stage 0 — background (off-chain)
+
+Collect `target_role`, `background.consent_granted`, KYC/jurisdiction fields per `references/offchain-diligence.md`.
+
+### Stage 1 — sanctions (#1/#11)
+
+```bash
+# Local denylist membership (after diligence:sync)
+# Oracle path:
+cast call $ORACLE "isSanctioned(address)(bool)" $TARGET --rpc-url $RPC
+cast call $ORACLE "isSanctioned(address)(bool)" 0x7F367cC41522cE07553e823bf3be79A889DEbe1B --rpc-url $RPC
+# → true (RED demo)
+```
+
+### Stage 2 — on-chain (#2–#10)
+
+```bash
+cast code $TARGET --rpc-url $RPC
+cast codesize $TARGET --rpc-url $RPC
+cast balance $TARGET --rpc-url $RPC --ether
+cast nonce $TARGET --rpc-url $RPC
+```
+
+Agent merges all evidence → `state.diligence` → pure-function rating:
+
+- any `risk` → **RED** → refuse mint/registerIdentity
+- ≥2 warn, no risk → **YELLOW**
+- ≤1 warn → **GREEN**
+
+See `state.example.json` for schema shape (`target_role`, `list_snapshots`, `checks_run`).
 
 ## Step 2 · Deploy CompliantRWAToken
 
@@ -38,50 +69,52 @@ npm run deploy:pharos
 # Tx:     0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d
 ```
 
-## Step 3 · Smoke · register + mint
+## Step 3 · Smoke (register + mint)
 
 ```bash
-npm run smoke:pharos
-# mint(deployer, 1e18) → tx 0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541
-# isVerified(deployer)=true, balanceOf=1e18, holderCount=1
+export TOKEN=0xfef7519bebda6c47af49583dbc9e60801f8aa3de
+export INV=$DEPLOYER
+cast send $TOKEN "registerIdentity(address,uint16)" $INV 840 --rpc-url $RPC --private-key $PK
+cast send $TOKEN "mint(address,uint256)" $INV 1000000000000000000000 --rpc-url $RPC --private-key $PK
+cast call $TOKEN "isVerified(address)(bool)" $INV --rpc-url $RPC
 ```
 
-Manual equivalent:
-
-```bash
-TOKEN=0xfef7519bebda6c47af49583dbc9e60801f8aa3de
-cast send $TOKEN "registerIdentity(address,uint16)" $DEPLOYER 840 \
-  --rpc-url $RPC --private-key $PK
-cast send $TOKEN "mint(address,uint256)" $DEPLOYER 1000000000000000000 \
-  --rpc-url $RPC --private-key $PK
-cast receipt <txhash> --rpc-url $RPC --json   # status must be 0x1
-```
-
-## Step 4 · Spawn asset skill (flywheel)
+## Step 4 · Spawn private operating skill
 
 ```bash
 npm run spawn:asset
-# → skills/MPF-asset/SKILL.md + references/MPF-*.md
+# → skills/MPF-asset/ with 4 diligence references + issuance + dividend
 ```
 
-Any other agent can now import `skills/MPF-asset/` and operate MPF **without redeploying**.
-
-## Step 5 · Verify reads (anyone)
+## Optional · Deploy your own Mock Oracle
 
 ```bash
-cast call $TOKEN "name()(string)" --rpc-url $RPC
-cast call $TOKEN "symbol()(string)" --rpc-url $RPC
-cast call $TOKEN "isVerified(address)(bool)" $DEPLOYER --rpc-url $RPC
-cast call $TOKEN "balanceOf(address)(uint256)" $DEPLOYER --rpc-url $RPC
-cast call $TOKEN "holderCount()(uint256)" --rpc-url $RPC
+npm run deploy:mock-ofac
+# writes state.config.ofac_oracle (local only)
 ```
 
-## What this proves for judges
+## Output samples
 
-| Criterion | Evidence in this flow |
-|---|---|
-| Technical quality | 24 Foundry tests + live contract on Atlantic |
-| Agent use case | Diligence → deploy → mint with pre-checks + state.json |
-| Reusability | `skills/MPF-asset/` spawned with fixed address |
-| Pharos integration | chainId 688689, Foundry/cast, Skill Engine pre-checks |
-| Flywheel | Parent skill produces child skill — **already done for MPF** |
+### GREEN (clean investor EOA)
+
+```
+Diligence: 🟢 GREEN (passed)
+Target: 0xA54A… role=investor
+Evidence: sanctions_screen ok · wallet_maturity ok · kyc_expiry ok
+→ proceed to registerIdentity / mint
+```
+
+### YELLOW (proxy + contract wallet warns)
+
+```
+Diligence: 🟡 YELLOW (passed — review recommended)
+→ risk=0, warn=2 · human review before whitelisting
+```
+
+### RED (sanctions hit)
+
+```
+Diligence: 🔴 RED (NOT passed)
+Evidence: ofac_sanctioned → true (0x7F367…)
+→ refuse all issuance to target
+```

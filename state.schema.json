@@ -58,6 +58,7 @@
           "description": "发行人反复确认的默认偏好，发行时用于预填",
           "properties": {
             "jurisdictions": { "type": "array", "items": { "type": "integer" }, "description": "常用司法辖区 ISO 3166 地区码" },
+            "allowed_jurisdictions": { "type": "array", "items": { "type": "string" }, "description": "允许投资的 ISO 3166 alpha-2 列表，供 jurisdiction_match 比对" },
             "default_max_holders": { "type": "integer", "description": "默认最大持有人数" },
             "default_max_balance_per_investor": { "type": "string", "description": "默认单投资者持仓上限" },
             "dividend_cadence": { "type": "string", "description": "派息节奏，如 'quarterly'" },
@@ -89,6 +90,14 @@
           "type": "array",
           "description": "禁投地址名单（黑名单/制裁名单）。尽调时若 target 命中，evidence.flag=risk → 评级 RED → 拒绝发行。",
           "items": { "type": "string", "description": "禁投地址" }
+        },
+        "ofac_oracle": {
+          "type": "string",
+          "description": "可选：MockOFACRegistry 或链上制裁 Oracle 地址。设置后尽调执行 cast call isSanctioned(address)。"
+        },
+        "denylist_source": {
+          "type": "string",
+          "description": "denylist 来源说明，如 assets/knowledge/denylist_ofac_eth.json"
         }
       }
     },
@@ -109,7 +118,49 @@
       "type": "object",
       "description": "发行前的尽调闸门结果（B skill 产出）",
       "properties": {
-        "target": { "type": "string", "description": "被尽调地址（托管方/发行方）" },
+        "session_id": { "type": "string", "description": "可选尽调会话 id，如 dd-20260618-xyz" },
+        "target": { "type": "string", "description": "被尽调地址（托管方/发行方/投资者）" },
+        "target_role": {
+          "type": "string",
+          "enum": ["investor", "custodian", "issuer_self", "intermediary", "underlying_asset", "large_subscriber"],
+          "description": "尽调对象角色（Claude 对照：INV/CUS/ISS/INT/SUB）。决定 Stage 1 检查子集"
+        },
+        "list_snapshots": {
+          "type": "object",
+          "description": "制裁/名单快照日期（公开事实，无需 consent）",
+          "properties": {
+            "ofac_eth": { "type": "string", "description": "YYYY-MM-DD，对应 denylist OFAC ETH 快照" }
+          }
+        },
+        "background": {
+          "type": "object",
+          "description": "Stage 0 链下背景摘要（PII 字段需 deposit consent）",
+          "properties": {
+            "jurisdiction": { "type": "string", "description": "ISO 3166 alpha-2" },
+            "entity_type": { "type": "string", "enum": ["individual", "corporate", "multisig"] },
+            "kyc_expiry": { "type": "string", "description": "YYYY-MM-DD" },
+            "asset_lien_status": { "type": "string", "enum": ["clear", "encumbered", "unknown"] },
+            "large_fiat_source_declared": { "type": "boolean" },
+            "consent_granted": { "type": "boolean", "description": "链下字段使用同意；false 则不得执行 off-chain checks" }
+          }
+        },
+        "checks_run": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Stage 2 实际执行的检查项 id 列表"
+        },
+        "skipped_checks": {
+          "type": "array",
+          "description": "因角色或配置跳过的检查及原因",
+          "items": {
+            "type": "object",
+            "properties": {
+              "check": { "type": "string" },
+              "reason": { "type": "string" }
+            },
+            "required": ["check", "reason"]
+          }
+        },
         "rating": { "type": "string", "enum": ["GREEN", "YELLOW", "RED", "UNCHECKED"], "description": "红黄绿三档" },
         "passed": { "type": "boolean", "description": "是否通过闸门。false 时 agent 必须拒绝一切发行操作" },
         "checked_at": { "type": "string" },
@@ -120,8 +171,11 @@
             "type": "object",
             "properties": {
               "check": { "type": "string", "description": "检查项标识，如 is_contract / tx_count / balance" },
-              "cmd": { "type": "string", "description": "实际执行的 cast 命令" },
-              "result": { "type": "string", "description": "命令返回的原始值" },
+              "cmd": { "type": "string", "description": "cast 命令或链下操作描述（questionnaire:…; verified_by=…）" },
+              "verified_by": { "type": "string", "enum": ["manual", "document", "regulator_db", "questionnaire", "explorer"], "description": "链下 evidence 可选：验证方式" },
+              "source": { "type": "string", "description": "可选：cast_logs_scan | explorer | unavailable | knowledge_mapping" },
+              "list_snapshot": { "type": "string", "description": "制裁比对使用的名单快照日期" },
+              "result": { "type": "string", "description": "命令返回的原始值或结构化摘要" },
               "infer": { "type": "string", "description": "从返回值推出的结论" },
               "flag": { "type": "string", "enum": ["ok", "warn", "risk"], "description": "该项的风险标记" }
             },

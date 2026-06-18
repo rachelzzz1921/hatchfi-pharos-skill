@@ -52,11 +52,25 @@
       "description": "Spawn evolution commands documented"
     },
     {
-      "id": "issuance_cheat_sheet",
+      "id": "ref_offchain_diligence",
       "category": "references",
-      "file": "references/rwa-issuance.md",
-      "must_contain": ["canTransfer", "registerIdentity", "forcedTransfer"],
-      "description": "Core issuance flows documented in manual reference"
+      "file": "references/offchain-diligence.md",
+      "must_contain": ["target_role", "issuer_background", "consent_granted"],
+      "description": "Off-chain diligence playbook present"
+    },
+    {
+      "id": "ref_sanctions_screening",
+      "category": "references",
+      "file": "references/sanctions-screening.md",
+      "must_contain": ["sanctions_screen", "list_snapshot"],
+      "description": "Sanctions screening playbook present"
+    },
+    {
+      "id": "ref_compliance_knowledge",
+      "category": "references",
+      "file": "references/compliance-knowledge.md",
+      "must_contain": ["erc3643_conformance", "ERC-3643"],
+      "description": "Compliance knowledge base present"
     }
   ],
   "logic_cases": [

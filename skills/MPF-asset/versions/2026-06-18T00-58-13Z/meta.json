@@ -1,8 +1,8 @@
 {
   "symbol": "MPF",
   "contract": "0xfef7519bebda6c47af49583dbc9e60801f8aa3de",
-  "version": 5,
-  "updated_at": "2026-06-18T00:58:13Z",
+  "version": 4,
+  "updated_at": "2026-06-17T10:10:34Z",
   "evolution": [
     {
       "action": "spawn",
@@ -27,14 +27,8 @@
       "at": "2026-06-17T10:10:34Z",
       "version": 4,
       "detail": "full deterministic regen from parent templates"
-    },
-    {
-      "action": "spawn",
-      "at": "2026-06-18T00:58:13Z",
-      "version": 5,
-      "detail": "full deterministic regen from parent templates"
     }
   ],
-  "spawned_at": "2026-06-18T00:58:13Z",
+  "spawned_at": "2026-06-17T10:10:34Z",
   "refined_at": "2026-06-17T10:08:09Z"
 }
