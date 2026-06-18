@@ -13,7 +13,7 @@
 [![live](https://img.shields.io/badge/Pharos_Atlantic_Testnet-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
 [![oracle](https://img.shields.io/badge/Mock_OFAC_预言机-已部署-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400)
 [![skill](https://img.shields.io/badge/hatched_Skill-private-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
-[![inspector](https://img.shields.io/badge/Skill_Inspector-8%2F100_LOW-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
+[![inspector](https://img.shields.io/badge/Skill_Inspector-10%2F100_LOW-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
 
 **[English](./README.md)**  ·  **中文**  ·  [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
@@ -51,7 +51,7 @@ HatchFi 是面向 Pharos 合规 RealFi 的 **Agent 原生发行层**。它将一
 | Mock OFAC 预言机（Atlantic） | 已完成 | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · 演示 RED @ `0x7F36…be1B` |
 | Skill eval 套件 | 已完成 | **52/52** · `npm run eval:skill` |
 | MPF 资产 Skill spawn | 已完成 | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) v5 · 子 Skill 含 4 份尽调 ref |
-| GitHub main | 已完成 | [`hatchfi-pharos-skill`](https://github.com/rachelzzz1921/hatchfi-pharos-skill) · commit `ed19e9e` |
+| GitHub main | 已完成 | [`hatchfi-pharos-skill`](https://github.com/rachelzzz1921/hatchfi-pharos-skill) |
 
 ---
 
@@ -256,7 +256,7 @@ HatchFi 是 Pharos **Skill**，不是脚本。Agent 遵循 [`SKILL.md`](./SKILL.
 | **安全审查**（[`docs/SECURITY.md`](./docs/SECURITY.md)） | 发现项已文档化；修复对应回归测试 |
 | **合规审查** | 修复 mint 绕过持有人/额度上限的合规关键问题 |
 | **生产就绪审查** | 见项目审查记录（validation 文档） |
-| **Pharos Skill Inspector** | [`8/100 LOW`](./docs/SKILL_SECURITY_REPORT.md) —— 0 critical / 0 high / 0 medium blocker |
+| **Pharos Skill Inspector** | [`10/100 LOW`](./docs/SKILL_SECURITY_REPORT.md) —— 0 critical / 0 high / 0 medium blocker |
 | **链上验证** | Atlantic **测试网**上 `preflight → deploy → smoke`，已执行的 receipt 均断言 `status == 1` |
 
 代表性修复（均有测试覆盖）：
@@ -302,6 +302,7 @@ Smoke 路径：若 deployer 已通过验证则跳过 `registerIdentity`；下方
 | 文档 | 内容 |
 |---|---|
 | [`SKILL.md`](./SKILL.md) | Agent 入口：能力索引、预检、风险档 |
+| [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) | 系统架构图、信任边界与验证 gate |
 | [可视化看板](./SUBMISSION_DASHBOARD.html) | 比赛展示与验证证据（EN/中文切换） |
 | [`docs/SUBMISSION.md`](./docs/SUBMISSION.md) | 提交概览与叙事 |
 | [`references/spawn-asset-skill.md`](./references/spawn-asset-skill.md) | spawn / refine / version / auto-refs / eval playbook |
@@ -321,7 +322,7 @@ src/CompliantRWAToken.sol      ERC-3643 风格 RWA 代币
 test/CompliantRWAToken.t.sol   24 项测试（含 fuzz 不变量）
 script/Deploy.s.sol            Foundry 部署脚本
 references/                    10 份 cast/forge playbook（含 4 份尽调）
-docs/diligence/              集成说明 · OFAC 同步 · Claude/Gemini 来源
+docs/diligence/              集成说明 · OFAC 同步 · 尽调来源归档
 assets/knowledge/              OFAC denylist 快照 · 红旗 · 制裁样例
 deployments/mock_ofac_atlantic.json  Mock OFAC 预言机记录（生成）
 references/generated/          自动生成的合约能力面（refs:generate）

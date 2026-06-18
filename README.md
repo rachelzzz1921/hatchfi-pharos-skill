@@ -13,7 +13,7 @@ Issue a compliant RWA on Pharos with an AI agent — and keep a private operatin
 [![live](https://img.shields.io/badge/Pharos_Atlantic_Testnet-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
 [![oracle](https://img.shields.io/badge/Mock_OFAC_Oracle-live-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400)
 [![skill](https://img.shields.io/badge/hatched_Skill-private-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
-[![inspector](https://img.shields.io/badge/Skill_Inspector-8%2F100_LOW-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
+[![inspector](https://img.shields.io/badge/Skill_Inspector-10%2F100_LOW-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
 
 **English**  ·  [中文](./README.zh.md)  ·  [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
@@ -52,7 +52,7 @@ It extends the official [Pharos Skill Engine](https://docs.pharos.xyz/tooling-an
 | Mock OFAC oracle (Atlantic) | Done | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · demo RED @ `0x7F36…be1B` |
 | Skill eval harness | Done | **52/52** · `npm run eval:skill` |
 | MPF asset Skill spawn | Done | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) v5 · 4 diligence refs per child |
-| GitHub main | Done | [`hatchfi-pharos-skill`](https://github.com/rachelzzz1921/hatchfi-pharos-skill) · commit `ed19e9e` |
+| GitHub main | Done | [`hatchfi-pharos-skill`](https://github.com/rachelzzz1921/hatchfi-pharos-skill) |
 
 ---
 
@@ -266,7 +266,7 @@ Before release, HatchFi went through a layered review loop. Issues found were fi
 | **Security review** ([`docs/SECURITY.md`](./docs/SECURITY.md)) | Findings documented; fixes pinned by named regression tests |
 | **Compliance review** | Found and closed a compliance-critical gap (`mint` bypassing holder/balance caps) — issuance now enforces the same `canTransfer` rules as transfers |
 | **Production-readiness review** | Documented in project review notes (see validation docs) |
-| **Pharos Skill Inspector** | [`8/100 LOW`](./docs/SKILL_SECURITY_REPORT.md) — 0 critical / 0 high / 0 medium blockers |
+| **Pharos Skill Inspector** | [`10/100 LOW`](./docs/SKILL_SECURITY_REPORT.md) — 0 critical / 0 high / 0 medium blockers |
 | **On-chain verification** | `preflight → deploy → smoke` on Atlantic **Testnet**, every executed receipt asserted `status == 1` |
 
 Selected fixes (all test-covered):
@@ -312,6 +312,7 @@ Anyone can verify independently in ~2 minutes: `git clone` → `npm run build &&
 | Doc | What's inside |
 |---|---|
 | [`SKILL.md`](./SKILL.md) | Agent entry — capability index, pre-checks, risk tiers |
+| [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) | System diagram, trust boundaries, and verification gates |
 | [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html) | Submission overview & verification evidence (EN/中文) |
 | [`docs/SUBMISSION.md`](./docs/SUBMISSION.md) | Submission overview and narrative |
 | [`references/spawn-asset-skill.md`](./references/spawn-asset-skill.md) | Spawn / refine / version / auto-refs / eval playbook |
@@ -331,7 +332,7 @@ src/CompliantRWAToken.sol      ERC-3643-style RWA token
 test/CompliantRWAToken.t.sol   24 tests (incl. fuzz invariant)
 script/Deploy.s.sol            Foundry deploy script
 references/                    10 cast/forge playbooks (incl. 4 diligence)
-docs/diligence/              integration notes · OFAC sync · Claude/Gemini sources
+docs/diligence/              integration notes · OFAC sync · diligence source archive
 assets/knowledge/              OFAC denylist snapshot · red flags · sanctions samples
 deployments/mock_ofac_atlantic.json  Mock OFAC oracle record (generated)
 references/generated/          auto-generated contract surface (refs:generate)

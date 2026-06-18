@@ -1,6 +1,6 @@
 # Diligence Enhancement Changelog (2026-06-18)
 
-> Tracks the Gemini + Claude diligence expansion merged into HatchFi. Full integration notes: [`INTEGRATION.md`](./INTEGRATION.md).
+> Tracks the diligence expansion merged into HatchFi. Full integration notes: [`INTEGRATION.md`](./INTEGRATION.md).
 
 ## Summary
 

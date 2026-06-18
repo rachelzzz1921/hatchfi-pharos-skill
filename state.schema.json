@@ -123,7 +123,7 @@
         "target_role": {
           "type": "string",
           "enum": ["investor", "custodian", "issuer_self", "intermediary", "underlying_asset", "large_subscriber"],
-          "description": "尽调对象角色（Claude 对照：INV/CUS/ISS/INT/SUB）。决定 Stage 1 检查子集"
+          "description": "尽调对象角色（aliases: INV/CUS/ISS/INT/SUB）。决定 Stage 1 检查子集"
         },
         "list_snapshots": {
           "type": "object",

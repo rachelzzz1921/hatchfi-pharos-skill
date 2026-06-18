@@ -23,8 +23,10 @@ Assert: `cast receipt <txhash>` with `status==1` → write `state.dividends[]{am
 
 ```bash
 cast call <token> "dividendOf(address)(uint256)" <holder> --rpc-url $RPC
+cast call <token> "dividendPerShareCumulative()(uint256)" --rpc-url $RPC
+cast call <token> "undistributedDividend()(uint256)" --rpc-url $RPC
 ```
-Return = settled `withdrawableDividend` + unsettled (balance × cumulative per-share delta). Display directly — no tx.
+`dividendOf(holder)` return = settled `withdrawableDividend` + unsettled (balance × cumulative per-share delta). `dividendPerShareCumulative` is the global accumulator; `undistributedDividend` is recoverable rounding dust. Display directly — no tx.
 
 ---
 

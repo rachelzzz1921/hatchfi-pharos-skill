@@ -1,23 +1,23 @@
 # 尽调 / 合规审查增强 · 整合档案
 
-> 归档 **Gemini R1/R2** + **Claude R2** 输出，及 HatchFi Skill 适配说明。  
-> Claude 原始稿：`docs/diligence/claude-source/`（来自 `HatchFi 合规 RWA Agent 尽调体系扩展方案/`）
+> 归档前几轮外部审查草稿与 HatchFi Skill 适配说明。  
+> 原始外部草稿已清理出提交包；本文件仅保留最终采用的设计差异和落地位置。
 
 ---
 
-## 1. 来源与状态
+## 1. 迭代来源与状态
 
-| 来源 | 内容 | 整合状态 |
+| 迭代 | 内容 | 整合状态 |
 |---|---|---|
-| Gemini R1 | 行业调研、扩展 checklist、三阶段 workflow | ✅ 已适配 |
-| Gemini R2 | Mock Oracle、Python Orchestrator、System Prompt | ⚠️ 部分采纳 |
-| **Claude R2** | 4 份 reference（链上 11 项、链下 ISS/CUS/INT、OFAC 快照、ERC-3643 对照） | ✅ **已落地** → `references/*.md` |
+| Research round 1 | 行业调研、扩展 checklist、三阶段 workflow | ✅ 已适配 |
+| Research round 2 | Mock Oracle、Python Orchestrator、System Prompt | ⚠️ 部分采纳 |
+| Reference hardening round | 4 份 reference（链上 11 项、链下 ISS/CUS/INT、OFAC 快照、ERC-3643 对照） | ✅ **已落地** → `references/*.md` |
 
 ---
 
-## 2. Claude R2 核心增量（相对 Gemini 迭代版）
+## 2. 核心增量（相对早期迭代版）
 
-| 主题 | Claude 贡献 | 落地位置 |
+| 主题 | 最终增量 | 落地位置 |
 |---|---|---|
 | 链上 5→11 项 | `account_age`, `counterparty_set`, `contract_verified`, `privileged_powers`, `proxy_upgradeable` | `onchain-diligence.md` |
 | 链下 ISS/CUS/INT | `issuer_background`, `legal_wrapper`, `audit_recency`, `custodian_attestation` | `offchain-diligence.md` |
@@ -29,22 +29,22 @@
 
 ---
 
-## 3. Claude vs Gemini vs HatchFi 差异（最终采用）
+## 3. 早期迭代 vs 最终采用
 
-| 主题 | Gemini | Claude | **HatchFi 采用** |
+| 主题 | 早期方案 | 强化方案 | **HatchFi 采用** |
 |---|---|---|---|
 | 链下 evidence | 必须有 `cmd` | 不要 `cmd`，用 `verified_by` | **`cmd` 保留**（链下写 `questionnaire:…`）+ **可选 `verified_by`** |
-| consent=false | → risk | → skip 链下，仍可链上评级 | **Claude** |
+| consent=false | → risk | → skip 链下，仍可链上评级 | **skip 链下，仍可链上评级** |
 | 制裁数据源 | Mock Oracle only | 0xB10C GitHub + 快照时效 | **两者并存** |
-| 链上项数 | 5–7 | 11 编号 | **Claude 11 项** |
+| 链上项数 | 5–7 | 11 编号 | **11 项** |
 | Python Orchestrator | 提议 | 无 | **拒绝** |
 | `diligence_session` | 提议 | 无 | **拒绝** — 扩展现有 `diligence` |
 
 ---
 
-## 4. 角色 → 检查子集（Claude 矩阵 + HatchFi enum）
+## 4. 角色 → 检查子集（HatchFi enum）
 
-| target_role | Claude | 必跑（摘要） |
+| target_role | Alias | 必跑（摘要） |
 |---|---|---|
 | `issuer_self` | ISS | sanctions + onchain #2–10 + issuer_background, legal_wrapper, audit_recency |
 | `custodian` | CUS | sanctions + onchain + custodian_attestation, audit_recency |
@@ -67,8 +67,7 @@
 | `references/compliance-knowledge.md` | ERC-3643 + red flags + #16 |
 | `assets/knowledge/rwa_red_flags.json` | 编号 red flags v2 |
 | `scripts/refresh_ofac_denylist.sh` | OFAC ETH 快照刷新 |
-| `assets/rwa/MockOFACRegistry.sol` | testnet oracle（Gemini，保留） |
-| `docs/diligence/claude-source/*.md` | Claude 原始四稿归档 |
+| `assets/rwa/MockOFACRegistry.sol` | testnet oracle（保留） |
 
 ---
 
@@ -97,6 +96,6 @@
 
 ---
 
-## 附录：Gemini 整合说明（历史）
+## 附录：早期整合说明（历史）
 
 见 git 历史 / DECISIONS.md 第六轮。Python Orchestrator 与独立 System Prompt 未采纳；Skill-native playbooks 为唯一编排面。

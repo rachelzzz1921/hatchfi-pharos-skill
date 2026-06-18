@@ -2,7 +2,7 @@
 
 > **Start here**
 > - Browser: open `SUBMISSION_DASHBOARD.html`
-> - Markdown: `SUBMISSION_DASHBOARD.md`
+> - Markdown: `docs/SUBMISSION.md`
 
 ## One-line pitch
 
@@ -40,7 +40,7 @@ Compliant RWA Issuance Agent (parent skill)
 |---|---|---|
 | Parent skill | `SKILL.md` + 10 references | Any Pharos agent can drive the full RWA issuance pipeline |
 | Child skill (generated) | `skills/MPF-asset/` | Operates **Manhattan Property Fund** at `0xfef7…Aa3DE` |
-| Contract | `CompliantRWAToken` @ Atlantic | Foundry tests + on-chain smoke prove compliant mint/verification |
+| Contract | `CompliantRWAToken` @ Atlantic | 24 Foundry tests + on-chain smoke prove compliant mint/verification |
 
 **Network effect**: each new RWA issued adds one composable capability unit; opt-in sharing can make compliant operations more reusable across agents on Pharos.
 
@@ -55,7 +55,18 @@ Compliant RWA Issuance Agent (parent skill)
 | Smoke note | `registerIdentity` skipped when deployer already verified; mint + receipt assert is the executed path |
 | Spawned child skill | `skills/MPF-asset/SKILL.md` (one command: `npm run spawn:asset`) |
 
-> Machine-readable records: `deployments/pharos.json` · `DEPLOYMENT_RESULT.md` · `COMPLETED_VALIDATION.md`
+> Machine-readable records: `deployments/pharos.json` · `DEPLOYMENT_RESULT.md` · `docs/COMPLETED_VALIDATION.md`
+
+### Evidence slots for future assets / final-demo refresh
+
+| Slot | Current value | Update rule |
+|---|---|---|
+| RWA contract | `0xfef7519bebda6c47af49583dbc9e60801f8aa3de` | Replace after `npm run deploy:pharos` writes `deployments/pharos.json` |
+| Deploy receipt | `0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d` | Must link to PharosScan and show `status == 1` |
+| Smoke receipt | `0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541` | Must prove at least one compliant mint / holder state |
+| Sanctions oracle | `0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400` | Replace if a fresh Mock OFAC oracle is deployed |
+| Spawned Skill | `skills/MPF-asset/` | Replace with `skills/<SYMBOL>-asset/` after `npm run spawn:asset` |
+| Security report | `docs/SKILL_SECURITY_REPORT.md` | Regenerate with `npm run inspect:skill:md` before sharing |
 
 ## Contract architecture and compliance gate
 
@@ -123,4 +134,4 @@ npm run preflight:pharos && npm run deploy:pharos && npm run smoke:pharos && npm
 
 **On-chain**: MPF deployed on Atlantic **Testnet** · smoke mint 1e18 succeeded · `skills/MPF-asset/` spawned.
 
-See `COMPLETED_VALIDATION.md`. Private keys are read from environment variables only — never written to source, docs, or git.
+See `docs/COMPLETED_VALIDATION.md`. Private keys are read from environment variables only — never written to source, docs, or git.

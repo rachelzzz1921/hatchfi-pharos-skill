@@ -25,16 +25,16 @@ Stage 2  Execute + rate           ← onchain + sanctions + off-chain evidence m
 
 ## When to trigger
 
-- `target_role ∈ { issuer_self, custodian, intermediary, investor, large_subscriber }` (Claude codes: ISS / CUS / INT / INV / SUB — same values, see role table below).
+- `target_role ∈ { issuer_self, custodian, intermediary, investor, large_subscriber }` (role aliases: ISS / CUS / INT / INV / SUB — same values, see role table below).
 - Chain signals insufficient (EOA with no contract surface) and background needed to rate.
 
 **Off-chain evidence rule**: every row includes `verified_by` ∈ `{ manual, document, regulator_db, questionnaire }`. Use descriptive `cmd` (not cast) — e.g. `questionnaire:issuer_background; verified_by=regulator_db`.
 
 ---
 
-## Role codes (HatchFi = Claude)
+## Role aliases (HatchFi enum)
 
-| HatchFi `target_role` | Claude | Typical target |
+| HatchFi `target_role` | Alias | Typical target |
 |---|---|---|
 | `issuer_self` | ISS | Issuer / SPV ops wallet |
 | `custodian` | CUS | Custodian wallet |

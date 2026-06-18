@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "description": "RWA red flags — Claude R2 numbering aligned with compliance-knowledge.md",
+  "description": "RWA red flags — numbered taxonomy aligned with compliance-knowledge.md",
   "flags": [
     { "id": 1, "check": "sanctions_screen", "layer": "sanctions", "severity": "critical", "flag": "risk" },
     { "id": 3, "check": "code_size", "layer": "onchain", "trigger": "self_destructed", "flag": "risk" },

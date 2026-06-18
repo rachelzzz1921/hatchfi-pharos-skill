@@ -70,7 +70,7 @@ Stage 1  checks_run / skipped_checks  →  role matrix in docs/diligence/INTEGRA
 Stage 2  cast + local compares + rating →  onchain-diligence.md · sanctions-screening.md
 ```
 
-- Set `state.diligence.target_role` — see role map in `offchain-diligence.md` (Claude codes ISS/CUS/INT/INV/SUB = HatchFi enum values).
+- Set `state.diligence.target_role` — see role map in `offchain-diligence.md` (role aliases ISS/CUS/INT/INV/SUB map to HatchFi enum values).
 - Off-chain PII (e.g. `kyc_expiry`) requires **deposit consent** before writing `state.diligence.background`.
 - All on-chain + off-chain evidence merges into one `state.diligence.evidence[]`; rating remains pure function of flags.
 - Compliance infer citations → `compliance-knowledge.md` · integration archive → `docs/diligence/INTEGRATION.md`.
@@ -151,6 +151,7 @@ Gate rule: `critical` / `high` block upload/publish; reports must redact secrets
 | Remove investor eligibility | removeIdentity | 🟡 | rwa-issuance |
 | Query investor jurisdiction | investorCountry | 🟢 | rwa-issuance |
 | Pre-check transfer compliance | canTransfer | 🟢 | rwa-issuance |
+| Query compliance limits | maxHolders / maxBalancePerInvestor | 🟢 | rwa-issuance · generated/contract-surface |
 | Adjust compliance rules | setComplianceRules | 🟡 | rwa-issuance |
 
 ### Yield distribution
@@ -158,6 +159,7 @@ Gate rule: `critical` / `high` block upload/publish; reports must redact secrets
 |---|---|---|---|
 | Distribute yield | depositDividend | 🔴 | rwa-dividend |
 | Query claimable yield | dividendOf | 🟢 | rwa-dividend |
+| Query dividend accounting | dividendPerShareCumulative / undistributedDividend | 🟢 | rwa-dividend · generated/contract-surface |
 | Claim yield | claimDividend | 🟢 | rwa-dividend |
 
 ### Asset management
@@ -169,6 +171,7 @@ Gate rule: `critical` / `high` block upload/publish; reports must redact secrets
 | Unfreeze partial balance | unfreezePartialTokens | 🟡 | rwa-issuance |
 | Query frozen balance | frozenTokens | 🟢 | rwa-issuance |
 | Query holder count | holderCount | 🟢 | rwa-issuance |
+| Query full contract surface | 30 callable entries + 12 events + 5 errors | 🟢 | generated/contract-surface |
 | Force transfer | forcedTransfer | 🔴 | rwa-issuance |
 | Recover lost wallet | recoveryAddress | 🔴 | rwa-issuance |
 | Grant operator | addAgent | 🟡 | rwa-issuance |

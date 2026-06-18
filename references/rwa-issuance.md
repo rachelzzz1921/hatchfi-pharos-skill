@@ -164,11 +164,15 @@ While paused, all transfers (including mint) blocked by `_update` hook.
 | burn | `burn(address,uint256)` | from, amount | totalSupply ↓ |
 | canTransfer | `canTransfer(address,address,uint256)(bool,string)` | from, to, amount | `(true,"")` or `(false,<reason>)` |
 | setComplianceRules | `setComplianceRules(uint256,uint256)` | maxHolders, maxBalancePerInvestor (0=unlimited) | emit ComplianceRulesUpdated |
+| maxHolders | `maxHolders()(uint256)` | — | current holder cap (`0` = unlimited) |
+| maxBalancePerInvestor | `maxBalancePerInvestor()(uint256)` | — | current per-investor cap (`0` = unlimited) |
 | forcedTransfer | `forcedTransfer(address,address,uint256)` | from, to (must isVerified), amount | balance moved, bypasses global rules |
 | recoveryAddress | `recoveryAddress(address,address)` | lostWallet, newWallet | balance + verification migrated, emit RecoverySuccess |
 | depositDividend | `depositDividend()` payable | `--value <PHRS>` | dividendPerShareCumulative ↑ |
 | dividendOf | `dividendOf(address)(uint256)` | holder | claimable (incl. unsettled) |
 | holderCount | `holderCount()(uint256)` | — | current holder count |
+| dividendPerShareCumulative | `dividendPerShareCumulative()(uint256)` | — | cumulative dividend per share |
+| undistributedDividend | `undistributedDividend()(uint256)` | — | recoverable rounding dust |
 
 ---
 
