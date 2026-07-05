@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
- * Browser E2E audit — exercises React demo + SUBMISSION_DASHBOARD interactions.
- * Writes NDJSON directly to debug log (HTTP ingest may be unavailable in CI).
+ * Browser E2E audit — exercises the 3-step React demo + SUBMISSION_DASHBOARD.
+ * Prereq: `npm run web:dev` serving http://localhost:5173 (or set DEMO_URL).
+ * Writes NDJSON audit trail locally (path via UI_E2E_LOG, default .ui-e2e-log.ndjson).
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -11,18 +12,16 @@ import { chromium } from "playwright";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const cwd = path.join(__dirname, "..");
-const logPath = process.env.DEBUG_LOG_PATH || path.join(cwd, "..", ".cursor", "debug-26459c.log");
-const sessionId = "26459c";
-const runId = process.env.DEBUG_RUN_ID || "ui-e2e";
+const logPath = process.env.UI_E2E_LOG || path.join(cwd, ".ui-e2e-log.ndjson");
 const demoUrl = process.env.DEMO_URL || "http://localhost:5173";
 const dashboardPort = Number(process.env.DASHBOARD_PORT || 8799);
 const dashboardBase = process.env.DASHBOARD_BASE || `http://127.0.0.1:${dashboardPort}`;
 const dashboardUrl = `${dashboardBase}/SUBMISSION_DASHBOARD.html`;
 
-function log(hypothesisId, location, message, data = {}) {
-  const line = JSON.stringify({ sessionId, runId, hypothesisId, location, message, data, timestamp: Date.now() });
+function log(id, location, message, data = {}) {
+  const line = JSON.stringify({ id, location, message, data, timestamp: Date.now() });
   fs.appendFileSync(logPath, line + "\n");
-  console.log(hypothesisId, message, data.pass === false ? "FAIL" : data.pass === true ? "PASS" : "");
+  console.log(id, message, data.pass === false ? "FAIL" : data.pass === true ? "PASS" : "");
 }
 
 let failures = 0;
@@ -52,44 +51,77 @@ const dashboardServer = http.createServer((req, res) => {
 });
 await new Promise((resolve) => dashboardServer.listen(dashboardPort, "127.0.0.1", resolve));
 
+async function noHorizontalOverflow(label) {
+  const m = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth,
+  }));
+  if (m.scrollWidth > m.clientWidth + 2) {
+    fail("OVERFLOW", `e2e:overflow:${label}`, `Horizontal overflow at ${label}`, m);
+  } else {
+    pass("OVERFLOW", `e2e:overflow:${label}`, `No horizontal overflow at ${label}`, m);
+  }
+}
+
 try {
-  // --- React Demo App ---
+  // --- React Demo App (3-step choreography) ---
   await page.goto(demoUrl, { waitUntil: "networkidle", timeout: 30000 });
 
-  await page.locator(".tabs button", { hasText: /^Docs$/ }).click();
-  const docsVisible = await page.getByText("Judge Quick Test").isVisible();
-  if (docsVisible) pass("H2", "e2e:tab", "Docs tab renders", {});
-  else fail("H2", "e2e:tab", "Docs tab missing content", {});
+  // Hero: brand + live on-chain chip pointing at the hardened token
+  const chipHref = await page.locator(".live-chip").getAttribute("href");
+  if (chipHref?.includes("pharosscan.xyz/address/0x975704")) {
+    pass("HERO", "e2e:hero", "Live chip links to hardened token", { chipHref });
+  } else {
+    fail("HERO", "e2e:hero", "Live chip href wrong", { chipHref });
+  }
 
-  await page.locator(".tabs button", { hasText: /^Demo$/ }).click();
-  const demoVisible = await page.getByRole("button", { name: "Run Diligence" }).isVisible();
-  if (demoVisible) pass("H2", "e2e:tab", "Demo tab renders", {});
-  else fail("H2", "e2e:tab", "Demo tab missing content", {});
+  // Step 1: four scenario presets
+  const cardCount = await page.locator(".scenarios .scenario").count();
+  if (cardCount === 4) pass("STEP1", "e2e:scenarios", "4 scenario cards render", { cardCount });
+  else fail("STEP1", "e2e:scenarios", "Scenario card count wrong", { cardCount });
 
-  // RED path
-  await page.getByRole("button", { name: /sanctionsHit/ }).click();
-  await page.getByRole("button", { name: "Run Diligence" }).click();
-  await page.waitForTimeout(300);
-  const redText = await page.locator("pre").first().textContent();
-  if (redText?.includes('"rating": "RED"')) pass("H1", "e2e:screen", "RED rating shown", {});
-  else fail("H1", "e2e:screen", "RED rating missing", { snippet: redText?.slice(0, 120) });
+  // RED path: OFAC scenario → RED verdict → mint DENIED
+  await page.locator(".scenarios .scenario").nth(1).click();
+  await page.waitForTimeout(250);
+  const redVerdict = await page.locator(".verdict .rating").textContent();
+  const redClass = await page.locator(".verdict").getAttribute("class");
+  if (redVerdict === "RED" && redClass?.includes("r-RED")) {
+    pass("RED", "e2e:verdict", "OFAC scenario yields RED verdict", {});
+  } else {
+    fail("RED", "e2e:verdict", "RED verdict missing", { redVerdict, redClass });
+  }
+  const failedCheck = await page.locator(".checks li.fail .ckey").first().textContent();
+  if (failedCheck === "sanctions") pass("RED", "e2e:checks", "sanctions check marked failed", {});
+  else fail("RED", "e2e:checks", "sanctions check not marked failed", { failedCheck });
 
-  // GREEN path
-  await page.getByRole("button", { name: /sanctionsHit: true/ }).click();
-  await page.getByRole("button", { name: "Run Diligence" }).click();
-  await page.waitForTimeout(300);
-  const greenText = await page.locator("pre").first().textContent();
-  if (greenText?.includes('"rating": "GREEN"')) pass("H1", "e2e:screen", "GREEN rating shown", {});
-  else fail("H1", "e2e:screen", "GREEN rating missing", { snippet: greenText?.slice(0, 120) });
+  await page.locator(".mint-row button").click();
+  await page.waitForTimeout(250);
+  const deniedBadge = await page.locator(".mint-badge").textContent();
+  const gateResult = await page.locator(".gate-result pre").textContent();
+  if (deniedBadge?.includes("DENIED") && gateResult?.includes('"allowed": false')) {
+    pass("RED", "e2e:mint", "RED path mint denied", {});
+  } else {
+    fail("RED", "e2e:mint", "RED path mint not denied", { deniedBadge, snippet: gateResult?.slice(0, 100) });
+  }
 
-  await page.getByRole("button", { name: "Attest Current" }).click();
-  await page.waitForTimeout(200);
-  await page.getByRole("button", { name: "Gate Mint" }).click();
-  await page.waitForTimeout(300);
-  const mintText = await page.locator("pre").nth(1).textContent();
-  if (mintText?.includes('"allowed": true')) pass("H1", "e2e:mint", "Post-attest mint allowed", {});
-  else fail("H1", "e2e:mint", "Mint not allowed after attest", { snippet: mintText?.slice(0, 120) });
+  // GREEN path: clean scenario → GREEN verdict → mint ALLOWED
+  await page.locator(".scenarios .scenario").nth(0).click();
+  await page.waitForTimeout(250);
+  const greenVerdict = await page.locator(".verdict .rating").textContent();
+  if (greenVerdict === "GREEN") pass("GREEN", "e2e:verdict", "Clean scenario yields GREEN", {});
+  else fail("GREEN", "e2e:verdict", "GREEN verdict missing", { greenVerdict });
 
+  await page.locator(".mint-row button").click();
+  await page.waitForTimeout(250);
+  const allowedBadge = await page.locator(".mint-badge").textContent();
+  const gateResult2 = await page.locator(".gate-result pre").textContent();
+  if (allowedBadge?.includes("ALLOWED") && gateResult2?.includes('"allowed": true')) {
+    pass("GREEN", "e2e:mint", "GREEN path mint allowed after attest", {});
+  } else {
+    fail("GREEN", "e2e:mint", "GREEN mint not allowed", { allowedBadge, snippet: gateResult2?.slice(0, 100) });
+  }
+
+  // Step 3: MCP playground round-trips for all five gate tools
   const tools = [
     "diligence_screen",
     "diligence_rate",
@@ -98,39 +130,38 @@ try {
     "diligence_get_attestation",
   ];
   for (const tool of tools) {
-    await page.locator("select").selectOption(tool);
-    await page.getByRole("button", { name: "Run Tool" }).click();
+    await page.locator(".mcp-controls select").selectOption(tool);
+    await page.locator(".mcp-controls button").click();
     await page.waitForTimeout(250);
-    const mcpText = await page.locator("pre").last().textContent();
-    const ok = mcpText && !mcpText.includes("Error") && mcpText !== "Run selected tool to inspect JSON result.";
-    if (ok) pass("H3", "e2e:mcp", `Tool ${tool} ok`, { tool });
-    else fail("H3", "e2e:mcp", `Tool ${tool} failed`, { snippet: mcpText?.slice(0, 120) });
+    const mcpText = await page.locator(".mcp-io pre.io").last().textContent();
+    const ok = mcpText && !mcpText.startsWith("Error") && mcpText.trim().startsWith("{");
+    if (ok) pass("MCP", "e2e:mcp", `Tool ${tool} ok`, { tool });
+    else fail("MCP", "e2e:mcp", `Tool ${tool} failed`, { tool, snippet: mcpText?.slice(0, 120) });
   }
 
-  // H5: input overflow at mobile width
+  // Overflow guards (the request-panel hash previously blew out the page)
+  await noHorizontalOverflow("desktop");
   await page.setViewportSize({ width: 375, height: 812 });
-  await page.locator(".tabs button", { hasText: /^Demo$/ }).click();
-  const layout = await page.evaluate(() => {
-    const layoutEl = document.querySelector(".layout");
-    const input = document.querySelector("input");
-    if (!layoutEl || !input) return { error: "missing elements" };
-    const layoutRect = layoutEl.getBoundingClientRect();
-    const inputRect = input.getBoundingClientRect();
-    const bodyScrollW = document.documentElement.scrollWidth;
-    const bodyClientW = document.documentElement.clientWidth;
-    return {
-      layoutWidth: layoutRect.width,
-      inputRight: inputRect.right,
-      viewport: window.innerWidth,
-      horizontalOverflow: bodyScrollW > bodyClientW + 2,
-      inputOverflowsLayout: inputRect.right > layoutRect.right + 2,
-    };
-  });
-  if (layout.horizontalOverflow || layout.inputOverflowsLayout) {
-    fail("H5", "e2e:overflow", "Mobile input/layout overflow detected", layout);
+  await page.waitForTimeout(250);
+  await noHorizontalOverflow("mobile-375");
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.waitForTimeout(250);
+
+  // Bilingual toggle: EN → ZH flips headings, translated check reasons, <html lang>
+  await page.locator(".lang-toggle").click();
+  await page.waitForTimeout(250);
+  const zhState = await page.evaluate(() => ({
+    lang: document.documentElement.lang,
+    step1: document.querySelector(".step-head h2")?.textContent,
+    reason: document.querySelector(".checks .creason")?.textContent,
+  }));
+  if (zhState.lang === "zh-CN" && zhState.step1 === "选择场景" && /[一-鿿]/.test(zhState.reason || "")) {
+    pass("LANG", "e2e:lang", "ZH mode translates UI + check reasons", zhState);
   } else {
-    pass("H5", "e2e:overflow", "No mobile overflow detected", layout);
+    fail("LANG", "e2e:lang", "ZH toggle incomplete", zhState);
   }
+  await page.locator(".lang-toggle").click();
+  await page.waitForTimeout(200);
 
   // --- SUBMISSION_DASHBOARD ---
   await page.goto(dashboardUrl, { waitUntil: "domcontentloaded" });
@@ -153,8 +184,8 @@ try {
         inViewport: r.top >= navH && r.top <= window.innerHeight * 0.75,
       };
     }, id);
-    if (inView.found && inView.inViewport) pass("H6", "e2e:nav", `Nav scroll ok: ${id}`, inView);
-    else fail("H6", "e2e:nav", `Nav scroll failed: ${id}`, inView);
+    if (inView.found && inView.inViewport) pass("DASHNAV", "e2e:nav", `Nav scroll ok: ${id}`, inView);
+    else fail("DASHNAV", "e2e:nav", `Nav scroll failed: ${id}`, inView);
   }
 
   await page.getByRole("button", { name: "中文" }).click();
@@ -169,8 +200,8 @@ try {
     });
     return { lang: document.body.className, enVisible, zhVisible };
   });
-  if (zhOnly.lang === "lang-zh" && zhOnly.zhVisible && !zhOnly.enVisible) pass("H8", "e2e:lang", "ZH mode hides EN", zhOnly);
-  else fail("H8", "e2e:lang", "ZH toggle broken", zhOnly);
+  if (zhOnly.lang === "lang-zh" && zhOnly.zhVisible && !zhOnly.enVisible) pass("DASHLANG", "e2e:lang", "ZH mode hides EN", zhOnly);
+  else fail("DASHLANG", "e2e:lang", "ZH toggle broken", zhOnly);
 
   await page.evaluate(() => window.scrollTo(0, 2000));
   await page.waitForTimeout(200);
@@ -184,9 +215,9 @@ try {
     return { scrollY: window.scrollY, heroTop: rect ? rect.top : null };
   });
   if (topState.scrollY < 50 || (topState.heroTop != null && topState.heroTop <= 80)) {
-    pass("H7", "e2e:backTop", "Back to top works", topState);
+    pass("DASHTOP", "e2e:backTop", "Back to top works", topState);
   } else {
-    fail("H7", "e2e:backTop", "Back to top failed", topState);
+    fail("DASHTOP", "e2e:backTop", "Back to top failed", topState);
   }
 
   log("SUMMARY", "e2e:summary", "E2E finished", { failures });
