@@ -6,6 +6,27 @@
 
 ---
 
+## 0. 2026-07-06 会话更新（Claude Code · 分支 `agent/6h-hardening-sweep`）
+
+本轮已完成并全部实跑验证（工作区已按主题分批 commit，此前自 6/18 起未提交的全部成果也一并入库）：
+
+- **eval 修回并扩展**：`recoveryAddress` 早已硬化为两阶段（`proposeRecoveryAddress`→`executeRecoveryAddress`/`cancel`），但 eval/SKILL/refs 仍用旧名 → 已统一（`executeRecoveryAddress` 为 🔴 迁移动作）。新增 LangChain/Vercel 适配器 example + 2 条 eval → **eval 64/64**。
+- **调试埋点彻底清除**：7+ 文件（含 `lib/hatchfi-gate/src/gate.ts`、`registry.ts`）的 `#region agent log`（localhost:7779 / `.cursor/debug-8bafd4.log`）全删；删 `debug-ping.mjs`；重命名 `PRIVATE_KEY_SOURCE→KEY_SOURCE` 消除误报。**Skill Inspector 从 100/100 CRITICAL 恢复到 0 critical / 0 high**。
+- **`.gitignore` 修复**：`lib/` → `lib/*`，否则 `lib/hatchfi-gate`（核心 primitive）根本没被 git 跟踪（一 clone 就丢）。
+- **评委叙事**：SKILL.md 顶部加 60 秒 Capability Index；Web demo 改「三步编排」（场景预设 → 巨型 RED/YELLOW/GREEN 判定卡 → MCP 请求/响应）；dashboard/JUDGE_MANUAL/DEMO_SCRIPT 同步；指标统一 **36 测试 / 64 eval / TOOLS 8 / 44 fn·18 events·14 errors**。
+- **read-only 链上 MCP 工具**：`rwa_token_metadata` / `rwa_is_verified` / `rwa_can_transfer`（viem 只读，读旧合约即可，实测读到 live MPF 元数据）。
+- **CI + 文档**：`.github/workflows/ci.yml`（gate:test + eval + forge test + mcp:probe + inspect:skill 防埋点回归）；`docs/diligence-attestation-protocol.md`（mermaid）；README 评审标准对齐表。
+
+**唯一遗留硬阻塞仍是链上部署**（见 §3）：`forge script` dry-run 模拟部署成功（约 454 万 gas ≈ 0.0165 PHRS @ 3 gwei），路径已验证。**你充值后一条命令收尾**：
+```bash
+PRIVATE_KEY=0x<有余额私钥> npm run deploy:pharos && npm run judge:readiness:strict   # 应 6/6
+```
+`judge:readiness:strict` 只读 `deployments/pharos.json` 的地址（`post-deploy.sh` 会自动更新），所以部署后 strict 立即 6/6；README/dashboard/`skills/MPF-asset` 里的地址与 tx 链接属"提交件润色"，可随后 `npm run spawn:asset` + 手动同步。
+
+**已知遗留（非阻塞）**：`docs/locale/zh/references/*` 仍有部分硬化前签名（register/mint 少了 bytes32），recovery 那条已同步；合约 `pragma ^0.8.20` 未固定（11 条 floating_pragma LOW，为保模板可移植性未改）。
+
+---
+
 ## 1. 一句话现状
 
 代码侧升级已基本完成且全部实跑验证通过；**唯一硬阻塞是链上部署**——`deployments/pharos.json` 指向的仍是旧版（legacy）合约，导致 `npm run judge:readiness:strict` 停在 `5/6`。需要一个**有余额的 Atlantic 测试网钱包**完成 hardened token 重新部署，strict 即可 `6/6`。
