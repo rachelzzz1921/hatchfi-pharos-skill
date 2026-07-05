@@ -110,6 +110,8 @@ Sources: [EIP-3643](https://eips.ethereum.org/EIPS/eip-3643) · [ERC-3643 docs](
 | No smart-contract audit or &gt; 12 months | warn | `audit_recency` (#15) |
 | Unclear geographic restrictions | warn | `legal_wrapper_profile` / ClaimTopics |
 | Thin-liquidity flow anomaly (round-trip / wash pattern) | warn | `market_flow_integrity` (#10b) |
+| Duplicate tokenization (same asset fingerprint, other token) | **risk** | `duplicate_tokenization` (#19) |
+| No declared liquidity / exit path | warn | `liquidity_exit_path` (#20) |
 | Opaque mint/burn vs reserves | warn→**risk** (stacked) | `privileged_powers` (#9) + PoR |
 | Unverified / obfuscated source | warn | `contract_verified` (#8) |
 | Sanctioned address | **risk** | `sanctions_screen` (#1) |
@@ -165,3 +167,59 @@ This layer mostly produces **warn**; escalate to **risk** only when mapping hits
 ## Regulatory framing (not legal advice)
 
 Institution-grade RWA posture: compliance-first admission, explainable evidence, local data sovereignty. Does **not** replace licensed compliance officers.
+
+---
+
+## Paper alignment & deliberate omissions
+
+**Reference**: Borjigin, Zhou, He (2025) — *AI-Governed Agent Architecture for Web-Trustworthy Tokenization of Alternative Assets* · [arXiv:2507.00096](https://arxiv.org/abs/2507.00096)
+
+Qualitative concept architecture + real-estate case study. Implementation pilot listed as future work.
+
+### What HatchFi adopts
+
+| Paper mechanism | HatchFi implementation |
+|---|---|
+| Multi-agent orchestration of tokenization stages | Skill playbooks: sanctions → on-chain → off-chain → issuance → spawn |
+| Separation of duties + approvals before mint | Deterministic RED gate; verification/compliance signals must pass before agent mint |
+| On-chain approval / audit record | `onchain-attestation.md` — `DiligenceAttestationRegistry` stores evidence hash |
+| Duplicate asset tokenization check | `#19 duplicate_tokenization` + `AssetTokenizationRegistry` |
+| Post-issuance monitoring | `#10b market_flow_integrity` (read-only); full Monitoring Agent = roadmap |
+| Progressive human sign-off | YELLOW → human review; 🔴 high-risk ops need confirm card |
+
+### What HatchFi deliberately does NOT adopt (and why)
+
+| Paper mechanism | HatchFi choice | Rationale |
+|---|---|---|
+| AI Governance Agent (adaptive policy, anomaly-driven freeze) | **Deterministic pure-function rating** | Explainable, reproducible; avoids AI false-positive freeze / false-negative fraud |
+| Valuation Agent (authoritative AI pricing) | **No valuation output** | Model risk + liability; use valuation **divergence** as diligence signal only |
+| ABT staking / slash cryptoeconomics | **Roadmap narrative only** (EIP-8004 reputation via `evidence{}`) | Hackathon lacks calibration data; paper notes tuning difficulty |
+| Oracle-verified land registry on testnet | **`verified_by: manual`** honest boundary | Pharos Atlantic cannot assert global asset provenance |
+
+### Phase 2: contract-enforced mint gate (design sketch — not deployed)
+
+```solidity
+interface IDiligenceAttestation {
+    function isPassable(bytes32 evidenceHash) external view returns (bool);
+}
+
+// CompliantRWAToken.mint — future
+function mint(address to, uint256 amount, bytes32 evidenceHash) external onlyAgent {
+    if (!attestationRegistry.isPassable(evidenceHash)) revert DiligenceNotAttested();
+    _mint(to, amount);
+}
+```
+
+Phase 1: agent refuses RED + recommends attestation; contract does not yet enforce.
+
+**Pitch line**: HatchFi is a **deterministic, deployed** instance of the agent-orchestrated tokenization research direction — replacing the paper's AI governance black box with reproducible gates and replacing conceptual on-chain approval records with Atlantic testnet attestations.
+
+### Post-issuance monitoring (paper Monitoring Agent — without AI)
+
+After mint, Phase C uses **read-only** surveillance — see `post-issuance-monitoring.md`:
+
+- `#10b market_flow_integrity` (wash / round-trip patterns → warn)
+- Optional holder concentration + sanctions rescreen on new transfer counterparties
+- **No auto-freeze from ML** — risk flags surface evidence; freeze remains 🟡 human/agent confirm
+
+This closes the paper's lifecycle loop (onboard → mint → monitor) while keeping HatchFi's deterministic discipline.

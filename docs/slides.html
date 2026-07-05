@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HatchFi Diligence Gate Slides</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+      body {
+        margin: 0;
+        background: #050b09;
+        color: #ebfff6;
+        overflow: hidden;
+      }
+      .deck {
+        display: flex;
+        width: 100vw;
+        height: 100vh;
+        transition: transform 320ms ease;
+      }
+      .slide {
+        width: 100vw;
+        height: 100vh;
+        padding: 56px;
+        box-sizing: border-box;
+        display: grid;
+        align-content: center;
+        gap: 16px;
+        border-right: 1px solid #21463a;
+      }
+      h1, h2 { margin: 0; }
+      p, li { color: #a9d6c4; font-size: 1.1rem; line-height: 1.55; }
+      ul { margin: 0; padding-left: 24px; }
+      .hint {
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        color: #84cdb2;
+        font-size: 0.9rem;
+      }
+      code { color: #93f0ca; }
+    </style>
+  </head>
+  <body>
+    <main class="deck" id="deck">
+      <section class="slide">
+        <h1>HatchFi Diligence Gate</h1>
+        <p>A reusable trust layer for RWA agents on Pharos.</p>
+        <ul>
+          <li>Deterministic RED/YELLOW/GREEN decision</li>
+          <li>Attestation-backed mint gating</li>
+          <li>MCP/LangChain/Vercel adapters</li>
+        </ul>
+      </section>
+      <section class="slide">
+        <h2>What We Hardened</h2>
+        <ul>
+          <li>Recovery now requires identity binding</li>
+          <li>Recovery switched to propose/execute two-step flow</li>
+          <li>Roles split: compliance / minter / recovery</li>
+          <li>Mint now gated by on-chain diligence attestation</li>
+        </ul>
+      </section>
+      <section class="slide">
+        <h2>Judge-Friendly Verification</h2>
+        <ul>
+          <li><code>npm run gate:test</code> deterministic checks</li>
+          <li><code>npm run gate:demo</code> JSON envelope output</li>
+          <li><code>npm run judge:readiness</code> Atlantic read-only checks</li>
+          <li><code>npm run web:dev</code> visual interactive demo</li>
+        </ul>
+      </section>
+      <section class="slide">
+        <h2>Visible Demo Story</h2>
+        <ul>
+          <li>Toggle <code>sanctionsHit=true</code> → RED / blocked</li>
+          <li>Turn flags green + attest → gate mint allowed</li>
+          <li>Run MCP playground tools live in browser</li>
+        </ul>
+        <p>Every result is reproducible from explicit flags and evidence.</p>
+      </section>
+    </main>
+    <div class="hint">Use ← / → keys</div>
+    <script>
+      const deck = document.getElementById("deck");
+      let index = 0;
+      const total = deck.children.length;
+      function render() {
+        deck.style.transform = `translateX(-${index * 100}vw)`;
+      }
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight") index = Math.min(total - 1, index + 1);
+        if (e.key === "ArrowLeft") index = Math.max(0, index - 1);
+        render();
+      });
+    </script>
+  </body>
+  </html>

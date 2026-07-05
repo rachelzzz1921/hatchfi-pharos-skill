@@ -11,7 +11,7 @@
 |---|---|---|
 | Research round 1 | 行业调研、扩展 checklist、三阶段 workflow | ✅ 已适配 |
 | Research round 2 | Mock Oracle、Python Orchestrator、System Prompt | ⚠️ 部分采纳 |
-| Reference hardening round | 4 份 reference（链上 11 项、链下 ISS/CUS/INT、OFAC 快照、ERC-3643 对照） | ✅ **已落地** → `references/*.md` |
+| **Round 8 (paper-driven)** | arXiv:2507.00096 对齐 · #19/#20 · 链上存证 registry · onchain-attestation playbook | ✅ **已落地** |
 
 ---
 
@@ -21,6 +21,8 @@
 |---|---|---|
 | 链上 5→11 项 | `account_age`, `counterparty_set`, `contract_verified`, `privileged_powers`, `proxy_upgradeable` | `onchain-diligence.md` |
 | 链下 ISS/CUS/INT | `issuer_background`, `legal_wrapper_profile`, `tokenization_rights`, `audit_recency`, `custodian_attestation`, `distribution_eligibility` | `offchain-diligence.md` |
+| **#19 / #20** | `duplicate_tokenization`, `liquidity_exit_path` | `offchain-diligence.md` |
+| **链上存证** | `DiligenceAttestationRegistry` + `AssetTokenizationRegistry` | `assets/rwa/*.sol` · `onchain-attestation.md` |
 | 制裁层 #1/#11 | `sanctions_screen` + `sanctions_list_stale` + 0xB10C OFAC JSON | `sanctions-screening.md` + `scripts/refresh_ofac_denylist.sh` |
 | 合规知识 #16 | `erc3643_conformance` + 六合约对照 + modular spawn 建议 | `compliance-knowledge.md` |
 | 角色码 | ISS/CUS/INT/INV/SUB | 映射为 HatchFi `target_role` enum |
@@ -46,12 +48,12 @@
 
 | target_role | Alias | 必跑（摘要） |
 |---|---|---|
-| `issuer_self` | ISS | distribution_eligibility + sanctions + onchain #2–10,#10b + issuer_background, legal_wrapper_profile, tokenization_rights, audit_recency |
+| `issuer_self` | ISS | distribution_eligibility + sanctions + onchain #2–10,#10b + issuer_background, legal_wrapper_profile, tokenization_rights, audit_recency, **duplicate_tokenization (#19)**, **liquidity_exit_path (#20)** |
 | `custodian` | CUS | distribution_eligibility + sanctions + onchain + custodian_attestation, audit_recency |
 | `intermediary` | INT | distribution_eligibility + sanctions + issuer_background, legal_wrapper_profile, tokenization_rights（若承担发行） |
 | `investor` | INV | distribution_eligibility + sanctions + onchain + kyc_expiry, jurisdiction_match |
 | `large_subscriber` | SUB | INV 全集 + large_fiat_source（Tier A KYC） |
-| `underlying_asset` | — | asset_lien_status, tokenization_rights, legal_wrapper_profile, jurisdiction_match |
+| `underlying_asset` | — | asset_lien_status, tokenization_rights, legal_wrapper_profile, jurisdiction_match, **duplicate_tokenization (#19)**, **liquidity_exit_path (#20)** |
 
 完整规则见各 reference 检查表。
 
@@ -64,10 +66,13 @@
 | `references/onchain-diligence.md` | #2–#10 链上 cast |
 | `references/offchain-diligence.md` | Stage 0 链下 + ISS/CUS/INT |
 | `references/sanctions-screening.md` | #1/#11 制裁 |
-| `references/compliance-knowledge.md` | ERC-3643 + red flags + #16 |
-| `assets/knowledge/rwa_red_flags.json` | 编号 red flags v2 |
+| `references/compliance-knowledge.md` | ERC-3643 + red flags + #16 + paper alignment |
+| `references/onchain-attestation.md` | 尽调结论哈希上链 + asset 注册 |
+| `assets/knowledge/rwa_red_flags.json` | 编号 red flags v3 |
 | `scripts/refresh_ofac_denylist.sh` | OFAC ETH 快照刷新 |
 | `assets/rwa/MockOFACRegistry.sol` | testnet oracle（保留） |
+| `assets/rwa/DiligenceAttestationRegistry.sol` | 尽调存证 |
+| `assets/rwa/AssetTokenizationRegistry.sol` | 重复代币化登记 |
 
 ---
 
@@ -84,13 +89,25 @@
 | 12–15 | issuer_background … audit_recency | offchain | #12, #14 yes |
 | 17 | tokenization_rights | offchain | yes |
 | 18 | distribution_eligibility | offchain | yes |
+| 19 | duplicate_tokenization | offchain | yes |
+| 20 | liquidity_exit_path | offchain | no |
 | 16 | erc3643_conformance | knowledge | rare yes |
+| — | onchain_attestation | attestation | no (medium-risk write) |
 
 评级纯函数不变：`any risk → RED` · `≥2 warn → YELLOW` · `≤1 warn → GREEN`.
 
 ---
 
-## 7. 下一步
+## 7. Round 8 changelog (paper-driven)
+
+1. arXiv:2507.00096 alignment documented in `compliance-knowledge.md` · `docs/PAPER_ALIGNMENT.md`
+2. Checks #19 `duplicate_tokenization` · #20 `liquidity_exit_path`
+3. `DiligenceAttestationRegistry` + `AssetTokenizationRegistry` + `onchain-attestation.md`
+4. Phase 2 mint gate = design sketch only (agent-enforced in Phase 1)
+
+---
+
+## 8. 下一步
 
 1. ~~`npm run diligence:sync`~~ ✅ 已跑（93 地址 · 快照 2026-06-18）
 2. ~~`npm run spawn:asset`~~ ✅ MPF-asset v5 · 4 份 diligence reference

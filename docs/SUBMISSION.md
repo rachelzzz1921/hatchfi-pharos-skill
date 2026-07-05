@@ -40,7 +40,7 @@ Compliant RWA Issuance Agent (parent skill)
 |---|---|---|
 | Parent skill | `SKILL.md` + 10 references | Any Pharos agent can drive the full RWA issuance pipeline |
 | Child skill (generated) | `skills/MPF-asset/` | Operates **Manhattan Property Fund** at `0xfef7…Aa3DE` |
-| Contract | `CompliantRWAToken` @ Atlantic | 24 Foundry tests + on-chain smoke prove compliant mint/verification |
+| Contract | `CompliantRWAToken` @ Atlantic | 36 Foundry tests + on-chain smoke prove compliant mint/verification |
 
 **Network effect**: each new RWA issued adds one composable capability unit; opt-in sharing can make compliant operations more reusable across agents on Pharos.
 

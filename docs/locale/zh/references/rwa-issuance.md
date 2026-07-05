@@ -12,7 +12,7 @@
 |---|---|---|
 | 🟢 低 | 所有 view：isVerified / canTransfer 预检 / dividendOf / isFrozen / frozenTokens / holderCount / 尽调 | 全自动，无需确认 |
 | 🟡 中 | registerIdentity / batchRegisterIdentity / setAddressFrozen / freezePartialTokens / unfreezePartialTokens / setComplianceRules / addAgent | 自动执行 + 回写 state.history（留痕） |
-| 🔴 高 | deploy / mint / burn / forcedTransfer / recoveryAddress / depositDividend | 先出「确认卡片」，等人 confirm 才执行 |
+| 🔴 高 | deploy / mint / burn / forcedTransfer / executeRecoveryAddress / depositDividend | 先出「确认卡片」，等人 confirm 才执行 |
 
 ---
 
@@ -123,11 +123,13 @@ cast send <token> "forcedTransfer(address,address,uint256)" <from> <to> <amount>
 ```
 绕过 canTransfer 全局规则，仍要求 `to` 已 `isVerified`。确认卡片须写明「绕过合规规则、用于监管/法律场景、不可逆」。
 
-### 钱包恢复 🔴（投资者丢私钥）
+### 钱包恢复 🔴（投资者丢私钥，两阶段）
 ```bash
-cast send <token> "recoveryAddress(address,address)" <lostWallet> <newWallet> --rpc-url $RPC --private-key $PK
+cast send <token> "proposeRecoveryAddress(address,address,bytes32)" <lostWallet> <newWallet> <identityId> --rpc-url $RPC --private-key $PK
+# 等待 recoveryDelay
+cast send <token> "executeRecoveryAddress(bytes32)" <requestId> --rpc-url $RPC --private-key $PK
 ```
-迁移余额（含冻结部分），新钱包自动继承验证状态与地区。前置：`lostWallet` 余额 > 0。
+前置：新旧钱包须绑定同一 identityId（`investorIdentity`）。迁移余额（含冻结部分）与已结算未领分红，旧钱包身份被撤销。
 
 ### 合规规则调整 🟡
 ```bash
@@ -165,7 +167,8 @@ cast send <token> "unpause()" --rpc-url $RPC --private-key $PK
 | canTransfer | `canTransfer(address,address,uint256)(bool,string)` | from、to、amount | `(true,"")` 或 `(false,<reason>)` |
 | setComplianceRules | `setComplianceRules(uint256,uint256)` | maxHolders、maxBalancePerInvestor（0=不限） | emit ComplianceRulesUpdated |
 | forcedTransfer | `forcedTransfer(address,address,uint256)` | from、to（须 isVerified）、amount | 余额迁移，绕过全局规则 |
-| recoveryAddress | `recoveryAddress(address,address)` | lostWallet、newWallet | 余额+验证状态迁移，emit RecoverySuccess |
+| proposeRecoveryAddress | `proposeRecoveryAddress(address,address,bytes32)` | lostWallet、newWallet、identityId | 创建恢复请求（带 executeAfter 延迟） |
+| executeRecoveryAddress | `executeRecoveryAddress(bytes32)` | requestId | 延迟后执行迁移，emit RecoverySuccess |
 | depositDividend | `depositDividend()` payable | `--value <PHRS>` | dividendPerShareCumulative 增加 |
 | dividendOf | `dividendOf(address)(uint256)` | holder | 可领金额（含未结算） |
 | holderCount | `holderCount()(uint256)` | — | 当前持有人数 |

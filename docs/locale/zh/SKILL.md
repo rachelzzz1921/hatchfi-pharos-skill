@@ -159,7 +159,9 @@ Gate 规则：`critical` / `high` 为 blocker，禁止上传/发布；报告必�
 | 查冻结份额 | frozenTokens | 🟢 | rwa-issuance |
 | 查当前持有人数 | holderCount | 🟢 | rwa-issuance |
 | 强制划转 | forcedTransfer | 🔴 | rwa-issuance |
-| 恢复丢失钱包 | recoveryAddress | 🔴 | rwa-issuance |
+| 提议钱包恢复（时间锁） | proposeRecoveryAddress | 🟡 | rwa-issuance |
+| 执行钱包恢复（延迟后） | executeRecoveryAddress | 🔴 | rwa-issuance |
+| 取消待定恢复 | cancelRecoveryAddress | 🟡 | rwa-issuance |
 | 授予操作员权限 | addAgent | 🟡 | rwa-issuance |
 | 撤销操作员权限 | removeAgent | 🟡 | rwa-issuance |
 | 查操作员权限 | isAgent | 🟢 | rwa-issuance |

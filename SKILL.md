@@ -27,6 +27,33 @@
 
 ---
 
+## New Primitive Surface (judge-facing)
+
+HatchFi now exposes a reusable deterministic gate module under `lib/hatchfi-gate/`:
+
+- `diligence_screen`
+- `diligence_rate`
+- `diligence_gate_mint`
+- `diligence_get_attestation`
+
+Validation commands:
+
+```bash
+npm run gate:test
+npm run gate:cli
+npm run gate:demo
+npm run judge:readiness
+npm run web:dev
+```
+
+MCP server:
+
+```bash
+npm run mcp
+```
+
+---
+
 ## Write Operation Pre-checks (four steps — do not skip)
 
 | Step | Command | Pass condition |
@@ -47,20 +74,21 @@ After passing, run the write command; then **must** `cast receipt <txhash>` and 
 ```
 ┌─────────────┐      ┌──────────────────┐      ┌──────────────────────┐
 │ ① Diligence │ pass │ ② Compliant issue │ done │ ③ Private skill spawn  │
-│ Read-only   │─────▶│ deploy/mint/div   │─────▶│ Self-serve · refine    │
+│ Read-only   │─────▶│ attest→deploy/mint│─────▶│ Self-serve · refine    │
 │ 🟢 block RED│ RED  │ 🔴🟡 tier + confirm│      │ Private · share needs 🔑│
 └─────────────┘ deny └──────────────────┘      └──────────────────────┘
        │                      │                          │
        └──── state.json throughout (memory + audit + preferences) ──┘
-                                                          │
-                              Personalization loop ◀──────┘
-                       (NL → deposit prefs → next issue fits better)
+              optional on-chain evidence_hash (onchain-attestation.md)
 ```
 
 Three stages are one pipeline and one complete agent: admission (diligence) → execution (compliant issuance) → **private operating asset for the issuer**.
 The spawned skill serves the issuer first; external reuse is an **explicit, scoped opt-in**, not the default.
 
-### Diligence sub-pipeline (Stage 0 → 1 → 2)
+                              Personalization loop ◀──────┘
+                       (NL → deposit prefs → next issue fits better)
+
+### Diligence sub-pipeline (Stage 0 → 1 → 2 → attest)
 
 Before any cast in Phase ①, run the three-stage diligence workflow:
 
@@ -69,10 +97,11 @@ Stage −1  distribution_eligibility (cheap geo gate)  →  offchain-diligence.m
 Stage 0  Background + deposit consent  →  offchain-diligence.md
 Stage 1  checks_run / skipped_checks  →  role matrix in docs/diligence/INTEGRATION.md
 Stage 2  cast + local compares + rating →  onchain-diligence.md · sanctions-screening.md
+Post-2  On-chain attestation (GREEN/YELLOW) →  onchain-attestation.md  (before deploy/mint)
 ```
 
 - Set `state.diligence.target_role` — see role map in `offchain-diligence.md` (role aliases ISS/CUS/INT/INV/SUB map to HatchFi enum values).
-- **ISS / underlying**: capture `legal_wrapper_profile` (wrapper type + `target_regime`) and `tokenization_rights` before mint.
+- **ISS / underlying**: capture `legal_wrapper_profile`, `tokenization_rights`, **`duplicate_tokenization` (#19)**, **`liquidity_exit_path` (#20)** before mint.
 - **INV / SUB**: run `distribution_eligibility` first — fail fast before PII collection.
 - Off-chain PII (e.g. `kyc_expiry`) requires **deposit consent** before writing `state.diligence.background`.
 - All on-chain + off-chain evidence merges into one `state.diligence.evidence[]`; rating remains pure function of flags.
@@ -116,7 +145,7 @@ Gate rule: `critical` / `high` block upload/publish; reports must redact secrets
 
 ## Agent discipline (follow before every operation)
 
-1. **Diligence first**: before issuing to an unscreened address, run diligence; if `state.diligence.passed == false` or rating RED → refuse issuance and cite evidence.
+1. **Diligence first**: before issuing to an unscreened address, run diligence; if `state.diligence.passed == false` or rating RED → refuse issuance and cite evidence. **Do not attest on-chain when RED** (`RedRatingNotAttestable`).
 2. **Human confirm for high risk**: before 🔴 ops, output a confirmation card (operation / target / impact / pre-checks / next step); execute only after `confirm`.
 3. **Consent first**: before 🔑 deposit / share, show consent card (share must include permission manifest); execute only after `consent`; record in `state.consent`. Default private — when unsure, do not deposit or share.
 4. **Security gate before publish**: run `npm run publish:check` before install/upload/publish/share; stop on critical/high from Skill Inspector.
@@ -148,6 +177,9 @@ Gate rule: `critical` / `high` block upload/publish; reports must redact secrets
 | On-chain address checks | cast read-only + oracle | 🟢 | onchain-diligence · sanctions-screening |
 | Off-chain background / KYC fields | background gather + compare | 🟢 | offchain-diligence |
 | Compliance rules & infer citations | static knowledge | 🟢 | compliance-knowledge |
+| Monitor post-issuance flow anomalies | read-only `#10b` + rescreen | 🟢 | post-issuance-monitoring |
+| Attest diligence hash on-chain | attest + registerAsset | 🟡 | onchain-attestation |
+| Dry-run attestation (no key) | `npm run attest:dry-run` · `evidence:summary` | 🟢 | onchain-attestation |
 | Verify holding eligibility | isVerified | 🟢 | rwa-issuance |
 | Register compliant investor | registerIdentity | 🟡 | rwa-issuance |
 | Batch register investors | batchRegisterIdentity | 🟡 | rwa-issuance |
@@ -174,9 +206,11 @@ Gate rule: `critical` / `high` block upload/publish; reports must redact secrets
 | Unfreeze partial balance | unfreezePartialTokens | 🟡 | rwa-issuance |
 | Query frozen balance | frozenTokens | 🟢 | rwa-issuance |
 | Query holder count | holderCount | 🟢 | rwa-issuance |
-| Query full contract surface | 30 callable entries + 12 events + 5 errors | 🟢 | generated/contract-surface |
+| Query full contract surface | 44 callable entries + 18 events + 14 errors | 🟢 | generated/contract-surface |
 | Force transfer | forcedTransfer | 🔴 | rwa-issuance |
-| Recover lost wallet | recoveryAddress | 🔴 | rwa-issuance |
+| Propose wallet recovery (time-locked) | proposeRecoveryAddress | 🟡 | rwa-issuance |
+| Execute wallet recovery (after delay) | executeRecoveryAddress | 🔴 | rwa-issuance |
+| Cancel pending recovery | cancelRecoveryAddress | 🟡 | rwa-issuance |
 | Grant operator | addAgent | 🟡 | rwa-issuance |
 | Revoke operator | removeAgent | 🟡 | rwa-issuance |
 | Check operator role | isAgent | 🟢 | rwa-issuance |
@@ -185,7 +219,7 @@ Gate rule: `critical` / `high` block upload/publish; reports must redact secrets
 ### Audit & evidence (compliance hard skills)
 | Intent | Capability | Tier | Reference |
 |---|---|---|---|
-| Query on-chain events (reconciliation) | cast logs (12 events) | 🟢 | rwa-issuance#event-queries |
+| Query on-chain events (reconciliation) | cast logs (18 events) | 🟢 | rwa-issuance#event-queries |
 | Sweep dividend rounding dust | sweepUndistributedDividend | 🔴 | rwa-dividend |
 | Staged verification before submit | staged verification loop | 🟢 | pharos-verification |
 | Scan skill before upload/publish | Pharos Skill Inspector | 🟢/block | scripts/skill_inspector.py |

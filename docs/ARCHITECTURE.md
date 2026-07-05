@@ -20,6 +20,7 @@ flowchart LR
       X[Foundry / cast / forge]
       T[CompliantRWAToken<br/>ERC-3643-style]
       O[Mock OFAC oracle<br/>Atlantic demo]
+      AT[DiligenceAttestationRegistry<br/>AssetTokenizationRegistry]
     end
 
     subgraph K[Contract Controls]
@@ -44,6 +45,7 @@ flowchart LR
     end
 
     A --> D --> R --> P --> X --> T
+    D --> AT
     A --> C
     A --> I
     T --> ID
@@ -71,6 +73,7 @@ flowchart LR
 | Permissioned ecosystem | Spawned Skills can be shared only by explicit opt-in with `PERMISSIONS.md` |
 | Static publish gate | `scripts/skill_inspector.py` scans before install / upload / publish / share |
 | Reproducibility | `refs:generate`, `eval:skill`, `inspect:skill`, `check` provide deterministic gates |
+| On-chain audit trail | Optional `DiligenceAttestationRegistry` stores evidence hash (no PII); Phase 2 may gate `mint` |
 
 ## Trust Boundaries
 

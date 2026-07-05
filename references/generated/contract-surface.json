@@ -3,19 +3,19 @@
   "functions": [
     {
       "name": "registerIdentity",
-      "params": "address,uint16",
+      "params": "address,uint16,bytes32",
       "modifiers": "external onlyAgent",
       "risk": "medium",
       "mutability": "write",
-      "cast_hint": "cast send <token> \"registerIdentity(address,uint16)\" <investor> <country> --rpc-url $RPC --private-key $PK"
+      "cast_hint": "cast send <token> \"registerIdentity(address,uint16,bytes32)\" <investor> <country> <identityId> --rpc-url $RPC --private-key $PK"
     },
     {
       "name": "batchRegisterIdentity",
-      "params": "address[],uint16[]",
-      "modifiers": "external\n        onlyAgent",
+      "params": "address[],uint16[],bytes32[]",
+      "modifiers": "external onlyAgent",
       "risk": "medium",
       "mutability": "write",
-      "cast_hint": "cast send <token> \"batchRegisterIdentity(address[],uint16[])\" \"[<a1>]\" \"[<c1>]\" --rpc-url $RPC --private-key $PK"
+      "cast_hint": "cast send <token> \"batchRegisterIdentity(address[],uint16[],bytes32[])\" \"[<a1>]\" \"[<c1>]\" \"[<id1>]\" --rpc-url $RPC --private-key $PK"
     },
     {
       "name": "removeIdentity",
@@ -42,6 +42,14 @@
       "cast_hint": "cast call <token> \"investorCountry(address)(uint16)\" <account> --rpc-url $RPC"
     },
     {
+      "name": "investorIdentity",
+      "params": "address",
+      "modifiers": "external view returns (bytes32)",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "see references/rwa-issuance.md#investorIdentity"
+    },
+    {
       "name": "setComplianceRules",
       "params": "uint256,uint256",
       "modifiers": "external\n        onlyOwner",
@@ -56,6 +64,22 @@
       "risk": "low",
       "mutability": "view",
       "cast_hint": "cast call <token> \"canTransfer(address,address,uint256)(bool,string)\" <from> <to> <amt> --rpc-url $RPC"
+    },
+    {
+      "name": "setDiligenceAttestationRegistry",
+      "params": "address",
+      "modifiers": "external onlyOwner",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "see references/rwa-issuance.md#setDiligenceAttestationRegistry"
+    },
+    {
+      "name": "setRecoveryDelay",
+      "params": "uint64",
+      "modifiers": "external onlyOwner",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "see references/rwa-issuance.md#setRecoveryDelay"
     },
     {
       "name": "setAddressFrozen",
@@ -99,16 +123,16 @@
     },
     {
       "name": "mint",
-      "params": "address,uint256",
-      "modifiers": "external onlyAgent",
+      "params": "address,uint256,bytes32",
+      "modifiers": "external onlyMinter",
       "risk": "high",
       "mutability": "write",
-      "cast_hint": "cast send <token> \"mint(address,uint256)\" <to> <amount> --rpc-url $RPC --private-key $PK"
+      "cast_hint": "cast send <token> \"mint(address,uint256,bytes32)\" <to> <amount> <evidenceHash> --rpc-url $RPC --private-key $PK"
     },
     {
       "name": "burn",
       "params": "address,uint256",
-      "modifiers": "external onlyAgent",
+      "modifiers": "external onlyMinter",
       "risk": "high",
       "mutability": "write",
       "cast_hint": "cast send <token> \"burn(address,uint256)\" <from> <amount> --rpc-url $RPC --private-key $PK"
@@ -122,12 +146,36 @@
       "cast_hint": "cast send <token> \"forcedTransfer(address,address,uint256)\" <from> <to> <amount> --rpc-url $RPC --private-key $PK"
     },
     {
-      "name": "recoveryAddress",
-      "params": "address,address",
-      "modifiers": "external\n        onlyAgent\n        returns (bool)",
+      "name": "proposeRecoveryAddress",
+      "params": "address,address,bytes32",
+      "modifiers": "external\n        onlyRecoveryOperator\n        returns (bytes32 requestId)",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"proposeRecoveryAddress(address,address,bytes32)\" <lost> <new> <identityId> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "cancelRecoveryAddress",
+      "params": "bytes32",
+      "modifiers": "external onlyRecoveryOperator",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"cancelRecoveryAddress(bytes32)\" <requestId> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "executeRecoveryAddress",
+      "params": "bytes32",
+      "modifiers": "external onlyRecoveryOperator returns (bool)",
       "risk": "high",
       "mutability": "write",
-      "cast_hint": "cast send <token> \"recoveryAddress(address,address)\" <lost> <new> --rpc-url $RPC --private-key $PK"
+      "cast_hint": "cast send <token> \"executeRecoveryAddress(bytes32)\" <requestId> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "getRecoveryRequest",
+      "params": "bytes32",
+      "modifiers": "external view returns (RecoveryRequest memory)",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "see references/rwa-issuance.md#getRecoveryRequest"
     },
     {
       "name": "depositDividend",
@@ -186,6 +234,54 @@
       "cast_hint": "cast call <token> \"isAgent(address)(bool)\" <account> --rpc-url $RPC"
     },
     {
+      "name": "addMinter",
+      "params": "address",
+      "modifiers": "external onlyOwner",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"addMinter(address)\" <account> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "removeMinter",
+      "params": "address",
+      "modifiers": "external onlyOwner",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"removeMinter(address)\" <account> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "isMinter",
+      "params": "address",
+      "modifiers": "external view returns (bool)",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "cast call <token> \"isMinter(address)(bool)\" <account> --rpc-url $RPC"
+    },
+    {
+      "name": "addRecoveryOperator",
+      "params": "address",
+      "modifiers": "external onlyOwner",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"addRecoveryOperator(address)\" <account> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "removeRecoveryOperator",
+      "params": "address",
+      "modifiers": "external onlyOwner",
+      "risk": "medium",
+      "mutability": "write",
+      "cast_hint": "cast send <token> \"removeRecoveryOperator(address)\" <account> --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "isRecoveryOperator",
+      "params": "address",
+      "modifiers": "external view returns (bool)",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "cast call <token> \"isRecoveryOperator(address)(bool)\" <account> --rpc-url $RPC"
+    },
+    {
       "name": "pause",
       "params": "",
       "modifiers": "external onlyAgent",
@@ -200,6 +296,14 @@
       "risk": "medium",
       "mutability": "write",
       "cast_hint": "cast send <token> \"unpause()\" --rpc-url $RPC --private-key $PK"
+    },
+    {
+      "name": "supportsInterface",
+      "params": "bytes4",
+      "modifiers": "public\n        view\n        override(AccessControl)\n        returns (bool)",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "see references/rwa-issuance.md#supportsInterface"
     },
     {
       "name": "maxHolders",
@@ -240,6 +344,14 @@
       "risk": "low",
       "mutability": "view",
       "cast_hint": "cast call <token> \"undistributedDividend()(uint256)\" --rpc-url $RPC"
+    },
+    {
+      "name": "recoveryDelay",
+      "params": "",
+      "modifiers": "public state variable",
+      "risk": "low",
+      "mutability": "view",
+      "cast_hint": "cast call <token> \"recoveryDelay()(...)\" --rpc-url $RPC"
     }
   ],
   "events": [
@@ -258,6 +370,10 @@
     {
       "name": "IdentityRemoved",
       "params": "address indexed investor"
+    },
+    {
+      "name": "WalletIdentityBound",
+      "params": "address indexed investor, bytes32 indexed identityId"
     },
     {
       "name": "AddressFrozen",
@@ -280,6 +396,26 @@
       "params": "address indexed lostWallet, address indexed newWallet"
     },
     {
+      "name": "RecoveryProposed",
+      "params": "bytes32 indexed requestId,\n        address indexed lostWallet,\n        address indexed newWallet,\n        bytes32 identityId,\n        uint64 executeAfter,\n        address proposer"
+    },
+    {
+      "name": "RecoveryCancelled",
+      "params": "bytes32 indexed requestId, address indexed by"
+    },
+    {
+      "name": "RecoveryExecuted",
+      "params": "bytes32 indexed requestId, address indexed by"
+    },
+    {
+      "name": "RecoveryDelayUpdated",
+      "params": "uint64 oldDelay, uint64 newDelay"
+    },
+    {
+      "name": "DiligenceAttestationRegistrySet",
+      "params": "address indexed registry"
+    },
+    {
       "name": "DividendDeposited",
       "params": "uint256 amount, uint256 newCumulativePerShare"
     },
@@ -298,6 +434,14 @@
       "params": ""
     },
     {
+      "name": "NotMinter",
+      "params": ""
+    },
+    {
+      "name": "NotRecoveryOperator",
+      "params": ""
+    },
+    {
       "name": "NotVerified",
       "params": "address account"
     },
@@ -312,11 +456,39 @@
     {
       "name": "InsufficientUnfrozen",
       "params": "uint256 available, uint256 required"
+    },
+    {
+      "name": "InvalidIdentity",
+      "params": ""
+    },
+    {
+      "name": "IdentityMismatch",
+      "params": "address account, bytes32 expectedIdentity, bytes32 actualIdentity"
+    },
+    {
+      "name": "RecoveryRequestNotFound",
+      "params": "bytes32 requestId"
+    },
+    {
+      "name": "RecoveryRequestProcessed",
+      "params": "bytes32 requestId"
+    },
+    {
+      "name": "RecoveryNotReady",
+      "params": "bytes32 requestId, uint64 executeAfter"
+    },
+    {
+      "name": "DiligenceAttestationRegistryNotSet",
+      "params": ""
+    },
+    {
+      "name": "DiligenceNotAttested",
+      "params": "bytes32 evidenceHash"
     }
   ],
   "counts": {
-    "functions": 30,
-    "events": 12,
-    "errors": 5
+    "functions": 44,
+    "events": 18,
+    "errors": 14
   }
 }

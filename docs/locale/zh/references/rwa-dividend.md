@@ -51,7 +51,7 @@ cast send <token> "sweepUndistributedDividend(address)" <to> --rpc-url $RPC --pr
 断言 `status==1` 后写 `history{action:"sweepUndistributedDividend",risk:"high",confirmed_by_human:true,tx,at}`，并可用 `cast logs ... "DividendDustSwept(address,uint256)"` 取证。
 
 > 另：`depositDividend` 现要求 `perShare>0`（即存入额相对总供应不能太小），否则 revert `deposit too small for supply`，避免整笔被静默当作 dust。
-> 钱包恢复（`recoveryAddress`）会把旧钱包**已结算未领**的分红一并迁移到新钱包，丢私钥不丢收益。
+> 钱包恢复（`executeRecoveryAddress`）会把旧钱包**已结算未领**的分红一并迁移到新钱包，丢私钥不丢收益。
 
 ---
 

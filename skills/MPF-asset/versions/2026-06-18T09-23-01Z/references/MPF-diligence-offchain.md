@@ -1,7 +1,10 @@
-> 中文 locale · 与 `references/offchain-diligence.md` 同步维护。
-> 命令与 JSON 保持英文以便 agent 直接执行；章节标题与表格说明为中文。
+# MPF-bound reference
 
-# Reference: 链下背景尽调（#12–#15）（offchain-diligence）
+> Asset: `Manhattan Property Fund` (`MPF`)
+> Token: `0xfef7519bebda6c47af49583dbc9e60801f8aa3de`
+> This file was generated from `references/offchain-diligence.md`.
+
+# Reference: Off-chain diligence & background gathering (offchain-diligence)
 
 > **Capability**: Stage 0 — structured background before cast execution. Role-based questionnaires, consent gate, off-chain checks feeding `state.diligence.evidence[]`.
 > **Risk tier**: 🟢 Low (read local state + ask user; no txs).
@@ -92,8 +95,6 @@ If **risk** here, stop pipeline — do not request deposit consent for deeper PI
 | `legal_wrapper_profile` | Prospectus, holder rights, wrapper type, target regime | missing wrapper doc → **risk**; `wrapper_type` undeclared → **warn**; `target_regime` undeclared → **warn**; wrapper contradicts on-chain transfer model → **risk** (see `compliance-knowledge.md` §Transferability) |
 | `tokenization_rights` | Issuer attestation, SPV deed, underlying-asset consent letter | no documented right to tokenize underlying → **risk**; rights limited to specific regime only but `target_regime` mismatches → **risk** |
 | `audit_recency` | Smart-contract audit report date | no audit or &gt; 12 months → **warn** |
-| `duplicate_tokenization` | `AssetTokenizationRegistry.tokenForAsset(asset_fingerprint)` + issuer questionnaire | fingerprint maps to **other** token → **risk**; issuer claims unique but no registry cross-check → **warn**; registry unavailable → **warn**(`registry_unavailable`) |
-| `liquidity_exit_path` | Questionnaire: ATS / redemption / secondary venue / lock-up | no declared exit path → **warn**; claims ATS/redemption but cannot verify → **warn** |
 | `kyc_expiry_check` | `background.kyc_expiry` | expired → **risk**; missing → **warn** |
 
 **`legal_wrapper_profile` fields** (write to `state.diligence.background` after consent):
@@ -133,21 +134,7 @@ Legacy check id `legal_wrapper` maps to this row (same #14).
 |---|---|
 | `asset_lien_status` | `encumbered` → **risk**; `unknown` → **warn**; `clear` → ok |
 | `tokenization_rights` | underlying issuer did not authorize tokenization → **risk**; attestation stale / missing → **warn** |
-| `duplicate_tokenization` | **required** — same rules as ISS; see `onchain-attestation.md` § fingerprint |
-| `liquidity_exit_path` | no declared exit / secondary path → **warn** |
 | `legal_wrapper_profile` | same as ISS when asset is the diligence target |
-
-**Asset fingerprint** (for #19):
-
-```
-asset_fingerprint = keccak256(abi.encode(asset_id, jurisdiction, wrapper_type))
-```
-
-Write to `state.diligence.asset_fingerprint`. Lookup:
-
-```bash
-cast call $ASSET_REGISTRY "tokenForAsset(bytes32)(address)" <fingerprint> --rpc-url $RPC
-```
 
 Red-flag knowledge base: `compliance-knowledge.md` §3 · `assets/knowledge/rwa_red_flags.json`.
 
@@ -217,32 +204,6 @@ Red-flag knowledge base: `compliance-knowledge.md` §3 · `assets/knowledge/rwa_
   "result": { "license_claimed": "MAS-CMS-123", "license_verified": false },
   "infer": "Claimed license not found in public regulator database.",
   "flag": "risk"
-}
-```
-
-```json
-{
-  "check": "duplicate_tokenization",
-  "cmd": "cast call <asset_registry> tokenForAsset(bytes32); verified_by=registrar_db",
-  "verified_by": "registrar_db",
-  "result": {
-    "asset_fingerprint": "0xabc...",
-    "existing_token": "0xOTHER...",
-    "current_token": "0x000..."
-  },
-  "infer": "Same underlying asset fingerprint already mapped to a different token — double tokenization risk.",
-  "flag": "risk"
-}
-```
-
-```json
-{
-  "check": "liquidity_exit_path",
-  "cmd": "questionnaire:liquidity_exit_path; verified_by=questionnaire",
-  "verified_by": "questionnaire",
-  "result": { "exit_path_declared": false, "secondary_venue": null },
-  "infer": "No declared liquidity or exit path before issuance — institutional red flag per compliance-knowledge.",
-  "flag": "warn"
 }
 ```
 

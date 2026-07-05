@@ -99,7 +99,7 @@ After every `cast send`, `cast receipt` with `status == 1`.
 
 **Write boundary (confirmed)**:
 - ✅ `registerIdentity(deployer)`, `mint(deployer, 1e18)`
-- ❌ `transferOwnership`, `forcedTransfer`, `depositDividend` (large), `recoveryAddress`
+- ❌ `transferOwnership`, `forcedTransfer`, `depositDividend` (large), `executeRecoveryAddress`
 
 Results → `deployments/pharos.json` + `DEPLOYMENT_RESULT.md` + `state.json` (asset section).
 

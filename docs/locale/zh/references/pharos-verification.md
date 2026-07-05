@@ -100,7 +100,7 @@ npm run smoke:pharos     # read + registerIdentity + mint 1 wei
 
 **Write 边界（已确认）**：
 - ✅ `registerIdentity(deployer)`、`mint(deployer, 1e18)`
-- ❌ `transferOwnership`、`forcedTransfer`、`depositDividend`（大额）、`recoveryAddress`
+- ❌ `transferOwnership`、`forcedTransfer`、`depositDividend`（大额）、`executeRecoveryAddress`
 
 结果写入 `deployments/pharos.json` + `DEPLOYMENT_RESULT.md` + `state.json`（asset 段）。
 

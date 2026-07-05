@@ -219,13 +219,3 @@ function mint(address to, uint256 amount, bytes32 evidenceHash) external onlyAge
 Phase 1: agent refuses RED + recommends attestation; contract does not yet enforce.
 
 **Pitch line**: HatchFi is a **deterministic, deployed** instance of the agent-orchestrated tokenization research direction — replacing the paper's AI governance black box with reproducible gates and replacing conceptual on-chain approval records with Atlantic testnet attestations.
-
-### Post-issuance monitoring (paper Monitoring Agent — without AI)
-
-After mint, Phase C uses **read-only** surveillance — see `post-issuance-monitoring.md`:
-
-- `#10b market_flow_integrity` (wash / round-trip patterns → warn)
-- Optional holder concentration + sanctions rescreen on new transfer counterparties
-- **No auto-freeze from ML** — risk flags surface evidence; freeze remains 🟡 human/agent confirm
-
-This closes the paper's lifecycle loop (onboard → mint → monitor) while keeping HatchFi's deterministic discipline.

@@ -24,7 +24,6 @@ description: Asset-specific operations for Manhattan Property Fund (MPF) on Phar
 | Deposit asset dividends | `depositDividend` | high | `references/MPF-dividend.md` |
 | Check or claim dividends | `dividendOf` / `claimDividend` | low | `references/MPF-dividend.md` |
 | Pre-issuance diligence (full pipeline) | Stage 0–2 | low | `references/MPF-diligence-offchain.md` · `references/MPF-diligence-onchain.md` |
-| On-chain diligence attestation | attest hash + asset register | medium | `references/MPF-onchain-attestation.md` |
 | Sanctions screening | denylist + oracle | low | `references/MPF-sanctions.md` |
 | Compliance infer citations | knowledge mapping | low | `references/MPF-compliance-knowledge.md` |
 | Apply owner defaults before operations | read `PREFERENCES.md` | low | `PREFERENCES.md` |
