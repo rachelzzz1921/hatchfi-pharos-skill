@@ -55,12 +55,12 @@ forge create assets/rwa/CompliantRWAToken.sol:CompliantRWAToken \
 
 ### 2. 注册合规投资者（加白名单）🟡
 ```bash
-cast send <token> "registerIdentity(address,uint16)" <investor> <country> \
+cast send <token> "registerIdentity(address,uint16,bytes32)" <investor> <country> <identityId> \
   --rpc-url $RPC --private-key $PK
 ```
 批量：
 ```bash
-cast send <token> "batchRegisterIdentity(address[],uint16[])" "[<a1>,<a2>]" "[<c1>,<c2>]" \
+cast send <token> "batchRegisterIdentity(address[],uint16[],bytes32[])" "[<a1>,<a2>]" "[<c1>,<c2>]" "[<id1>,<id2>]" \
   --rpc-url $RPC --private-key $PK
 ```
 断言后写 `state.whitelist[]`。前置验证（低风险，可先查）：
@@ -74,9 +74,9 @@ cast send <token> "removeIdentity(address)" <investor> --rpc-url $RPC --private-
 ```
 
 ### 3. 发行份额 mint 🔴
-前置：`isVerified(to)==true`（合约会强制，agent 先查避免白跑）。
+前置：`isVerified(to)==true` 且 evidence hash 已通过 attestation registry 存证（`isPassable(evidenceHash)==true`，合约会强制；见 `onchain-attestation.md`）。
 ```bash
-cast send <token> "mint(address,uint256)" <to> <amount> --rpc-url $RPC --private-key $PK
+cast send <token> "mint(address,uint256,bytes32)" <to> <amount> <evidenceHash> --rpc-url $RPC --private-key $PK
 ```
 确认卡片影响项需写明：总供应量变化、不可逆。断言后写 history。
 
@@ -161,8 +161,8 @@ cast send <token> "unpause()" --rpc-url $RPC --private-key $PK
 
 | 操作 | 签名 | 关键参数 | 返回 / 状态变化 |
 |---|---|---|---|
-| registerIdentity | `registerIdentity(address,uint16)` | investor 地址、country 地区码 | `_verified[investor]=true`，emit IdentityRegistered |
-| mint | `mint(address,uint256)` | to（须 isVerified）、amount（wei） | totalSupply 增加，holderCount 可能 +1 |
+| registerIdentity | `registerIdentity(address,uint16,bytes32)` | investor 地址、country 地区码、identityId | `_verified[investor]=true`，绑定身份，emit IdentityRegistered |
+| mint | `mint(address,uint256,bytes32)` | to（须 isVerified）、amount（wei）、evidenceHash（须已存证可通过） | totalSupply 增加，holderCount 可能 +1 |
 | burn | `burn(address,uint256)` | from、amount | totalSupply 减少 |
 | canTransfer | `canTransfer(address,address,uint256)(bool,string)` | from、to、amount | `(true,"")` 或 `(false,<reason>)` |
 | setComplianceRules | `setComplianceRules(uint256,uint256)` | maxHolders、maxBalancePerInvestor（0=不限） | emit ComplianceRulesUpdated |
