@@ -9,6 +9,8 @@ PAIRS = [
     ("offchain-diligence.md", "链下背景尽调（#12–#15）"),
     ("sanctions-screening.md", "制裁筛查（#1/#11）"),
     ("compliance-knowledge.md", "合规知识对照"),
+    ("onchain-attestation.md", "链上尽调存证"),
+    ("post-issuance-monitoring.md", "发行后监控"),
 ]
 
 HEADER = """> 中文 locale · 与 `references/{name}` 同步维护。

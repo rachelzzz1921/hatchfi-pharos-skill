@@ -17,6 +17,7 @@ if [ -z "$LATEST" ]; then
   exit 1
 fi
 
+
 DEPLOYER=$(cast wallet address --private-key "$PRIVATE_KEY")
 
 python3 << PY
@@ -111,6 +112,7 @@ with open("DEPLOYMENT_RESULT.md", "w") as f:
 print(f"Contract: {addr}")
 print(f"Tx:       {txhash}")
 print(f"Explorer: {data['explorer']['address']}")
+
 PY
 
 # 同步 state.json asset 段（若存在 schema）

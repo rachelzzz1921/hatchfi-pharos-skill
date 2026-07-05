@@ -103,6 +103,14 @@
           "type": "array",
           "items": { "type": "string" },
           "description": "ISO 3166 alpha-2 禁止认购/分销的司法辖区（Stage −1 distribution_eligibility）"
+        },
+        "attestation_registry": {
+          "type": "string",
+          "description": "DiligenceAttestationRegistry 地址；默认读 deployments/attestation_atlantic.json"
+        },
+        "asset_registry": {
+          "type": "string",
+          "description": "AssetTokenizationRegistry 地址；用于 #19 duplicate_tokenization 查询"
         }
       }
     },
@@ -206,6 +214,22 @@
         "rating": { "type": "string", "enum": ["GREEN", "YELLOW", "RED", "UNCHECKED"], "description": "红黄绿三档" },
         "passed": { "type": "boolean", "description": "是否通过闸门。false 时 agent 必须拒绝一切发行操作" },
         "checked_at": { "type": "string" },
+        "asset_fingerprint": {
+          "type": "string",
+          "description": "keccak256(asset_id, jurisdiction, wrapper_type) — #19 duplicate_tokenization 与链上注册用"
+        },
+        "attestation": {
+          "type": "object",
+          "description": "链上尽调结论存证（哈希 only，无 PII）",
+          "properties": {
+            "registry": { "type": "string", "description": "DiligenceAttestationRegistry 地址" },
+            "asset_registry": { "type": "string", "description": "AssetTokenizationRegistry 地址" },
+            "evidence_hash": { "type": "string", "description": "canonical evidence[] 的 keccak256" },
+            "tx": { "type": "string", "description": "attest 交易哈希" },
+            "at": { "type": "string", "description": "ISO8601" },
+            "rating_onchain": { "type": "integer", "enum": [1, 2], "description": "1=YELLOW 2=GREEN（RED 不上链）" }
+          }
+        },
         "evidence": {
           "type": "array",
           "description": "可验证依据数组——每条结论都能追溯到具体 cast 命令与返回值，规则确定性、可复现",

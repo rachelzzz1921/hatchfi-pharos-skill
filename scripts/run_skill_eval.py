@@ -10,10 +10,13 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from evidence_hash_lib import asset_fingerprint, canonicalize_evidence, evidence_hash
+
 from contract_surface import external_function_names, parse_contract
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = ROOT / "eval" / "skill_behavior_cases.json"
+GOLDEN_HASH = ROOT / "eval" / "evidence_hash_golden.json"
 
 
 @dataclass
@@ -30,6 +33,9 @@ def should_refuse_issuance(state: dict) -> bool:
         return True
     if diligence.get("rating") == "RED":
         return True
+    for row in diligence.get("evidence") or []:
+        if row.get("flag") == "risk":
+            return True
     return False
 
 
@@ -140,6 +146,58 @@ def run_spawn_structure() -> list[EvalResult]:
     return results
 
 
+def run_evidence_hash_golden() -> list[EvalResult]:
+    if not GOLDEN_HASH.exists():
+        return [EvalResult("evidence_hash_golden", False, "missing golden file", "hash")]
+    spec = json.loads(GOLDEN_HASH.read_text(encoding="utf-8"))
+    fixture_path = ROOT / spec["fixture_file"]
+    if not fixture_path.exists():
+        return [EvalResult("evidence_hash_golden", False, "missing fixture", "hash")]
+
+    evidence = json.loads(fixture_path.read_text(encoding="utf-8"))
+    results: list[EvalResult] = []
+
+    try:
+        digest = evidence_hash(evidence)
+        ok = digest.lower() == spec["expected_hash"].lower()
+        results.append(
+            EvalResult(
+                "evidence_hash_golden",
+                ok,
+                digest if ok else f"got {digest} want {spec['expected_hash']}",
+                "hash",
+            )
+        )
+        canon = canonicalize_evidence(evidence)
+        results.append(
+            EvalResult(
+                "evidence_canonical_stable",
+                "balance" in canon and canon.index("balance") < canon.index("denylist"),
+                "sorted by check asc",
+                "hash",
+            )
+        )
+        fp_spec = spec.get("asset_fingerprint") or {}
+        if fp_spec.get("expected"):
+            fp = asset_fingerprint(
+                fp_spec["asset_id"],
+                fp_spec["jurisdiction"],
+                fp_spec["wrapper_type"],
+            )
+            ok_fp = fp.lower() == fp_spec["expected"].lower()
+            results.append(
+                EvalResult(
+                    "asset_fingerprint_golden",
+                    ok_fp,
+                    fp if ok_fp else f"got {fp}",
+                    "hash",
+                )
+            )
+    except Exception as exc:  # noqa: BLE001
+        results.append(EvalResult("evidence_hash_golden", False, str(exc), "hash"))
+    return results
+
+
 def run_generated_refs() -> EvalResult:
     gen_md = ROOT / "references" / "generated" / "contract-surface.md"
     gen_json = ROOT / "references" / "generated" / "contract-surface.json"
@@ -172,6 +230,7 @@ def main() -> None:
         results.append(run_text_case(case))
 
     results.extend(run_logic_cases(spec.get("logic_cases", [])))
+    results.extend(run_evidence_hash_golden())
     results.extend(run_risk_alignment(spec.get("risk_alignment", {})))
     results.extend(run_spawn_structure())
     results.append(run_generated_refs())

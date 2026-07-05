@@ -4,6 +4,10 @@ set -euo pipefail
 
 RPC_URL="${PHAROS_RPC_URL:-https://atlantic.dplabs-internal.com}"
 EXPECTED_CHAIN=688689
+DEPLOY_GAS_LIMIT="${PHAROS_DEPLOY_GAS_LIMIT:-5500000}"
+DEPLOY_GAS_PRICE_WEI="${PHAROS_DEPLOY_GAS_PRICE_WEI:-3000000000}"
+KEY_SOURCE="${PHAROS_KEY_SOURCE:-unknown}"
+RPC_SOURCE="${PHAROS_RPC_SOURCE:-unknown}"
 
 echo "== Pharos Atlantic Preflight =="
 
@@ -42,15 +46,26 @@ BALANCE_WEI=$(cast balance "$WALLET" --rpc-url "$RPC_URL")
 BALANCE_ETH=$(cast --to-unit "$BALANCE_WEI" ether)
 BLOCK=$(cast block-number --rpc-url "$RPC_URL")
 GAS=$(cast gas-price --rpc-url "$RPC_URL")
+REQUIRED_WEI=$((DEPLOY_GAS_LIMIT * DEPLOY_GAS_PRICE_WEI))
+REQUIRED_ETH=$(cast --to-unit "$REQUIRED_WEI" ether)
+SHORTFALL_WEI=0
+if [ "$BALANCE_WEI" -lt "$REQUIRED_WEI" ]; then
+  SHORTFALL_WEI=$((REQUIRED_WEI - BALANCE_WEI))
+fi
+SHORTFALL_ETH=$(cast --to-unit "$SHORTFALL_WEI" ether)
 
 echo ""
 echo "Network:     Pharos Atlantic Testnet"
 echo "Chain ID:    $CHAIN_ID"
 echo "RPC:         $RPC_URL"
+echo "RPC Source:  $RPC_SOURCE"
+echo "Key Source:  $KEY_SOURCE"
 echo "Wallet:      $WALLET"
 echo "Balance:     $BALANCE_ETH PHRS"
 echo "Block:       $BLOCK"
 echo "Gas Price:   $GAS wei"
+echo "Deploy Gas:  limit=$DEPLOY_GAS_LIMIT price=$DEPLOY_GAS_PRICE_WEI wei"
+echo "Deploy Need: $REQUIRED_ETH PHRS"
 echo ""
 
 if [ "$BALANCE_WEI" = "0" ]; then
@@ -60,6 +75,17 @@ if [ "$BALANCE_WEI" = "0" ]; then
   echo "  - https://testnet.pharosnetwork.xyz/"
   echo "  - https://www.gas.zip/faucet/pharos"
   echo "  - https://zan.top/faucet/pharos"
+  exit 1
+fi
+
+if [ "$BALANCE_WEI" -lt "$REQUIRED_WEI" ]; then
+  echo "Status: FAIL"
+  echo "Reason: 余额不足以覆盖部署预估成本"
+  echo "Need:   $REQUIRED_ETH PHRS (limit=$DEPLOY_GAS_LIMIT, gas=$DEPLOY_GAS_PRICE_WEI wei)"
+  echo "Have:   $BALANCE_ETH PHRS"
+  echo "TopUp:  至少补充 $SHORTFALL_ETH PHRS"
+  echo "Hint:   当前使用 ${KEY_SOURCE} 钱包 ${WALLET}。可用 PRIVATE_KEY=0x... 临时切换部署钱包。"
+  echo "Fix: 先补充 PHRS，或降低 PHAROS_DEPLOY_GAS_LIMIT / PHAROS_DEPLOY_GAS_PRICE_WEI 后重试"
   exit 1
 fi
 

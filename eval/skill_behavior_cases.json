@@ -69,8 +69,50 @@
       "id": "ref_compliance_knowledge",
       "category": "references",
       "file": "references/compliance-knowledge.md",
-      "must_contain": ["erc3643_conformance", "ERC-3643", "COMPLIANCE_MODULE", "legal_wrapper_profile"],
+      "must_contain": ["erc3643_conformance", "ERC-3643", "COMPLIANCE_MODULE", "legal_wrapper_profile", "Paper alignment"],
       "description": "Compliance knowledge base present"
+    },
+    {
+      "id": "ref_onchain_attestation",
+      "category": "references",
+      "file": "references/onchain-attestation.md",
+      "must_contain": ["DiligenceAttestationRegistry", "evidence_hash", "duplicate_tokenization", "RedRatingNotAttestable"],
+      "description": "On-chain diligence attestation playbook present"
+    },
+    {
+      "id": "skill_indexes_attestation",
+      "category": "references",
+      "file": "SKILL.md",
+      "must_contain": ["onchain-attestation", "duplicate_tokenization"],
+      "description": "SKILL.md indexes attestation and duplicate tokenization checks"
+    },
+    {
+      "id": "ref_offchain_duplicate",
+      "category": "references",
+      "file": "references/offchain-diligence.md",
+      "must_contain": ["duplicate_tokenization", "liquidity_exit_path", "asset_fingerprint"],
+      "description": "Off-chain checks #19 and #20 documented"
+    },
+    {
+      "id": "ref_post_issuance_monitoring",
+      "category": "references",
+      "file": "references/post-issuance-monitoring.md",
+      "must_contain": ["market_flow_integrity", "Monitoring Agent", "deterministic"],
+      "description": "Post-issuance monitoring playbook (paper Monitoring Agent analogue)"
+    },
+    {
+      "id": "ref_attest_dry_run",
+      "category": "references",
+      "file": "references/onchain-attestation.md",
+      "must_contain": ["attest:dry-run", "evidence:summary"],
+      "description": "Dry-run attestation pipeline documented"
+    },
+    {
+      "id": "package_attest_scripts",
+      "category": "tooling",
+      "file": "package.json",
+      "must_contain": ["attest:dry-run", "evidence:summary", "smoke:attestation"],
+      "description": "npm scripts for attestation pipeline"
     }
   ],
   "logic_cases": [
@@ -93,6 +135,27 @@
       "expect_refuse_issuance": true
     },
     {
+      "id": "logic_refuse_duplicate_tokenization",
+      "description": "duplicate_tokenization risk in evidence → refuse mint",
+      "state": {
+        "diligence": {
+          "passed": true,
+          "rating": "GREEN",
+          "evidence": [
+            {
+              "check": "duplicate_tokenization",
+              "cmd": "cast call asset_registry tokenForAsset",
+              "flag": "risk",
+              "infer": "fingerprint maps to other token",
+              "result": "0xOTHER"
+            }
+          ]
+        },
+        "asset": { "address": "0x1" }
+      },
+      "expect_refuse_issuance": true
+    },
+    {
       "id": "logic_allow_green",
       "description": "GREEN + passed → issuance allowed (gate open)",
       "state": {
@@ -103,7 +166,7 @@
     }
   ],
   "risk_alignment": {
-    "high": ["mint", "burn", "forcedTransfer", "recoveryAddress", "depositDividend", "sweepUndistributedDividend"],
+    "high": ["mint", "burn", "forcedTransfer", "executeRecoveryAddress", "depositDividend", "sweepUndistributedDividend"],
     "medium": ["registerIdentity", "setAddressFrozen", "freezePartialTokens", "setComplianceRules", "addAgent", "pause"],
     "low": ["isVerified", "canTransfer", "dividendOf", "claimDividend", "holderCount"]
   }

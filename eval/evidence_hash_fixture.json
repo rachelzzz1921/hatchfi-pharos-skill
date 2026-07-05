@@ -1,0 +1,23 @@
+[
+  {
+    "check": "balance",
+    "cmd": "cast balance 0xA54A3C2766a80d3AFe7C4Bf00D5bcfF9e1892bc4 --rpc-url $RPC",
+    "flag": "ok",
+    "infer": "有余额",
+    "result": ">0"
+  },
+  {
+    "check": "denylist",
+    "cmd": "compare state.config.denylist[]",
+    "flag": "ok",
+    "infer": "目标不在禁投名单",
+    "result": "miss"
+  },
+  {
+    "check": "is_contract",
+    "cmd": "cast code 0xA54A3C2766a80d3AFe7C4Bf00D5bcfF9e1892bc4 --rpc-url $RPC",
+    "flag": "ok",
+    "infer": "EOA",
+    "result": "0x"
+  }
+]

@@ -6,6 +6,7 @@ RPC_URL="${PHAROS_RPC_URL:-https://atlantic.dplabs-internal.com}"
 DEPLOY_FILE="deployments/pharos.json"
 COUNTRY=840
 MINT_AMOUNT=1000000000000000000  # 1e18
+EVIDENCE_HASH="${EVIDENCE_HASH:-$(cast keccak "smoke-evidence-v1")}"
 
 if [ -z "${PRIVATE_KEY:-}" ]; then
   echo "FAIL: PRIVATE_KEY 未设置"
@@ -19,6 +20,7 @@ fi
 
 TOKEN=$(python3 -c "import json; print(json.load(open('$DEPLOY_FILE'))['contractAddress'])")
 DEPLOYER=$(cast wallet address --private-key "$PRIVATE_KEY")
+IDENTITY_ID=$(cast keccak "identity:$DEPLOYER")
 
 echo "== Smoke Test: $TOKEN =="
 echo "Deployer: $DEPLOYER"
@@ -53,14 +55,30 @@ if [ "$REGISTER_BEFORE" = "true" ]; then
   echo "-- Write: registerIdentity skipped (deployer already verified) --"
   TX1="skipped"
 else
-  echo "-- Write: registerIdentity(deployer, $COUNTRY) --"
-  TX1=$(cast send "$TOKEN" "registerIdentity(address,uint16)" "$DEPLOYER" "$COUNTRY" \
+  echo "-- Write: registerIdentity(deployer, $COUNTRY, identityId) --"
+  TX1=$(cast send "$TOKEN" "registerIdentity(address,uint16,bytes32)" "$DEPLOYER" "$COUNTRY" "$IDENTITY_ID" \
     --rpc-url "$RPC_URL" --private-key "$PRIVATE_KEY" --json | python3 -c "import sys,json; print(json.load(sys.stdin)['transactionHash'])")
   assert_receipt "$TX1" "registerIdentity"
 fi
 
-echo "-- Write: mint(deployer, 1e18) --"
-TX2=$(cast send "$TOKEN" "mint(address,uint256)" "$DEPLOYER" "$MINT_AMOUNT" \
+echo "-- Read: diligenceAttestationRegistry() --"
+ATTESTATION_REGISTRY=$(cast call "$TOKEN" "diligenceAttestationRegistry()(address)" --rpc-url "$RPC_URL")
+if [ "$ATTESTATION_REGISTRY" = "0x0000000000000000000000000000000000000000" ]; then
+  echo "FAIL: diligenceAttestationRegistry not configured on token"
+  echo "Hint: call setDiligenceAttestationRegistry first, then attest evidence hash."
+  exit 1
+fi
+
+PASSABLE=$(cast call "$ATTESTATION_REGISTRY" "isPassable(bytes32)(bool)" "$EVIDENCE_HASH" --rpc-url "$RPC_URL")
+if [ "$PASSABLE" != "true" ]; then
+  echo "FAIL: evidence hash is not passable on attestation registry"
+  echo "Registry: $ATTESTATION_REGISTRY"
+  echo "Evidence: $EVIDENCE_HASH"
+  exit 1
+fi
+
+echo "-- Write: mint(deployer, 1e18, evidenceHash) --"
+TX2=$(cast send "$TOKEN" "mint(address,uint256,bytes32)" "$DEPLOYER" "$MINT_AMOUNT" "$EVIDENCE_HASH" \
   --rpc-url "$RPC_URL" --private-key "$PRIVATE_KEY" --json | python3 -c "import sys,json; print(json.load(sys.stdin)['transactionHash'])")
 assert_receipt "$TX2" "mint"
 
@@ -84,6 +102,9 @@ d["smokeTest"] = {
     "passedAt": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
     "registerTx": "$TX1",
     "mintTx": "$TX2",
+    "identityId": "$IDENTITY_ID",
+    "evidenceHash": "$EVIDENCE_HASH",
+    "attestationRegistry": "$ATTESTATION_REGISTRY",
     "isVerified": "$VERIFIED",
     "balance": "$BAL",
     "holderCount": "$HOLDERS2"

@@ -1,0 +1,11 @@
+{
+  "description": "Golden vectors for canonical evidence hashing (Round 9)",
+  "fixture_file": "eval/evidence_hash_fixture.json",
+  "expected_hash": "0xadd0e6f2a56877d9c5bcc383e7a7d4a5aeab5fe49c2701873d3e49e0dbf18054",
+  "asset_fingerprint": {
+    "asset_id": "MPF",
+    "jurisdiction": "US",
+    "wrapper_type": "permissioned_token",
+    "expected": "0xe8d343f2ca60abadc7ac491a9272fa3b4a19eadfe82629924c4d52794e4c65f3"
+  }
+}

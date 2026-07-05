@@ -194,8 +194,10 @@ def write_skill(asset: dict, out_dir: Path) -> None:
     issuance_ref = f"references/{symbol}-issuance.md"
     diligence_onchain = f"references/{symbol}-diligence-onchain.md"
     diligence_offchain = f"references/{symbol}-diligence-offchain.md"
+    attestation_ref = f"references/{symbol}-onchain-attestation.md"
     sanctions_ref = f"references/{symbol}-sanctions.md"
     compliance_ref = f"references/{symbol}-compliance-knowledge.md"
+    monitoring_ref = f"references/{symbol}-post-issuance-monitoring.md"
     dividend_ref = f"references/{symbol}-dividend.md"
 
     (out_dir / "SKILL.md").write_text(
@@ -225,8 +227,10 @@ description: Asset-specific operations for {asset['name']} ({symbol}) on Pharos 
 | Deposit asset dividends | `depositDividend` | high | `{dividend_ref}` |
 | Check or claim dividends | `dividendOf` / `claimDividend` | low | `{dividend_ref}` |
 | Pre-issuance diligence (full pipeline) | Stage 0–2 | low | `{diligence_offchain}` · `{diligence_onchain}` |
+| On-chain diligence attestation | attest hash + asset register | medium | `{attestation_ref}` |
 | Sanctions screening | denylist + oracle | low | `{sanctions_ref}` |
 | Compliance infer citations | knowledge mapping | low | `{compliance_ref}` |
+| Post-issuance monitoring (#10b) | read-only surveillance | low | `{monitoring_ref}` |
 | Apply owner defaults before operations | read `PREFERENCES.md` | low | `PREFERENCES.md` |
 | Asset compliance module (regime + transferability) | read `COMPLIANCE_MODULE.md` | low | `COMPLIANCE_MODULE.md` |
 
@@ -439,8 +443,10 @@ def write_reference_templates(asset: dict, out_dir: Path) -> list[Path]:
     templates = {
         ROOT / "references" / "onchain-diligence.md": refs_dir / f"{symbol}-diligence-onchain.md",
         ROOT / "references" / "offchain-diligence.md": refs_dir / f"{symbol}-diligence-offchain.md",
+        ROOT / "references" / "onchain-attestation.md": refs_dir / f"{symbol}-onchain-attestation.md",
         ROOT / "references" / "sanctions-screening.md": refs_dir / f"{symbol}-sanctions.md",
         ROOT / "references" / "compliance-knowledge.md": refs_dir / f"{symbol}-compliance-knowledge.md",
+        ROOT / "references" / "post-issuance-monitoring.md": refs_dir / f"{symbol}-post-issuance-monitoring.md",
         ROOT / "references" / "rwa-issuance.md": refs_dir / f"{symbol}-issuance.md",
         ROOT / "references" / "rwa-dividend.md": refs_dir / f"{symbol}-dividend.md",
     }
