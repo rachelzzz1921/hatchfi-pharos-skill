@@ -318,7 +318,7 @@ Before release, HatchFi went through a layered review loop. Issues found were fi
 | **Security review** ([`docs/SECURITY.md`](./docs/SECURITY.md)) | Findings documented; fixes pinned by named regression tests |
 | **Compliance review** | Found and closed a compliance-critical gap (`mint` bypassing holder/balance caps) — issuance now enforces the same `canTransfer` rules as transfers |
 | **Production-readiness review** | Documented in project review notes (see validation docs) |
-| **Pharos Skill Inspector** | [`10/100 LOW`](./docs/SKILL_SECURITY_REPORT.md) — 0 critical / 0 high / 0 medium blockers |
+| **Pharos Skill Inspector** | [`22/100 MEDIUM`](./docs/SKILL_SECURITY_REPORT.md) — 0 critical / 0 high / 0 medium blockers |
 | **On-chain verification** | `preflight → deploy → smoke` on Atlantic **Testnet**, every executed receipt asserted `status == 1` |
 
 Selected fixes (all test-covered):

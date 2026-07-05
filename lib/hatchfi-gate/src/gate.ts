@@ -35,7 +35,7 @@ export class DiligenceGate {
   }> {
     const decision = evaluateDiligence(input.flags);
     const attestation = await this.registry.getAttestation(input.evidenceHash);
-    const attested = Boolean(attestation) && attestation.rating !== "RED";
+    const attested = attestation !== null && attestation.rating !== "RED";
 
     return {
       allowed: decision.allowed && attested,

@@ -93,8 +93,8 @@ npm run check            # build + tests + package checks + inspector
 
 Current release evidence:
 
-- Foundry tests: 24 passed, 0 failed
-- Skill eval: 52/52 passed
+- Foundry tests: 36 passed, 0 failed
+- Skill eval: 64/64 passed
 - Skill Inspector: 10/100 LOW, 0 critical/high/medium blockers
 - Atlantic MPF: `0xfef7519bebda6c47af49583dbc9e60801f8aa3de`
 - Mock OFAC oracle: `0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400`

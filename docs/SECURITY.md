@@ -1,6 +1,6 @@
 # 安全说明 — CompliantRWAToken
 
-本文件总结 `src/CompliantRWAToken.sol`（同时随包提供 `assets/rwa/CompliantRWAToken.sol`）的安全姿态、威胁模型、一次内部审计的发现，以及每条的处置方式。下述所有修复均有 Foundry 测试覆盖（`forge test`：24 passed；0 failed，含一个 fuzz 不变量）。
+本文件总结 `src/CompliantRWAToken.sol`（同时随包提供 `assets/rwa/CompliantRWAToken.sol`）的安全姿态、威胁模型、一次内部审计的发现，以及每条的处置方式。下述所有修复均有 Foundry 测试覆盖（`forge test`：36 passed；0 failed，含一个 fuzz 不变量）。
 
 ## 设计姿态
 
@@ -44,7 +44,7 @@
 
 ```bash
 forge build
-forge test          # 24 passed; 0 failed
+forge test          # 36 passed; 0 failed
 ```
 
 agent 侧的运营守卫（写操作预检、尽调闸门、按风险档的人确认）见 `SKILL.md` 与 `references/`。

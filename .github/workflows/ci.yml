@@ -18,7 +18,7 @@ jobs:
           node-version: "20"
           cache: npm
       - run: npm ci
-      - name: Behavioral evals (expect 62/62)
+      - name: Behavioral evals (expect 64/64)
         run: npm run eval:skill
       - name: Gate primitive tests
         run: npm run gate:test

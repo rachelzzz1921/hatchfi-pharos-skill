@@ -8,7 +8,7 @@
     "high": 0,
     "medium": 0,
     "low": 11,
-    "info": 469
+    "info": 474
   },
   "static_only": true,
   "findings": [
@@ -127,7 +127,7 @@
       "category": "pharos-web3",
       "rule": "declared_write_capability",
       "path": "SKILL.md",
-      "line": 152,
+      "line": 175,
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "5. **Post-tx assertion**: after every `cast send`, `cast receipt` with `status==1` before continuing; on failure stop and report.",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
@@ -137,7 +137,7 @@
       "category": "pharos-web3",
       "rule": "declared_write_capability",
       "path": "SKILL.md",
-      "line": 163,
+      "line": 186,
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "| Balance / token query / send PHRS / generic verify | cast balance / cast call / cast send / forge verify | 🟢/🔴 | pharos-base-ops |",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
@@ -501,6 +501,26 @@
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "cast send <token> \"claimDividend()\" --rpc-url $RPC --private-key $PK         # 持有人自领",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
+    },
+    {
+      "severity": "info",
+      "category": "data-leakage",
+      "rule": "env_harvesting",
+      "path": "mcp-server/onchain-tools.ts",
+      "line": 8,
+      "message": "Code reads environment variables.",
+      "evidence": "const RPC = process.env.PHAROS_RPC_URL || \"https://atlantic.dplabs-internal.com\";",
+      "recommendation": "Read only the specific env vars needed; never enumerate or export all env."
+    },
+    {
+      "severity": "info",
+      "category": "data-leakage",
+      "rule": "env_harvesting",
+      "path": "mcp-server/onchain-tools.ts",
+      "line": 11,
+      "message": "Code reads environment variables.",
+      "evidence": "const envAddr = process.env.PHAROS_TOKEN_ADDRESS;",
+      "recommendation": "Read only the specific env vars needed; never enumerate or export all env."
     },
     {
       "severity": "info",
@@ -1799,7 +1819,7 @@
       "path": "skills/MPF-asset/references/MPF-contract-surface.md",
       "line": 30,
       "message": "On-chain write capability is present and declared in SKILL.md.",
-      "evidence": "| `recoveryAddress(address,address)` | 🔴 high | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"recoveryAddress(address,address)\" <lost> <new> --rpc-url $RPC --private-key $PK` |",
+      "evidence": "| `proposeRecoveryAddress(address,address,bytes32)` | 🟡 medium | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"proposeRecoveryAddress(address,address,bytes32)\" <lost> <new> <identityId> --rpc-url $RPC --",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
     },
     {
@@ -1809,7 +1829,7 @@
       "path": "skills/MPF-asset/references/MPF-contract-surface.md",
       "line": 31,
       "message": "On-chain write capability is present and declared in SKILL.md.",
-      "evidence": "| `depositDividend()` | 🔴 high | payable | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"depositDividend()\" --value <PHRS> --rpc-url $RPC --private-key $PK` |",
+      "evidence": "| `cancelRecoveryAddress(bytes32)` | 🟡 medium | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"cancelRecoveryAddress(bytes32)\" <requestId> --rpc-url $RPC --private-key $PK` |",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
     },
     {
@@ -1819,7 +1839,7 @@
       "path": "skills/MPF-asset/references/MPF-contract-surface.md",
       "line": 32,
       "message": "On-chain write capability is present and declared in SKILL.md.",
-      "evidence": "| `sweepUndistributedDividend(address)` | 🔴 high | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"sweepUndistributedDividend(address)\" <to> --rpc-url $RPC --private-key $PK` |",
+      "evidence": "| `executeRecoveryAddress(bytes32)` | 🔴 high | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"executeRecoveryAddress(bytes32)\" <requestId> --rpc-url $RPC --private-key $PK` |",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
     },
     {
@@ -1829,7 +1849,17 @@
       "path": "skills/MPF-asset/references/MPF-contract-surface.md",
       "line": 33,
       "message": "On-chain write capability is present and declared in SKILL.md.",
-      "evidence": "| `claimDividend()` | 🟢 low | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"claimDividend()\" --rpc-url $RPC --private-key $PK` |",
+      "evidence": "| `depositDividend()` | 🔴 high | payable | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"depositDividend()\" --value <PHRS> --rpc-url $RPC --private-key $PK` |",
+      "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
+    },
+    {
+      "severity": "info",
+      "category": "pharos-web3",
+      "rule": "declared_write_capability",
+      "path": "skills/MPF-asset/references/MPF-contract-surface.md",
+      "line": 34,
+      "message": "On-chain write capability is present and declared in SKILL.md.",
+      "evidence": "| `sweepUndistributedDividend(address)` | 🔴 high | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"sweepUndistributedDividend(address)\" <to> --rpc-url $RPC --private-key $PK` |",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
     },
     {
@@ -1839,7 +1869,7 @@
       "path": "skills/MPF-asset/references/MPF-contract-surface.md",
       "line": 35,
       "message": "On-chain write capability is present and declared in SKILL.md.",
-      "evidence": "| `addAgent(address)` | 🟡 medium | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"addAgent(address)\" <agent> --rpc-url $RPC --private-key $PK` |",
+      "evidence": "| `claimDividend()` | 🟢 low | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"claimDividend()\" --rpc-url $RPC --private-key $PK` |",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
     },
     {
@@ -1847,9 +1877,9 @@
       "category": "pharos-web3",
       "rule": "declared_write_capability",
       "path": "skills/MPF-asset/references/MPF-contract-surface.md",
-      "line": 36,
+      "line": 37,
       "message": "On-chain write capability is present and declared in SKILL.md.",
-      "evidence": "| `removeAgent(address)` | 🟡 medium | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"removeAgent(address)\" <agent> --rpc-url $RPC --private-key $PK` |",
+      "evidence": "| `addAgent(address)` | 🟡 medium | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"addAgent(address)\" <agent> --rpc-url $RPC --private-key $PK` |",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
     },
     {
@@ -1859,6 +1889,16 @@
       "path": "skills/MPF-asset/references/MPF-contract-surface.md",
       "line": 38,
       "message": "On-chain write capability is present and declared in SKILL.md.",
+      "evidence": "| `removeAgent(address)` | 🟡 medium | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"removeAgent(address)\" <agent> --rpc-url $RPC --private-key $PK` |",
+      "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
+    },
+    {
+      "severity": "info",
+      "category": "pharos-web3",
+      "rule": "declared_write_capability",
+      "path": "skills/MPF-asset/references/MPF-contract-surface.md",
+      "line": 40,
+      "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "| `pause()` | 🟡 medium | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"pause()\" --rpc-url $RPC --private-key $PK` |",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
     },
@@ -1867,7 +1907,7 @@
       "category": "pharos-web3",
       "rule": "declared_write_capability",
       "path": "skills/MPF-asset/references/MPF-contract-surface.md",
-      "line": 39,
+      "line": 41,
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "| `unpause()` | 🟡 medium | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"unpause()\" --rpc-url $RPC --private-key $PK` |",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
@@ -2029,7 +2069,7 @@
       "path": "skills/MPF-asset/references/MPF-issuance.md",
       "line": 141,
       "message": "On-chain write capability is present and declared in SKILL.md.",
-      "evidence": "cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"recoveryAddress(address,address)\" <lostWallet> <newWallet> --rpc-url $RPC --private-key $PK",
+      "evidence": "cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"proposeRecoveryAddress(address,address,bytes32)\" <lostWallet> <newWallet> <identityId> --rpc-url $RPC --private-key $PK",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
     },
     {
@@ -2037,7 +2077,17 @@
       "category": "pharos-web3",
       "rule": "declared_write_capability",
       "path": "skills/MPF-asset/references/MPF-issuance.md",
-      "line": 147,
+      "line": 143,
+      "message": "On-chain write capability is present and declared in SKILL.md.",
+      "evidence": "cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"executeRecoveryAddress(bytes32)\" <requestId> --rpc-url $RPC --private-key $PK",
+      "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
+    },
+    {
+      "severity": "info",
+      "category": "pharos-web3",
+      "rule": "declared_write_capability",
+      "path": "skills/MPF-asset/references/MPF-issuance.md",
+      "line": 149,
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"setComplianceRules(uint256,uint256)\" 100 1000000000000000000000000 --rpc-url $RPC --private-key $PK",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
@@ -2047,7 +2097,7 @@
       "category": "pharos-web3",
       "rule": "declared_write_capability",
       "path": "skills/MPF-asset/references/MPF-issuance.md",
-      "line": 157,
+      "line": 159,
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"addAgent(address)\" <agent> --rpc-url $RPC --private-key $PK     # owner only",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
@@ -2057,7 +2107,7 @@
       "category": "pharos-web3",
       "rule": "declared_write_capability",
       "path": "skills/MPF-asset/references/MPF-issuance.md",
-      "line": 158,
+      "line": 160,
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"removeAgent(address)\" <agent> --rpc-url $RPC --private-key $PK  # owner only",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
@@ -2067,7 +2117,7 @@
       "category": "pharos-web3",
       "rule": "declared_write_capability",
       "path": "skills/MPF-asset/references/MPF-issuance.md",
-      "line": 164,
+      "line": 166,
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"pause()\" --rpc-url $RPC --private-key $PK",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
@@ -2077,7 +2127,7 @@
       "category": "pharos-web3",
       "rule": "declared_write_capability",
       "path": "skills/MPF-asset/references/MPF-issuance.md",
-      "line": 165,
+      "line": 167,
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"unpause()\" --rpc-url $RPC --private-key $PK",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
@@ -2087,7 +2137,7 @@
       "category": "pharos-web3",
       "rule": "declared_write_capability",
       "path": "skills/MPF-asset/references/MPF-issuance.md",
-      "line": 222,
+      "line": 225,
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"depositDividend()\" --value <PHRS> --rpc-url $RPC --private-key $PK",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
@@ -2097,7 +2147,7 @@
       "category": "pharos-web3",
       "rule": "declared_write_capability",
       "path": "skills/MPF-asset/references/MPF-issuance.md",
-      "line": 229,
+      "line": 232,
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de \"claimDividend()\" --rpc-url $RPC --private-key $PK         # holder self-claim",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."

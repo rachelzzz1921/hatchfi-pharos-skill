@@ -7,7 +7,7 @@
 ```bash
 cd pharos-rwa-skill
 npm run build    # forge build
-npm run test     # 24 passed; 0 failed
+npm run test     # 36 passed; 0 failed
 ```
 
 ## 2. Atlantic deploy + smoke + spawn (wallet required)

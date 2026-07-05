@@ -138,7 +138,9 @@ Bypasses canTransfer; still requires `to` isVerified. Card must state: bypasses 
 
 ### Wallet recovery 🔴 (investor lost key)
 ```bash
-cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "recoveryAddress(address,address)" <lostWallet> <newWallet> --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "proposeRecoveryAddress(address,address,bytes32)" <lostWallet> <newWallet> <identityId> --rpc-url $RPC --private-key $PK
+# wait recoveryDelay
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "executeRecoveryAddress(bytes32)" <requestId> --rpc-url $RPC --private-key $PK
 ```
 Migrates balance (including frozen); new wallet inherits verification & country. Pre: `lostWallet` balance > 0.
 
@@ -180,7 +182,8 @@ While paused, all transfers (including mint) blocked by `_update` hook.
 | maxHolders | `maxHolders()(uint256)` | — | current holder cap (`0` = unlimited) |
 | maxBalancePerInvestor | `maxBalancePerInvestor()(uint256)` | — | current per-investor cap (`0` = unlimited) |
 | forcedTransfer | `forcedTransfer(address,address,uint256)` | from, to (must isVerified), amount | balance moved, bypasses global rules |
-| recoveryAddress | `recoveryAddress(address,address)` | lostWallet, newWallet | balance + verification migrated, emit RecoverySuccess |
+| proposeRecoveryAddress | `proposeRecoveryAddress(address,address,bytes32)` | lostWallet, newWallet, identityId | create recovery request with executeAfter |
+| executeRecoveryAddress | `executeRecoveryAddress(bytes32)` | requestId | executes approved recovery, emit RecoverySuccess |
 | depositDividend | `depositDividend()` payable | `--value <PHRS>` | dividendPerShareCumulative ↑ |
 | dividendOf | `dividendOf(address)(uint256)` | holder | claimable (incl. unsettled) |
 | holderCount | `holderCount()(uint256)` | — | current holder count |

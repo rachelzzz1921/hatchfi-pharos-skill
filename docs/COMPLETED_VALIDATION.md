@@ -51,7 +51,7 @@ forge test
 Result:
 
 ```text
-Suite result: ok. 24 passed; 0 failed; 0 skipped
+Suite result: ok. 36 passed; 0 failed; 0 skipped
 ```
 
 The test suite (including a fuzz test) covers the core ERC-3643-style behavior:
@@ -168,7 +168,7 @@ These commands reproduce the completed validation evidence above.
 
 ```bash
 npm run eval:skill
-# Skill eval: 52/52 passed
+# Skill eval: 64/64 passed
 ```
 
 ### OFAC snapshot + local state merge

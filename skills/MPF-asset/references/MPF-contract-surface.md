@@ -27,7 +27,9 @@ Counts: 30 external/public functions · 12 events · 5 errors
 | `mint(address,uint256)` | 🔴 high | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "mint(address,uint256)" <to> <amount> --rpc-url $RPC --private-key $PK` |
 | `burn(address,uint256)` | 🔴 high | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "burn(address,uint256)" <from> <amount> --rpc-url $RPC --private-key $PK` |
 | `forcedTransfer(address,address,uint256)` | 🔴 high | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "forcedTransfer(address,address,uint256)" <from> <to> <amount> --rpc-url $RPC --private-key $PK` |
-| `recoveryAddress(address,address)` | 🔴 high | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "recoveryAddress(address,address)" <lost> <new> --rpc-url $RPC --private-key $PK` |
+| `proposeRecoveryAddress(address,address,bytes32)` | 🟡 medium | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "proposeRecoveryAddress(address,address,bytes32)" <lost> <new> <identityId> --rpc-url $RPC --private-key $PK` |
+| `cancelRecoveryAddress(bytes32)` | 🟡 medium | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "cancelRecoveryAddress(bytes32)" <requestId> --rpc-url $RPC --private-key $PK` |
+| `executeRecoveryAddress(bytes32)` | 🔴 high | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "executeRecoveryAddress(bytes32)" <requestId> --rpc-url $RPC --private-key $PK` |
 | `depositDividend()` | 🔴 high | payable | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "depositDividend()" --value <PHRS> --rpc-url $RPC --private-key $PK` |
 | `sweepUndistributedDividend(address)` | 🔴 high | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "sweepUndistributedDividend(address)" <to> --rpc-url $RPC --private-key $PK` |
 | `claimDividend()` | 🟢 low | write | `cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "claimDividend()" --rpc-url $RPC --private-key $PK` |

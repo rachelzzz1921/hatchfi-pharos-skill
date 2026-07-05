@@ -296,7 +296,7 @@ HatchFi 是 Pharos **Skill**，不是脚本。Agent 遵循 [`SKILL.md`](./SKILL.
 | **安全审查**（[`docs/SECURITY.md`](./docs/SECURITY.md)） | 发现项已文档化；修复对应回归测试 |
 | **合规审查** | 修复 mint 绕过持有人/额度上限的合规关键问题 |
 | **生产就绪审查** | 见项目审查记录（validation 文档） |
-| **Pharos Skill Inspector** | [`10/100 LOW`](./docs/SKILL_SECURITY_REPORT.md) —— 0 critical / 0 high / 0 medium blocker |
+| **Pharos Skill Inspector** | [`22/100 MEDIUM`](./docs/SKILL_SECURITY_REPORT.md) —— 0 critical / 0 high / 0 medium blocker |
 | **链上验证** | Atlantic **测试网**上 `preflight → deploy → smoke`，已执行的 receipt 均断言 `status == 1` |
 
 代表性修复（均有测试覆盖）：
