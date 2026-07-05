@@ -1,0 +1,45 @@
+name: CI
+
+# Deterministic, no-wallet gates. No secrets, no on-chain writes.
+on:
+  push:
+    branches: [main, "agent/**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  deterministic:
+    name: Deterministic suites (no wallet)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - name: Behavioral evals (expect 62/62)
+        run: npm run eval:skill
+      - name: Gate primitive tests
+        run: npm run gate:test
+      - name: Gate CLI narrative (RED → GREEN → attest → mint)
+        run: npm run gate:cli
+      - name: MCP probe (expect TOOLS 8, MINT allowed=true attested=true)
+        run: npm run mcp:probe
+      - name: Skill Inspector security gate (blocks on high/critical)
+        run: npm run inspect:skill
+
+  contracts:
+    name: Foundry contract suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
+      - name: Install Solidity dependencies
+        run: |
+          forge install OpenZeppelin/openzeppelin-contracts@v5.1.0 --no-commit || forge install OpenZeppelin/openzeppelin-contracts@v5.1.0
+          forge install foundry-rs/forge-std --no-commit || forge install foundry-rs/forge-std
+      - name: forge build (zero warnings)
+        run: forge build
+      - name: forge test (expect 36 passing)
+        run: forge test -vvv
