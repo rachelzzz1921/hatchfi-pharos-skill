@@ -1,7 +1,7 @@
 # MPF-bound reference
 
 > Asset: `Manhattan Property Fund` (`MPF`)
-> Token: `0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3`
+> Token: `0xfef7519bebda6c47af49583dbc9e60801f8aa3de`
 > This file was generated from `references/rwa-issuance.md`.
 
 # Reference: Compliant RWA issuance core (rwa-issuance)
@@ -18,7 +18,7 @@
 |---|---|---|
 | 🟢 Low | All views: isVerified / canTransfer pre-check / dividendOf / isFrozen / frozenTokens / holderCount / diligence | Fully automatic, no confirm |
 | 🟡 Medium | registerIdentity / batchRegisterIdentity / setAddressFrozen / freezePartialTokens / unfreezePartialTokens / setComplianceRules / addAgent | Auto + write state.history |
-| 🔴 High | deploy / mint / burn / forcedTransfer / executeRecoveryAddress / depositDividend | Confirmation card first; execute after `confirm` |
+| 🔴 High | deploy / mint / burn / forcedTransfer / recoveryAddress / depositDividend | Confirmation card first; execute after `confirm` |
 
 ---
 
@@ -68,35 +68,34 @@ Assert: capture `Deployed to` address → write `state.asset{address,deploy_tx,d
 
 ### 2. Register compliant investors (whitelist) 🟡
 ```bash
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "registerIdentity(address,uint16,bytes32)" <investor> <country> <identityId> \
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "registerIdentity(address,uint16)" <investor> <country> \
   --rpc-url $RPC --private-key $PK
 ```
 Batch:
 ```bash
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "batchRegisterIdentity(address[],uint16[],bytes32[])" "[<a1>,<a2>]" "[<c1>,<c2>]" "[<id1>,<id2>]" \
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "batchRegisterIdentity(address[],uint16[])" "[<a1>,<a2>]" "[<c1>,<c2>]" \
   --rpc-url $RPC --private-key $PK
 ```
 After assert → write `state.whitelist[]`. Pre-verify (low risk, optional):
 ```bash
-cast call 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "isVerified(address)(bool)" <investor> --rpc-url $RPC
-cast call 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "investorCountry(address)(uint16)" <investor> --rpc-url $RPC
+cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "isVerified(address)(bool)" <investor> --rpc-url $RPC
+cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "investorCountry(address)(uint16)" <investor> --rpc-url $RPC
 ```
 Remove whitelist 🟡:
 ```bash
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "removeIdentity(address)" <investor> --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "removeIdentity(address)" <investor> --rpc-url $RPC --private-key $PK
 ```
 
 ### 3. Mint shares 🔴
 Pre: `isVerified(to)==true` (contract enforces; agent pre-checks to avoid wasted tx).
 ```bash
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "mint(address,uint256,bytes32)" <to> <amount> <evidenceHash> --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "mint(address,uint256)" <to> <amount> --rpc-url $RPC --private-key $PK
 ```
-Pre: `diligenceAttestationRegistry.isPassable(evidenceHash)==true`（合约硬闸门）。  
 Confirmation card must state: total supply change, irreversible. Assert → history.
 
 Burn shares 🔴 (regulatory / redemption — deduct from address):
 ```bash
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "burn(address,uint256)" <from> <amount> --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "burn(address,uint256)" <from> <amount> --rpc-url $RPC --private-key $PK
 ```
 
 ---
@@ -105,7 +104,7 @@ cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "burn(address,uint256)" <fr
 
 Standard `transfer` enforces `isVerified(to)` + `canTransfer` in-contract. Agent **pre-checks read-only** (🟢) before transfer:
 ```bash
-cast call 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "canTransfer(address,address,uint256)(bool,string)" <from> <to> <amt> --rpc-url $RPC
+cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "canTransfer(address,address,uint256)(bool,string)" <from> <to> <amt> --rpc-url $RPC
 ```
 Returns `(false,"exceeds max holder count")` etc. → tell user, do not send tx.
 Two checks: `isVerified` = recipient eligible; `canTransfer` = global rules (holder cap / per-investor limit). **Normal transfer** needs both; **mint** also enforces `canTransfer(0, to, amount)`; **forcedTransfer** is regulatory — only requires `to` isVerified, bypasses `canTransfer`.
@@ -116,39 +115,38 @@ Two checks: `isVerified` = recipient eligible; `canTransfer` = global rules (hol
 
 ### Freeze entire wallet 🟡
 ```bash
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "setAddressFrozen(address,bool)" <account> true --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "setAddressFrozen(address,bool)" <account> true --rpc-url $RPC --private-key $PK
 ```
 Unfreeze: same with `false`. Frozen addresses cannot send or receive.
 
 ### Freeze / unfreeze partial balance 🟡
 ```bash
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "freezePartialTokens(address,uint256)" <account> <amount> --rpc-url $RPC --private-key $PK
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "unfreezePartialTokens(address,uint256)" <account> <amount> --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "freezePartialTokens(address,uint256)" <account> <amount> --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "unfreezePartialTokens(address,uint256)" <account> <amount> --rpc-url $RPC --private-key $PK
 ```
 Partial freeze locks only that amount. Query:
 ```bash
-cast call 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "isFrozen(address)(bool)" <account> --rpc-url $RPC
-cast call 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "frozenTokens(address)(uint256)" <account> --rpc-url $RPC
+cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "isFrozen(address)(bool)" <account> --rpc-url $RPC
+cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "frozenTokens(address)(uint256)" <account> --rpc-url $RPC
 ```
 
 ### Forced transfer 🔴 (regulatory / legal)
 ```bash
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "forcedTransfer(address,address,uint256)" <from> <to> <amount> --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "forcedTransfer(address,address,uint256)" <from> <to> <amount> --rpc-url $RPC --private-key $PK
 ```
 Bypasses canTransfer; still requires `to` isVerified. Card must state: bypasses compliance rules, regulatory/legal use, irreversible.
 
-### Wallet recovery 🔴 (investor lost key, two-step)
+### Wallet recovery 🔴 (investor lost key)
 ```bash
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "proposeRecoveryAddress(address,address,bytes32)" <lostWallet> <newWallet> <identityId> --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "proposeRecoveryAddress(address,address,bytes32)" <lostWallet> <newWallet> <identityId> --rpc-url $RPC --private-key $PK
 # wait recoveryDelay
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "executeRecoveryAddress(bytes32)" <requestId> --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "executeRecoveryAddress(bytes32)" <requestId> --rpc-url $RPC --private-key $PK
 ```
-Pre: old/new wallet must bind to same identityId (`investorIdentity`).  
-Migrates balance (including frozen) and pending dividends; old wallet identity is revoked.
+Migrates balance (including frozen); new wallet inherits verification & country. Pre: `lostWallet` balance > 0.
 
 ### Adjust compliance rules 🟡
 ```bash
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "setComplianceRules(uint256,uint256)" 100 1000000000000000000000000 --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "setComplianceRules(uint256,uint256)" 100 1000000000000000000000000 --rpc-url $RPC --private-key $PK
 ```
 Pass `0` for unlimited on that dimension.
 
@@ -158,15 +156,15 @@ Pass `0` for unlimited on that dimension.
 
 ### Grant / revoke operator 🟡
 ```bash
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "addAgent(address)" <agent> --rpc-url $RPC --private-key $PK     # owner only
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "removeAgent(address)" <agent> --rpc-url $RPC --private-key $PK  # owner only
-cast call 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "isAgent(address)(bool)" <account> --rpc-url $RPC
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "addAgent(address)" <agent> --rpc-url $RPC --private-key $PK     # owner only
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "removeAgent(address)" <agent> --rpc-url $RPC --private-key $PK  # owner only
+cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "isAgent(address)(bool)" <account> --rpc-url $RPC
 ```
 
 ### Global pause / unpause 🟡 (emergency circuit breaker)
 ```bash
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "pause()" --rpc-url $RPC --private-key $PK
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "unpause()" --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "pause()" --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "unpause()" --rpc-url $RPC --private-key $PK
 ```
 While paused, all transfers (including mint) blocked by `_update` hook.
 
@@ -176,8 +174,8 @@ While paused, all transfers (including mint) blocked by `_update` hook.
 
 | Operation | Signature | Key params | Return / state change |
 |---|---|---|---|
-| registerIdentity | `registerIdentity(address,uint16,bytes32)` | investor, country code, identityId | `_verified[investor]=true`, bind identity, emit IdentityRegistered |
-| mint | `mint(address,uint256,bytes32)` | to (must isVerified), amount (wei), evidenceHash | totalSupply ↑, holderCount may ↑, requires passable attestation |
+| registerIdentity | `registerIdentity(address,uint16)` | investor, country code | `_verified[investor]=true`, emit IdentityRegistered |
+| mint | `mint(address,uint256)` | to (must isVerified), amount (wei) | totalSupply ↑, holderCount may ↑ |
 | burn | `burn(address,uint256)` | from, amount | totalSupply ↓ |
 | canTransfer | `canTransfer(address,address,uint256)(bool,string)` | from, to, amount | `(true,"")` or `(false,<reason>)` |
 | setComplianceRules | `setComplianceRules(uint256,uint256)` | maxHolders, maxBalancePerInvestor (0=unlimited) | emit ComplianceRulesUpdated |
@@ -198,22 +196,22 @@ While paused, all transfers (including mint) blocked by `_update` hook.
 
 ```bash
 # Identity register / remove
-cast logs --rpc-url $RPC --address 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "IdentityRegistered(address,uint16)"
-cast logs --rpc-url $RPC --address 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "IdentityRemoved(address)"
+cast logs --rpc-url $RPC --address 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "IdentityRegistered(address,uint16)"
+cast logs --rpc-url $RPC --address 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "IdentityRemoved(address)"
 # Freeze
-cast logs --rpc-url $RPC --address 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "AddressFrozen(address,bool,address)"
-cast logs --rpc-url $RPC --address 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "TokensFrozen(address,uint256)"
-cast logs --rpc-url $RPC --address 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "TokensUnfrozen(address,uint256)"
+cast logs --rpc-url $RPC --address 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "AddressFrozen(address,bool,address)"
+cast logs --rpc-url $RPC --address 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "TokensFrozen(address,uint256)"
+cast logs --rpc-url $RPC --address 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "TokensUnfrozen(address,uint256)"
 # Rules / recovery
-cast logs --rpc-url $RPC --address 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "ComplianceRulesUpdated(uint256,uint256)"
-cast logs --rpc-url $RPC --address 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "RecoverySuccess(address,address)"
+cast logs --rpc-url $RPC --address 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "ComplianceRulesUpdated(uint256,uint256)"
+cast logs --rpc-url $RPC --address 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "RecoverySuccess(address,address)"
 # Dividends
-cast logs --rpc-url $RPC --address 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "DividendDeposited(uint256,uint256)"
-cast logs --rpc-url $RPC --address 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "DividendClaimed(address,uint256)"
-cast logs --rpc-url $RPC --address 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "DividendDustSwept(address,uint256)"
+cast logs --rpc-url $RPC --address 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "DividendDeposited(uint256,uint256)"
+cast logs --rpc-url $RPC --address 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "DividendClaimed(address,uint256)"
+cast logs --rpc-url $RPC --address 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "DividendDustSwept(address,uint256)"
 # Permissions
-cast logs --rpc-url $RPC --address 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "AgentAdded(address)"
-cast logs --rpc-url $RPC --address 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "AgentRemoved(address)"
+cast logs --rpc-url $RPC --address 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "AgentAdded(address)"
+cast logs --rpc-url $RPC --address 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "AgentRemoved(address)"
 ```
 
 > All 11 events named per ERC-3643 for future standardization and indexing.
@@ -224,14 +222,14 @@ cast logs --rpc-url $RPC --address 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "A
 
 ### Deposit dividend 🔴
 ```bash
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "depositDividend()" --value <PHRS> --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "depositDividend()" --value <PHRS> --rpc-url $RPC --private-key $PK
 ```
 Card: deposit amount, per-share allocation at current supply, irreversible. Assert → `state.dividends[]`.
 
 ### Holder query / claim (🟢 query / self-claim)
 ```bash
-cast call 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "dividendOf(address)(uint256)" <holder> --rpc-url $RPC   # claimable incl. unsettled
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "claimDividend()" --rpc-url $RPC --private-key $PK         # holder self-claim
+cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "dividendOf(address)(uint256)" <holder> --rpc-url $RPC   # claimable incl. unsettled
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "claimDividend()" --rpc-url $RPC --private-key $PK         # holder self-claim
 ```
 Model: cumulative per-share `dividendPerShareCumulative` + per-address last claimed — no holder iteration, gas-safe.
 

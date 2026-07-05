@@ -1,7 +1,7 @@
 # Worked Example · Full Issuance Flow (Atlantic · MPF)
 
 > Example state: `state.example.json` · Spawned child: `skills/MPF-asset/` (v5)  
-> **Live contract**: [`0xfef7519bebda6c47af49583dbc9e60801f8aa3de`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)  
+> **Live contract**: [`0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3`](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3)  
 > **Mock OFAC oracle**: [`0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400)
 
 This is the **exact flow** the submission package runs on Pharos Atlantic Testnet.
@@ -65,14 +65,14 @@ See `state.example.json` for schema shape (`target_role`, `list_snapshots`, `che
 ```bash
 npm run preflight:pharos
 npm run deploy:pharos
-# Result: 0xfef7519bebda6c47af49583dbc9e60801f8aa3de
-# Tx:     0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d
+# Result: 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3
+# Tx:     0xd00bcc18e78f85eaa9f62ee907a6adac13c9a45f6f7266699e57487beb61a023
 ```
 
 ## Step 3 · Smoke (register + mint)
 
 ```bash
-export TOKEN=0xfef7519bebda6c47af49583dbc9e60801f8aa3de
+export TOKEN=0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3
 export INV=$DEPLOYER
 cast send $TOKEN "registerIdentity(address,uint16)" $INV 840 --rpc-url $RPC --private-key $PK
 cast send $TOKEN "mint(address,uint256)" $INV 1000000000000000000000 --rpc-url $RPC --private-key $PK

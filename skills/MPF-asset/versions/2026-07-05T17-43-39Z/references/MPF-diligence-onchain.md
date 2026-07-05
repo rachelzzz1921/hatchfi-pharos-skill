@@ -1,7 +1,7 @@
 # MPF-bound reference
 
 > Asset: `Manhattan Property Fund` (`MPF`)
-> Token: `0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3`
+> Token: `0xfef7519bebda6c47af49583dbc9e60801f8aa3de`
 > This file was generated from `references/onchain-diligence.md`.
 
 # Reference: On-chain diligence gate (onchain-diligence)

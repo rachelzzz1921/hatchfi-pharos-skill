@@ -1,6 +1,6 @@
 # Quickstart · 5 Minutes to Reproduce
 
-> **Already deployed on Atlantic**: MPF @ [`0xfef7519bebda6c47af49583dbc9e60801f8aa3de`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) · spawned skill `../skills/MPF-asset/`
+> **Already deployed on Atlantic**: MPF @ [`0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3`](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3) · spawned skill `../skills/MPF-asset/`
 
 ## 1. Local proof (no wallet needed)
 

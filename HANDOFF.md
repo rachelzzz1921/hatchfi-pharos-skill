@@ -17,11 +17,7 @@
 - **read-only 链上 MCP 工具**：`rwa_token_metadata` / `rwa_is_verified` / `rwa_can_transfer`（viem 只读，读旧合约即可，实测读到 live MPF 元数据）。
 - **CI + 文档**：`.github/workflows/ci.yml`（gate:test + eval + forge test + mcp:probe + inspect:skill 防埋点回归）；`docs/diligence-attestation-protocol.md`（mermaid）；README 评审标准对齐表。
 
-**唯一遗留硬阻塞仍是链上部署**（见 §3）：`forge script` dry-run 模拟部署成功（约 454 万 gas ≈ 0.0165 PHRS @ 3 gwei），路径已验证。**你充值后一条命令收尾**：
-```bash
-PRIVATE_KEY=0x<有余额私钥> npm run deploy:pharos && npm run judge:readiness:strict   # 应 6/6
-```
-`judge:readiness:strict` 只读 `deployments/pharos.json` 的地址（`post-deploy.sh` 会自动更新），所以部署后 strict 立即 6/6；README/dashboard/`skills/MPF-asset` 里的地址与 tx 链接属"提交件润色"，可随后 `npm run spawn:asset` + 手动同步。
+**链上部署已闭环（2026-07-06 晚）**：hardened token `0x975704…b5C3` + DiligenceAttestationRegistry `0x0d21aE…B94F`（已接线）+ AssetTokenizationRegistry `0x2Da088…a333` 均已上线，`judge:readiness:strict` **6/6**、`smoke:pharos` 全绿。全仓地址/tx 已同步（README×2 / dashboard / SKILL / `skills/MPF-asset` v9 重繁殖 / deployments*.json / state.example），旧地址 `0xfef7…` 零残留。
 
 **已知遗留（非阻塞）**：`docs/locale/zh/references/*` 仍有部分硬化前签名（register/mint 少了 bytes32），recovery 那条已同步；合约 `pragma ^0.8.20` 未固定（11 条 floating_pragma LOW，为保模板可移植性未改）。
 
@@ -29,7 +25,7 @@ PRIVATE_KEY=0x<有余额私钥> npm run deploy:pharos && npm run judge:readiness
 
 ## 1. 一句话现状
 
-代码侧升级已基本完成且全部实跑验证通过；**唯一硬阻塞是链上部署**——`deployments/pharos.json` 指向的仍是旧版（legacy）合约，导致 `npm run judge:readiness:strict` 停在 `5/6`。需要一个**有余额的 Atlantic 测试网钱包**完成 hardened token 重新部署，strict 即可 `6/6`。
+~~唯一硬阻塞是链上部署~~ → **已解决（2026-07-06）**：hardened token 已部署至 `0x975704…b5C3`，attestation registry 已接线，`npm run judge:readiness:strict` **6/6**、`npm run smoke:pharos` 全绿（见 §0 与 `DEPLOYMENT_RESULT.md`）。以下 §2–§3 保留为历史记录。
 
 ---
 

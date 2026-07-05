@@ -2,9 +2,9 @@
 
 This folder is the issuer-specific skill package for **Manhattan Property Fund (MPF)** on Pharos Atlantic.
 
-- Contract: `0xfef7519bebda6c47af49583dbc9e60801f8aa3de`
+- Contract: `0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3`
 - Network: Pharos Atlantic Testnet (`688689`)
-- Explorer: [PharosScan](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
+- Explorer: [PharosScan](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3)
 
 ## Judge quick test
 
@@ -27,7 +27,7 @@ npm run judge:readiness:strict
 
 ```bash
 export RPC=${PHAROS_RPC_URL:-https://atlantic.dplabs-internal.com}
-export TOKEN=0xfef7519bebda6c47af49583dbc9e60801f8aa3de
+export TOKEN=0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3
 export HOLDER=0xA54A3C2766a80d3AFe7C4Bf00D5bcfF9e1892bc4
 
 cast call $TOKEN "name()(string)" --rpc-url $RPC

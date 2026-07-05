@@ -6,7 +6,7 @@
 
 ## Exposed (public operating surface)
 
-- Contract address: `0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3`
+- Contract address: `0xfef7519bebda6c47af49583dbc9e60801f8aa3de`
 - Operation commands & references (whitelist check, mint, transfer-check, dividends, diligence)
 - Public compliance constants: MAX_HOLDERS=100, MAX_BALANCE_PER_INVESTOR=1000000000000000000000000
 - Compliance module: `COMPLIANCE_MODULE.md` (wrapper type, target regime, transferability — no PII)

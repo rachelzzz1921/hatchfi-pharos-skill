@@ -7,9 +7,9 @@
   "asset": {
     "name": "Manhattan Property Fund",
     "symbol": "MPF",
-    "address": "0xfef7519bebda6c47af49583dbc9e60801f8aa3de",
+    "address": "0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3",
     "deployed_at": "2026-06-17T06:27:16Z",
-    "deploy_tx": "0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d",
+    "deploy_tx": "0xd00bcc18e78f85eaa9f62ee907a6adac13c9a45f6f7266699e57487beb61a023",
     "max_holders": 100,
     "max_balance_per_investor": "1000000000000000000000000"
   },
@@ -69,7 +69,7 @@
     {
       "addr": "0xA54A3C2766a80d3AFe7C4Bf00D5bcfF9e1892bc4",
       "country": 840,
-      "tx": "0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541",
+      "tx": "0x1b212771313c0ad0b382f99c69c027bdd5265e0cc64b619792adbd9038063905",
       "at": "2026-06-17T06:28:00Z"
     }
   ],
@@ -85,14 +85,14 @@
       "action": "deploy",
       "risk": "high",
       "confirmed_by_human": true,
-      "tx": "0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d",
+      "tx": "0xd00bcc18e78f85eaa9f62ee907a6adac13c9a45f6f7266699e57487beb61a023",
       "at": "2026-06-17T06:27:16Z"
     },
     {
       "action": "mint",
       "risk": "high",
       "confirmed_by_human": true,
-      "tx": "0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541",
+      "tx": "0x1b212771313c0ad0b382f99c69c027bdd5265e0cc64b619792adbd9038063905",
       "at": "2026-06-17T06:28:00Z"
     },
     {

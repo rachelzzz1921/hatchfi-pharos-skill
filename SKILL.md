@@ -22,7 +22,7 @@
 | 🧪 Compliance contract suite | `npm run build && npm run test` | 36 Foundry tests pass (identity · two checks · freeze · two-phase recovery · dividends) |
 | 📊 Behavioral evals (deterministic, no LLM) | `npm run eval:skill` | `64/64` |
 | 🔒 Security self-scan before publish | `npm run inspect:skill` | 0 critical / 0 high |
-| 🌐 Live on Pharos Atlantic | [PharosScan](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) | deployed `CompliantRWAToken` + Mock OFAC oracle |
+| 🌐 Live on Pharos Atlantic | [PharosScan](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3) | deployed `CompliantRWAToken` + Mock OFAC oracle |
 
 ---
 

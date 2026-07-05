@@ -1,7 +1,7 @@
 # MPF-bound reference
 
 > Asset: `Manhattan Property Fund` (`MPF`)
-> Token: `0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3`
+> Token: `0xfef7519bebda6c47af49583dbc9e60801f8aa3de`
 > This file was generated from `references/onchain-attestation.md`.
 
 # Reference: On-chain diligence attestation (onchain-attestation)
@@ -93,14 +93,7 @@ python3 scripts/evidence_hash.py --evidence /tmp/evidence.json --print-canonical
 cast keccak "$(python3 scripts/evidence_hash.py --evidence /tmp/evidence.json --print-canonical)"
 ```
 
-Golden test vectors: `eval/evidence_hash_golden.json` — verified in **Python eval** (`npm run eval:skill`) and **Foundry** (`test_EvidenceHashGoldenFixture` / `test_AssetFingerprintGoldenMpf`).
-
-**Dry-run before broadcast** (no `PRIVATE_KEY` required):
-
-```bash
-npm run evidence:summary          # gate + hashes from state.example.json
-npm run attest:dry-run            # calldata for attest + registerAsset
-```
+Golden test vectors: `eval/evidence_hash_golden.json` (run via `npm run eval:skill`).
 
 ---
 

@@ -4,18 +4,19 @@
   "rpc": "https://atlantic.dplabs-internal.com",
   "explorer": "https://atlantic.pharosscan.xyz",
   "contracts": {
-    "CompliantRWAToken": "0xfef7519bebda6c47af49583dbc9e60801f8aa3de",
+    "CompliantRWAToken": "0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3",
     "MockOFACRegistry": "0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400",
-    "DiligenceAttestationRegistry": "",
-    "AssetTokenizationRegistry": ""
+    "DiligenceAttestationRegistry": "0x0d21aED2e3d4c64B2e0Df556C7514b80CC4AB94F",
+    "AssetTokenizationRegistry": "0x2Da088a783c0964821b4A3780aA18C69eDc3a333"
   },
   "transactions": {
-    "deploy_CompliantRWAToken": "0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d",
+    "deploy_CompliantRWAToken": "0xd00bcc18e78f85eaa9f62ee907a6adac13c9a45f6f7266699e57487beb61a023",
     "deploy_MockOFACRegistry": "0x7ae012f2ac8d388faa808005145054e9db338157a20be2c6f091eba5fa3fa8fa",
-    "smoke_mint": "0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541"
+    "smoke_mint": "0x1b212771313c0ad0b382f99c69c027bdd5265e0cc64b619792adbd9038063905"
   },
   "notes": {
     "sampleSanctionedAddress": "0x7F367cC41522cE07553e823bf3be79A889DEbe1B",
-    "attestationDeployStatus": "pending"
+    "attestationDeployStatus": "deployed_and_wired",
+    "hardened": "two-phase recovery + attestation-gated mint live; judge:readiness:strict 6/6 (2026-07-06)"
   }
 }

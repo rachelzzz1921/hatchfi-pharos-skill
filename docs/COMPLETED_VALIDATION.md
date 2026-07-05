@@ -110,12 +110,12 @@ Observed result:
 | Field | Value |
 |---|---|
 | Contract | `CompliantRWAToken` |
-| Address | `0xfef7519bebda6c47af49583dbc9e60801f8aa3de` |
-| Deploy tx | `0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d` |
+| Address | `0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3` |
+| Deploy tx | `0xd00bcc18e78f85eaa9f62ee907a6adac13c9a45f6f7266699e57487beb61a023` |
 | Network | Pharos Atlantic Testnet (chainId `688689`) |
 | Asset | Manhattan Property Fund / MPF |
-| Explorer (address) | https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de |
-| Explorer (deploy tx) | https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d |
+| Explorer (address) | https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 |
+| Explorer (deploy tx) | https://atlantic.pharosscan.xyz/tx/0xd00bcc18e78f85eaa9f62ee907a6adac13c9a45f6f7266699e57487beb61a023 |
 
 Smoke test (post-deploy):
 
@@ -123,7 +123,7 @@ Smoke test (post-deploy):
 |---|---|
 | `name()` / `symbol()` | Manhattan Property Fund / MPF |
 | `registerIdentity(deployer)` | deployer already verified |
-| `mint(deployer, 1e18)` | tx `0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541`, receipt status = 1 |
+| `mint(deployer, 1e18)` | tx `0x1b212771313c0ad0b382f99c69c027bdd5265e0cc64b619792adbd9038063905`, receipt status = 1 |
 | `isVerified(deployer)` | `true` |
 | `balanceOf(deployer)` | `1e18` |
 | `holderCount()` | `1` |

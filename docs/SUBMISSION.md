@@ -39,7 +39,7 @@ Compliant RWA Issuance Agent (parent skill)
 | Layer | Package | Reuse |
 |---|---|---|
 | Parent skill | `SKILL.md` + 10 references | Any Pharos agent can drive the full RWA issuance pipeline |
-| Child skill (generated) | `skills/MPF-asset/` | Operates **Manhattan Property Fund** at `0xfef7…Aa3DE` |
+| Child skill (generated) | `skills/MPF-asset/` | Operates **Manhattan Property Fund** at `0x9757…b5C3` |
 | Contract | `CompliantRWAToken` @ Atlantic | 36 Foundry tests + on-chain smoke prove compliant mint/verification |
 
 **Network effect**: each new RWA issued adds one composable capability unit; opt-in sharing can make compliant operations more reusable across agents on Pharos.
@@ -48,9 +48,9 @@ Compliant RWA Issuance Agent (parent skill)
 
 | Item | Value |
 |---|---|
-| Contract | [`0xfef7519bebda6c47af49583dbc9e60801f8aa3de`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) |
-| Deploy tx | [`0x71ebe5…17e4d`](https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d) |
-| Smoke mint tx | `0x7ece3b…bb5541` · deployer `isVerified=true` · `balanceOf=1e18` · `holderCount=1` |
+| Contract | [`0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3`](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3) |
+| Deploy tx | [`0xd00bcc…a023`](https://atlantic.pharosscan.xyz/tx/0xd00bcc18e78f85eaa9f62ee907a6adac13c9a45f6f7266699e57487beb61a023) |
+| Smoke mint tx | `0x1b2127…bb5541` · deployer `isVerified=true` · `balanceOf=1e18` · `holderCount=1` |
 | Network | Pharos Atlantic **Testnet** |
 | Smoke note | `registerIdentity` skipped when deployer already verified; mint + receipt assert is the executed path |
 | Spawned child skill | `skills/MPF-asset/SKILL.md` (one command: `npm run spawn:asset`) |
@@ -61,9 +61,9 @@ Compliant RWA Issuance Agent (parent skill)
 
 | Slot | Current value | Update rule |
 |---|---|---|
-| RWA contract | `0xfef7519bebda6c47af49583dbc9e60801f8aa3de` | Replace after `npm run deploy:pharos` writes `deployments/pharos.json` |
-| Deploy receipt | `0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d` | Must link to PharosScan and show `status == 1` |
-| Smoke receipt | `0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541` | Must prove at least one compliant mint / holder state |
+| RWA contract | `0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3` | Replace after `npm run deploy:pharos` writes `deployments/pharos.json` |
+| Deploy receipt | `0xd00bcc18e78f85eaa9f62ee907a6adac13c9a45f6f7266699e57487beb61a023` | Must link to PharosScan and show `status == 1` |
+| Smoke receipt | `0x1b212771313c0ad0b382f99c69c027bdd5265e0cc64b619792adbd9038063905` | Must prove at least one compliant mint / holder state |
 | Sanctions oracle | `0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400` | Replace if a fresh Mock OFAC oracle is deployed |
 | Spawned Skill | `skills/MPF-asset/` | Replace with `skills/<SYMBOL>-asset/` after `npm run spawn:asset` |
 | Security report | `docs/SKILL_SECURITY_REPORT.md` | Regenerate with `npm run inspect:skill:md` before sharing |

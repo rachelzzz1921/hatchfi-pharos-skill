@@ -39,7 +39,7 @@
 
 | Artifact | Value |
 |---|---|
-| MPF token | `0xfef7519bebda6c47af49583dbc9e60801f8aa3de` |
+| MPF token | `0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3` |
 | MockOFACRegistry | `0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400` |
 | Oracle deploy tx | `0x7ae012f2ac8d388faa808005145054e9db338157a20be2c6f091eba5fa3fa8fa` |
 | OFAC ETH snapshot | `assets/knowledge/denylist_ofac_eth.json` (93 addresses, 2026-06-18) |

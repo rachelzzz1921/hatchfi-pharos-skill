@@ -12,7 +12,7 @@
 
 [![tests](https://img.shields.io/badge/Foundry-36_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
 [![eval](https://img.shields.io/badge/skill_eval-64%2F64-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
-[![live](https://img.shields.io/badge/Pharos_Atlantic_Testnet-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
+[![live](https://img.shields.io/badge/Pharos_Atlantic_Testnet-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3)
 [![oracle](https://img.shields.io/badge/Mock_OFAC_预言机-已部署-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400)
 [![skill](https://img.shields.io/badge/hatched_Skill-private-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
 [![inspector](https://img.shields.io/badge/Skill_Inspector-0_critical%2F0_high-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
@@ -56,7 +56,7 @@ Agent 编排 RWA 代币化是活跃研究方向（[Borjigin 等，2025 — arXiv
 
 | 里程碑 | 状态 | 证据 |
 |---|---|---|
-| 核心合约 + Atlantic 部署 | 已完成 | MPF @ [`0xfef7…Aa3DE`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) · smoke mint receipt `status==1` |
+| 核心合约 + Atlantic 部署 | 已完成 | MPF @ [`0x9757…b5C3`](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3) · smoke mint receipt `status==1` |
 | 三阶段尽调流水线 | 已完成 | 4 份 playbook · [`docs/diligence/INTEGRATION.md`](./docs/diligence/INTEGRATION.md) |
 | OFAC denylist 同步 | 已完成 | 93 个 ETH 地址 · `npm run diligence:sync` · 快照 2026-06-18 |
 | Mock OFAC 预言机（Atlantic） | 已完成 | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · 演示 RED @ `0x7F36…be1B` |
@@ -313,12 +313,12 @@ HatchFi **已部署在 Pharos Atlantic 测试网并通过 smoke 测试**，下�
 
 | | |
 |---|---|
-| **合约（MPF）** | [`0xfef7519bebda6c47af49583dbc9e60801f8aa3de`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) |
-| **Deploy tx** | [`0x71ebe5…17e4d`](https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d) |
-| **Smoke mint tx** | [`0x7ece3b…b5541`](https://atlantic.pharosscan.xyz/tx/0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541) |
+| **合约（MPF）** | [`0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3`](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3) |
+| **Deploy tx** | [`0xd00bcc…a023`](https://atlantic.pharosscan.xyz/tx/0xd00bcc18e78f85eaa9f62ee907a6adac13c9a45f6f7266699e57487beb61a023) |
+| **Smoke mint tx** | [`0x1b2127…b5541`](https://atlantic.pharosscan.xyz/tx/0x1b212771313c0ad0b382f99c69c027bdd5265e0cc64b619792adbd9038063905) |
 | **Mock OFAC 预言机** | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · 部署 [`0x7ae012…a8fa`](https://atlantic.pharosscan.xyz/tx/0x7ae012f2ac8d388faa808005145054e9db338157a20be2c6f091eba5fa3fa8fa) |
 | **网络** | Pharos Atlantic 测试网 · chainId `688689` |
-| **Spawned Skill** | [`skills/MPF-asset/SKILL.md`](./skills/MPF-asset/SKILL.md) —— 子 Skill v8 · `TOKEN=0xfef7…` · 6 份尽调 ref |
+| **Spawned Skill** | [`skills/MPF-asset/SKILL.md`](./skills/MPF-asset/SKILL.md) —— 子 Skill v8 · `TOKEN=0x9757…` · 6 份尽调 ref |
 
 Smoke 路径：若 deployer 已通过验证则跳过 `registerIdentity`；下方记录的是 **mint + receipt 断言** 的执行路径。
 

@@ -1,7 +1,7 @@
 # MPF-bound reference
 
 > Asset: `Manhattan Property Fund` (`MPF`)
-> Token: `0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3`
+> Token: `0xfef7519bebda6c47af49583dbc9e60801f8aa3de`
 > This file was generated from `references/rwa-dividend.md`.
 
 # Reference: RWA yield distribution (rwa-dividend)
@@ -17,7 +17,7 @@ Pre: `state.asset.address` set; `totalSupply > 0`.
 Confirmation card must state: deposit amount, per-share allocation at current supply, **irreversible**.
 
 ```bash
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "depositDividend()" --value <PHRS_amount> --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "depositDividend()" --value <PHRS_amount> --rpc-url $RPC --private-key $PK
 ```
 Assert: `cast receipt <txhash>` with `status==1` → write `state.dividends[]{amount,tx,at}` + `history{action:"depositDividend",risk:"high",confirmed_by_human:true,tx,at}`.
 
@@ -28,9 +28,9 @@ Assert: `cast receipt <txhash>` with `status==1` → write `state.dividends[]{am
 ## Query claimable yield 🟢 (read-only, incl. unsettled)
 
 ```bash
-cast call 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "dividendOf(address)(uint256)" <holder> --rpc-url $RPC
-cast call 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "dividendPerShareCumulative()(uint256)" --rpc-url $RPC
-cast call 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "undistributedDividend()(uint256)" --rpc-url $RPC
+cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "dividendOf(address)(uint256)" <holder> --rpc-url $RPC
+cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "dividendPerShareCumulative()(uint256)" --rpc-url $RPC
+cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "undistributedDividend()(uint256)" --rpc-url $RPC
 ```
 `dividendOf(holder)` return = settled `withdrawableDividend` + unsettled (balance × cumulative per-share delta). `dividendPerShareCumulative` is the global accumulator; `undistributedDividend` is recoverable rounding dust. Display directly — no tx.
 
@@ -39,7 +39,7 @@ cast call 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "undistributedDividend()(ui
 ## Claim yield 🟢 (holder self-claim)
 
 ```bash
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "claimDividend()" --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "claimDividend()" --rpc-url $RPC --private-key $PK
 ```
 Contract settles then transfers PHRS; reverts `nothing to claim` if zero. 🟢 tier: caller moves own funds, predictable, no third-party impact.
 Optional history after assert (user's own action).
@@ -52,14 +52,14 @@ Per-share integer division leaves remainder (dust) in `undistributedDividend`; o
 
 ```bash
 # Query dust (read-only)
-cast call 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "undistributedDividend()(uint256)" --rpc-url $RPC
+cast call 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "undistributedDividend()(uint256)" --rpc-url $RPC
 # Sweep to address (owner, 🔴 confirmation card)
-cast send 0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3 "sweepUndistributedDividend(address)" <to> --rpc-url $RPC --private-key $PK
+cast send 0xfef7519bebda6c47af49583dbc9e60801f8aa3de "sweepUndistributedDividend(address)" <to> --rpc-url $RPC --private-key $PK
 ```
 After `status==1` → `history{action:"sweepUndistributedDividend",risk:"high",confirmed_by_human:true,tx,at}`; optional `cast logs ... "DividendDustSwept(address,uint256)"`.
 
 > `depositDividend` requires `perShare>0` (deposit large enough vs supply) or reverts `deposit too small for supply`.
-> `executeRecoveryAddress` migrates **settled unclaimed** dividends to the new wallet — lost key does not forfeit yield.
+> `recoveryAddress` migrates **settled unclaimed** dividends to the new wallet — lost key does not forfeit yield.
 
 ---
 

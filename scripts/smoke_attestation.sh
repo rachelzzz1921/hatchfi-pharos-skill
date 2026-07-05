@@ -31,7 +31,7 @@ fi
 
 PK=$PRIVATE_KEY
 DEPLOYER=$(cast wallet address --private-key "$PK")
-TOKEN="${MPF_TOKEN:-0xfef7519bebda6c47af49583dbc9e60801f8aa3de}"
+TOKEN="${MPF_TOKEN:-0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3}"
 
 HASH=$(python3 scripts/evidence_hash.py --evidence eval/evidence_hash_fixture.json)
 FP=$(python3 scripts/evidence_hash.py --asset-id MPF --jurisdiction US --wrapper-type permissioned_token)

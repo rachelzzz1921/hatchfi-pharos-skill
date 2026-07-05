@@ -19,7 +19,7 @@ This skill is built **for that stack**:
 Agent A: Compliant RWA Issuance Agent
   ├─ diligence pipeline (sanctions + on-chain + off-chain, RED blocks issuance)
   ├─ MockOFACRegistry @ 0x4FD3…F400 (Atlantic)
-  ├─ deploy + smoke on Atlantic (PROVEN: MPF @ 0xfef7…Aa3DE)
+  ├─ deploy + smoke on Atlantic (PROVEN: MPF @ 0x9757…b5C3)
   └─ spawn skills/MPF-asset/ (4 diligence refs)
 
 Agent B, C, … : import MPF-asset skill
@@ -30,9 +30,9 @@ Agent B, C, … : import MPF-asset skill
 
 ## Evidence judges can verify in 60 seconds
 
-1. Open [`atlantic.pharosscan.xyz/address/0xfef7…`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) — live contract
+1. Open [`atlantic.pharosscan.xyz/address/0x9757…`](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3) — live contract
 2. Run `forge test` locally — 36 passed
-3. Open `skills/MPF-asset/SKILL.md` — spawned child skill with hardcoded `TOKEN=0xfef7…`
+3. Open `skills/MPF-asset/SKILL.md` — spawned child skill with hardcoded `TOKEN=0x9757…`
 4. Read `COMPLETED_VALIDATION.md` — full local + on-chain record
 
 ## Design choices aligned with Pharos Skill Engine

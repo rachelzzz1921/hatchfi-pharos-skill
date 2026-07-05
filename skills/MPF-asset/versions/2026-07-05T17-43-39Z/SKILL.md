@@ -5,7 +5,7 @@ description: Asset-specific operations for Manhattan Property Fund (MPF) on Phar
 
 # Skill: MPF Asset Operations (Manhattan Property Fund)
 
-> Contract: `0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3` (`CompliantRWAToken`, Pharos Atlantic Testnet)
+> Contract: `0xfef7519bebda6c47af49583dbc9e60801f8aa3de` (`CompliantRWAToken`, Pharos Atlantic Testnet)
 > Generated deterministically from the parent Compliant RWA Issuance Agent.
 > **Private by default — serves its owner first.** Sharing scope is declared in `PERMISSIONS.md`;
 > the owner's data (investor PII, diligence evidence, dividends, preferences) is NOT in this package.
@@ -27,13 +27,12 @@ description: Asset-specific operations for Manhattan Property Fund (MPF) on Phar
 | On-chain diligence attestation | attest hash + asset register | medium | `references/MPF-onchain-attestation.md` |
 | Sanctions screening | denylist + oracle | low | `references/MPF-sanctions.md` |
 | Compliance infer citations | knowledge mapping | low | `references/MPF-compliance-knowledge.md` |
-| Post-issuance monitoring (#10b) | read-only surveillance | low | `references/MPF-post-issuance-monitoring.md` |
 | Apply owner defaults before operations | read `PREFERENCES.md` | low | `PREFERENCES.md` |
 | Asset compliance module (regime + transferability) | read `COMPLIANCE_MODULE.md` | low | `COMPLIANCE_MODULE.md` |
 
 ## Asset Constants
 
-- `TOKEN=0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3`
+- `TOKEN=0xfef7519bebda6c47af49583dbc9e60801f8aa3de`
 - `SYMBOL=MPF`
 - `NAME=Manhattan Property Fund`
 - `MAX_HOLDERS=100`

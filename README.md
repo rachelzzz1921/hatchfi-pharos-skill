@@ -12,7 +12,7 @@ Now includes a **reusable primitive**: `HatchFi Diligence Gate` (`lib/hatchfi-ga
 
 [![tests](https://img.shields.io/badge/Foundry-36_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
 [![eval](https://img.shields.io/badge/skill_eval-64%2F64-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
-[![live](https://img.shields.io/badge/Pharos_Atlantic_Testnet-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
+[![live](https://img.shields.io/badge/Pharos_Atlantic_Testnet-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3)
 [![oracle](https://img.shields.io/badge/Mock_OFAC_Oracle-live-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400)
 [![skill](https://img.shields.io/badge/hatched_Skill-private-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
 [![inspector](https://img.shields.io/badge/Skill_Inspector-0_critical%2F0_high-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
@@ -57,7 +57,7 @@ It extends the official [Pharos Skill Engine](https://docs.pharos.xyz/tooling-an
 
 | Milestone | Status | Evidence |
 |---|---|---|
-| Core contract + Atlantic deploy | Done | MPF @ [`0xfef7…Aa3DE`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) · smoke mint receipt `status==1` |
+| Core contract + Atlantic deploy | Done | MPF @ [`0x9757…b5C3`](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3) · smoke mint receipt `status==1` |
 | Three-stage diligence pipeline | Done | 4 playbooks · [`docs/diligence/INTEGRATION.md`](./docs/diligence/INTEGRATION.md) |
 | OFAC denylist sync | Done | 93 ETH addresses · `npm run diligence:sync` · snapshot 2026-06-18 |
 | Mock OFAC oracle (Atlantic) | Done | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · demo RED @ `0x7F36…be1B` |
@@ -77,7 +77,7 @@ npm install
 npm run gate:test            # deterministic gate unit checks
 npm run gate:cli             # narrated RED->GREEN->attest->gate flow
 npm run judge:package        # gate:test + gate:cli + mcp:probe + judge:readiness
-npm run judge:readiness:strict # strict mode (requires hardened deployment in deployments/pharos.json)
+npm run judge:readiness:strict # strict on-chain trust-model checks — 6/6 (hardened deployment live)
 npm run web:dev              # guided 3-step demo (scenario -> giant RED/YELLOW/GREEN verdict -> MCP playground)
 ```
 
@@ -90,7 +90,7 @@ npm run web:dev              # guided 3-step demo (scenario -> giant RED/YELLOW/
 | **Verifiable in minutes, no wallet** | `npm run judge:package` | `gate:test` PASS · narrated RED→GREEN · `TOOLS 8` · readiness |
 | **Composability / agent integration** | `npm run mcp:probe` | 8 MCP tools (5 gate + 3 live on-chain reads) + LangChain/Vercel adapters |
 | **Security posture** | `npm run inspect:skill` | 0 critical / 0 high — the Skill scans itself before publish |
-| **On-chain proof** | [PharosScan](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) · `rwa_token_metadata` | deployed `CompliantRWAToken` + Mock OFAC oracle |
+| **On-chain proof** | [PharosScan](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3) · `rwa_token_metadata` | deployed `CompliantRWAToken` + Mock OFAC oracle |
 | **Determinism / auditability** | `npm run eval:skill` · `npm run evidence:hash` | 64/64 evals; evidence hash reproducible in Python **and** Solidity ([protocol](./docs/diligence-attestation-protocol.md)) |
 
 ---
@@ -335,12 +335,12 @@ HatchFi is deployed and smoke-tested on **Pharos Atlantic Testnet**.
 
 | | |
 |---|---|
-| **Contract (MPF)** | [`0xfef7519bebda6c47af49583dbc9e60801f8aa3de`](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) |
-| **Deploy tx** | [`0x71ebe5…17e4d`](https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d) |
-| **Smoke mint tx** | [`0x7ece3b…b5541`](https://atlantic.pharosscan.xyz/tx/0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541) |
+| **Contract (MPF)** | [`0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3`](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3) |
+| **Deploy tx** | [`0xd00bcc…a023`](https://atlantic.pharosscan.xyz/tx/0xd00bcc18e78f85eaa9f62ee907a6adac13c9a45f6f7266699e57487beb61a023) |
+| **Smoke mint tx** | [`0x1b2127…b5541`](https://atlantic.pharosscan.xyz/tx/0x1b212771313c0ad0b382f99c69c027bdd5265e0cc64b619792adbd9038063905) |
 | **Mock OFAC oracle** | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · deploy [`0x7ae012…a8fa`](https://atlantic.pharosscan.xyz/tx/0x7ae012f2ac8d388faa808005145054e9db338157a20be2c6f091eba5fa3fa8fa) |
 | **Network** | Pharos Atlantic Testnet · chainId `688689` |
-| **Spawned Skill** | [`skills/MPF-asset/SKILL.md`](./skills/MPF-asset/SKILL.md) — child skill v8 · `TOKEN=0xfef7…` · 6 diligence refs |
+| **Spawned Skill** | [`skills/MPF-asset/SKILL.md`](./skills/MPF-asset/SKILL.md) — child skill v8 · `TOKEN=0x9757…` · 6 diligence refs |
 
 Smoke path: `registerIdentity` is skipped when the deployer is already verified; **mint + receipt assert** is the executed write path recorded below.
 
