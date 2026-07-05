@@ -763,8 +763,8 @@ evidence   offchain → attest hash   smoke      freeze triple gate       recove
 
     <table>
       <tbody>
-        <tr><td class="k">forge build / test</td><td><span style="color:var(--ok)">24 passed · 0 failed</span> <span class="en">(incl. fuzz invariant: dividends never over-distribute)</span><span class="zh">（含 fuzz 不变量：派息绝不超发）</span></td></tr>
-        <tr><td class="k"><span class="en">Skill eval suite</span><span class="zh">Skill eval 套件</span></td><td><a class="ref" href="eval/skill_behavior_cases.json">52/52 passed</a> · <span class="en">gates · risk tiers · consent · spawn structure · diligence refs</span><span class="zh">闸门 · 风险档 · 同意闸 · spawn 结构 · 尽调 ref</span></td></tr>
+        <tr><td class="k">forge build / test</td><td><span style="color:var(--ok)">36 passed · 0 failed</span> <span class="en">(incl. fuzz invariant: dividends never over-distribute)</span><span class="zh">（含 fuzz 不变量：派息绝不超发）</span></td></tr>
+        <tr><td class="k"><span class="en">Skill eval suite</span><span class="zh">Skill eval 套件</span></td><td><a class="ref" href="eval/skill_behavior_cases.json">62/62 passed</a> · <span class="en">gates · risk tiers · consent · spawn structure · diligence refs</span><span class="zh">闸门 · 风险档 · 同意闸 · spawn 结构 · 尽调 ref</span></td></tr>
         <tr><td class="k"><span class="en">Diligence expansion</span><span class="zh">尽调扩展</span></td><td><a class="ref" href="docs/diligence/INTEGRATION.md">INTEGRATION.md</a> · <span class="en">4 playbooks · OFAC sync · 93-address snapshot</span><span class="zh">4 份 playbook · OFAC 同步 · 93 地址快照</span></td></tr>
         <tr><td class="k"><span class="en">Security audit</span><span class="zh">安全审计</span></td><td><a class="ref" href="docs/SECURITY.md">SECURITY.md</a> · <span class="en">fixes pinned by regression tests</span><span class="zh">修复对应回归测试</span></td></tr>
         <tr><td class="k"><span class="en">Compliance review</span><span class="zh">合规性审查</span></td><td><span style="color:var(--ok)"><span class="en">closed mint cap-bypass (compliance-critical)</span><span class="zh">堵上 mint 绕过上限（合规关键）</span></span></td></tr>
@@ -802,7 +802,7 @@ evidence   offchain → attest hash   smoke      freeze triple gate       recove
       <div class="item">
         <div class="t">Round 7 · <span class="en">diligence v2</span><span class="zh">尽调 v2</span></div>
         <h4><span class="en">Three-stage pipeline + OFAC oracle + spawn v5</span><span class="zh">三阶段流水线 + OFAC 预言机 + spawn v5</span></h4>
-        <p><span class="en">Expanded from 5 cast checks to 4 playbooks · <code>npm run diligence:sync</code> · MockOFACRegistry on Atlantic · eval 52/52.</span><span class="zh">从 5 项 cast 检查扩展为 4 份 playbook · <code>npm run diligence:sync</code> · Atlantic 部署 MockOFACRegistry · eval 52/52。</span></p>
+        <p><span class="en">Expanded from 5 cast checks to 4 playbooks · <code>npm run diligence:sync</code> · MockOFACRegistry on Atlantic · eval 62/62.</span><span class="zh">从 5 项 cast 检查扩展为 4 份 playbook · <code>npm run diligence:sync</code> · Atlantic 部署 MockOFACRegistry · eval 62/62。</span></p>
       </div>
       <div class="item">
         <div class="t">D1 · <span class="en">gate design</span><span class="zh">闸门设计</span></div>
@@ -823,11 +823,11 @@ evidence   offchain → attest hash   smoke      freeze triple gate       recove
       </div>
       <div class="card">
         <h3><span class="en">Local (2 minutes)</span><span class="zh">本地（2 分钟）</span></h3>
-        <p class="mono" style="font-size:0.78rem;line-height:1.55;color:var(--text-2);">git clone hatchfi-pharos-skill<br/>npm run build && npm run test<br/>npm run eval:skill<br/># → 24 passed · 62/62 eval</p>
+        <p class="mono" style="font-size:0.78rem;line-height:1.55;color:var(--text-2);">git clone hatchfi-pharos-skill<br/>npm run judge:package<br/># gate:test · gate:cli · TOOLS 5 · readiness<br/>npm run build && npm run test<br/># → 36 passed · 62/62 eval</p>
       </div>
     </div>
     <div class="highlight" style="margin-top:1rem;">
-      <p><span class="en"><strong>Submission scope:</strong> ERC-3643-style RWA on Atlantic Testnet (three-stage diligence gate) · agent Skill extending the Pharos Skill Engine · 10 playbooks · spawn → refine → version pipeline · auto-generated contract surface · 52-check eval harness · Skill Inspector gate · Foundry tests · Mock OFAC oracle · security review documented · data sovereignty with opt-in sharing.</span></p>
+      <p><span class="en"><strong>Submission scope:</strong> ERC-3643-style RWA on Atlantic Testnet (three-stage diligence gate) · agent Skill extending the Pharos Skill Engine · 10 playbooks · spawn → refine → version pipeline · auto-generated contract surface · 62-check eval harness · Skill Inspector gate · Foundry tests · Mock OFAC oracle · security review documented · data sovereignty with opt-in sharing.</span></p>
       <p><span class="zh"><strong>提交范围：</strong>Atlantic 测试网上 ERC-3643 风格 RWA（三阶段尽调闸门）· 扩展 Pharos Skill Engine 的 agent Skill · 10 份 playbook · spawn → refine → version 流水线 · 自动生成合约能力面 · 62 项 eval · Skill Inspector 门 · Foundry 测试 · Mock OFAC 预言机 · 安全审查已文档化 · 数据主权 + opt-in 分享。</span></p>
     </div>
   </section>
@@ -839,8 +839,10 @@ evidence   offchain → attest hash   smoke      freeze triple gate       recove
     <pre class="ascii" style="font-size:0.76rem;">curl -L https://foundry.paradigm.xyz | bash && foundryup
 forge install OpenZeppelin/openzeppelin-contracts@v5.1.0 && forge install foundry-rs/forge-std
 
-npm run build && npm run test          <span class="gd"># 24 passed · no wallet needed</span>
-npm run eval:skill                     <span class="gd"># 52/52 deterministic skill checks</span>
+npm run judge:package                  <span class="gd"># one shot: gate:test · gate:cli · mcp:probe · readiness</span>
+npm run gate:cli                       <span class="gd"># narrated RED → GREEN → attest → mint gate</span>
+npm run build && npm run test          <span class="gd"># 36 passed · no wallet needed</span>
+npm run eval:skill                     <span class="gd"># 62/62 deterministic skill checks</span>
 npm run diligence:sync                 <span class="gd"># OFAC snapshot → state.json denylist</span>
 npm run refs:generate                  <span class="gd"># contract → references/generated/contract-surface.*</span>
 npm run inspect:skill                  <span class="gd"># static skill security gate · no high/critical</span>

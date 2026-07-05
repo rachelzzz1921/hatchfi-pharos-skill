@@ -1,11 +1,13 @@
 # Judge Manual
 
-## One-command checks
+## One-command checks (no wallet)
 
 ```bash
-npm run gate:test
-npm run gate:demo
-npm run judge:readiness
+npm run judge:package   # one shot: gate:test + gate:cli + mcp:probe + judge:readiness
+npm run gate:cli        # narrated RED -> GREEN -> attest -> mint gate
+npm run gate:test       # deterministic gate + mint-gating asserts
+npm run eval:skill      # 62/62 behavioral evals
+npm run build && npm run test   # 36 Foundry tests (needs Foundry)
 ```
 
 ## Visual demo
@@ -14,12 +16,12 @@ npm run judge:readiness
 npm run web:dev
 ```
 
-Open the app and verify:
+Open the app — a guided 3-step flow — and verify:
 
-1. Set `sanctionsHit=true` -> `Run Diligence` returns `RED`.
-2. Clear all flags -> `Run Diligence` returns `GREEN`.
-3. Click `Attest Current`, then `Gate Mint` -> `allowed: true`.
-4. Use MCP playground with all 4 tools.
+1. **Step 1** — click the **OFAC-sanctioned counterparty** scenario.
+2. **Step 2** — a giant **RED · BLOCKED** verdict appears; the `sanctions` check is ✗. Click **Attest evidence → run mint gate** → **mint DENIED**.
+3. Switch to **Clean institutional issuer** → **GREEN · ADMITTED**; the mint gate now returns **mint ALLOWED**.
+4. **Step 3** — pick any tool in the MCP playground to see the exact request/response an agent would exchange.
 
 ## Trust model hardening highlights
 
