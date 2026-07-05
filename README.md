@@ -11,7 +11,7 @@ Issue a compliant RWA on Pharos with an AI agent — and keep a private operatin
 Now includes a **reusable primitive**: `HatchFi Diligence Gate` (`lib/hatchfi-gate`) with MCP/LangChain/Vercel adapters, a web demo (`web/`), and one-command readiness checks (`npm run judge:readiness`).
 
 [![tests](https://img.shields.io/badge/Foundry-36_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
-[![eval](https://img.shields.io/badge/skill_eval-62%2F62-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
+[![eval](https://img.shields.io/badge/skill_eval-64%2F64-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
 [![live](https://img.shields.io/badge/Pharos_Atlantic_Testnet-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
 [![oracle](https://img.shields.io/badge/Mock_OFAC_Oracle-live-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400)
 [![skill](https://img.shields.io/badge/hatched_Skill-private-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
@@ -61,7 +61,7 @@ It extends the official [Pharos Skill Engine](https://docs.pharos.xyz/tooling-an
 | Three-stage diligence pipeline | Done | 4 playbooks · [`docs/diligence/INTEGRATION.md`](./docs/diligence/INTEGRATION.md) |
 | OFAC denylist sync | Done | 93 ETH addresses · `npm run diligence:sync` · snapshot 2026-06-18 |
 | Mock OFAC oracle (Atlantic) | Done | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · demo RED @ `0x7F36…be1B` |
-| Skill eval harness | Done | **62/62** · `npm run eval:skill` (Python + Foundry golden parity) |
+| Skill eval harness | Done | **64/64** · `npm run eval:skill` (Python + Foundry golden parity) |
 | MPF asset Skill spawn | Done | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) v8 · 6 diligence refs per child |
 | Paper-driven Round 8–10 | Done | `#19`/`#20` · attestation · monitoring · dry-run · [`PAPER_ALIGNMENT.md`](./docs/PAPER_ALIGNMENT.md) |
 | Diligence Gate primitive + adapters | Done | [`lib/hatchfi-gate/`](./lib/hatchfi-gate/SKILL.md) · `diligence_screen`/`diligence_rate`/`diligence_gate_mint`/`diligence_get_attestation` |
@@ -91,7 +91,7 @@ npm run web:dev              # guided 3-step demo (scenario -> giant RED/YELLOW/
 | **Composability / agent integration** | `npm run mcp:probe` | 8 MCP tools (5 gate + 3 live on-chain reads) + LangChain/Vercel adapters |
 | **Security posture** | `npm run inspect:skill` | 0 critical / 0 high — the Skill scans itself before publish |
 | **On-chain proof** | [PharosScan](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) · `rwa_token_metadata` | deployed `CompliantRWAToken` + Mock OFAC oracle |
-| **Determinism / auditability** | `npm run eval:skill` · `npm run evidence:hash` | 62/62 evals; evidence hash reproducible in Python **and** Solidity ([protocol](./docs/diligence-attestation-protocol.md)) |
+| **Determinism / auditability** | `npm run eval:skill` · `npm run evidence:hash` | 64/64 evals; evidence hash reproducible in Python **and** Solidity ([protocol](./docs/diligence-attestation-protocol.md)) |
 
 ---
 
@@ -104,7 +104,7 @@ forge install OpenZeppelin/openzeppelin-contracts@v5.1.0 && forge install foundr
 
 # 2 · build + verify locally (no wallet needed)
 npm run build && npm run test       # 36 Foundry tests
-npm run eval:skill                  # 62 deterministic skill checks
+npm run eval:skill                  # 64 deterministic skill checks
 npm run inspect:skill               # static security scan
 npm run check                       # full local gate (build · test · refs · eval · inspector)
 ```
@@ -170,7 +170,7 @@ HatchFi is operated through `npm` scripts that wrap Foundry, `cast`, and the age
 
 | Command | What it does |
 |---|---|
-| `npm run eval:skill` | 62 deterministic checks: diligence gate, risk tiers, consent gates, spawn structure |
+| `npm run eval:skill` | 64 deterministic checks: diligence gate, risk tiers, consent gates, spawn structure |
 | `npm run eval:skill:json` | Same suite, machine-readable JSON |
 
 ### Security gate (before install / upload / publish / share)
@@ -314,7 +314,7 @@ Before release, HatchFi went through a layered review loop. Issues found were fi
 | Review gate | Outcome |
 |---|---|
 | **TDD test suite** | 36 Foundry tests, 0 failed, including a fuzz invariant proving dividends can't over-distribute (`claimable + dust ≤ deposit`) |
-| **Skill eval suite** | `npm run eval:skill` — 62/62 deterministic checks on gates, risk tiers, consent, and spawn structure |
+| **Skill eval suite** | `npm run eval:skill` — 64/64 deterministic checks on gates, risk tiers, consent, and spawn structure |
 | **Security review** ([`docs/SECURITY.md`](./docs/SECURITY.md)) | Findings documented; fixes pinned by named regression tests |
 | **Compliance review** | Found and closed a compliance-critical gap (`mint` bypassing holder/balance caps) — issuance now enforces the same `canTransfer` rules as transfers |
 | **Production-readiness review** | Documented in project review notes (see validation docs) |
@@ -344,7 +344,7 @@ HatchFi is deployed and smoke-tested on **Pharos Atlantic Testnet**.
 
 Smoke path: `registerIdentity` is skipped when the deployer is already verified; **mint + receipt assert** is the executed write path recorded below.
 
-Anyone can verify independently in ~2 minutes: `git clone` → `npm run build && npm run test` (36 passed) → `npm run eval:skill` (62/62) → open the contract on PharosScan (Atlantic Testnet).
+Anyone can verify independently in ~2 minutes: `git clone` → `npm run build && npm run test` (36 passed) → `npm run eval:skill` (64/64) → open the contract on PharosScan (Atlantic Testnet).
 
 ---
 
@@ -354,7 +354,7 @@ Anyone can verify independently in ~2 minutes: `git clone` → `npm run build &&
 - A full agent Skill (`SKILL.md` + **10 references**) that extends the official Pharos Skill Engine
 - A deterministic spawn → refine → version pipeline that leaves the issuer a private, evolving operating Skill
 - An auto-generated contract-surface reference kept in sync with the Solidity source
-- A 62-check eval harness and a static Skill Inspector security gate
+- A 64-check eval harness and a static Skill Inspector security gate
 - 36 Foundry tests, a security review with all findings addressed, and data sovereignty with opt-in sharing
 
 ---

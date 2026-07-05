@@ -6,7 +6,7 @@
 npm run judge:package   # one shot: gate:test + gate:cli + mcp:probe + judge:readiness
 npm run gate:cli        # narrated RED -> GREEN -> attest -> mint gate
 npm run gate:test       # deterministic gate + mint-gating asserts
-npm run eval:skill      # 62/62 behavioral evals
+npm run eval:skill      # 64/64 behavioral evals
 npm run build && npm run test   # 36 Foundry tests (needs Foundry)
 ```
 

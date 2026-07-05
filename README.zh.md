@@ -11,7 +11,7 @@
 当前版本新增 **可复用 Primitive 层**：`lib/hatchfi-gate`（MCP/LangChain/Vercel 适配）、`web/` 可视化交互 Demo、`npm run judge:readiness` 一键评审检查。
 
 [![tests](https://img.shields.io/badge/Foundry-36_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
-[![eval](https://img.shields.io/badge/skill_eval-62%2F62-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
+[![eval](https://img.shields.io/badge/skill_eval-64%2F64-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
 [![live](https://img.shields.io/badge/Pharos_Atlantic_Testnet-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
 [![oracle](https://img.shields.io/badge/Mock_OFAC_预言机-已部署-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400)
 [![skill](https://img.shields.io/badge/hatched_Skill-private-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
@@ -60,7 +60,7 @@ Agent 编排 RWA 代币化是活跃研究方向（[Borjigin 等，2025 — arXiv
 | 三阶段尽调流水线 | 已完成 | 4 份 playbook · [`docs/diligence/INTEGRATION.md`](./docs/diligence/INTEGRATION.md) |
 | OFAC denylist 同步 | 已完成 | 93 个 ETH 地址 · `npm run diligence:sync` · 快照 2026-06-18 |
 | Mock OFAC 预言机（Atlantic） | 已完成 | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · 演示 RED @ `0x7F36…be1B` |
-| Skill eval 套件 | 已完成 | **62/62** · `npm run eval:skill`（Python + Foundry golden 对齐） |
+| Skill eval 套件 | 已完成 | **64/64** · `npm run eval:skill`（Python + Foundry golden 对齐） |
 | MPF 资产 Skill spawn | 已完成 | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) v8 · 子 Skill 含 6 份 diligence ref |
 | 论文驱动 Round 8–10 | 已完成 | `#19`/`#20` · 存证 · 发行后监控 · dry-run · [`PAPER_ALIGNMENT.md`](./docs/PAPER_ALIGNMENT.md) |
 | Diligence Gate primitive + 适配器 | 已完成 | [`lib/hatchfi-gate/`](./lib/hatchfi-gate/SKILL.md) · 4 个工具 |
@@ -91,7 +91,7 @@ forge install OpenZeppelin/openzeppelin-contracts@v5.1.0 && forge install foundr
 
 # 2 · 本地构建与验证（无需钱包）
 npm run build && npm run test       # 36 项 Foundry 测试
-npm run eval:skill                  # 62 项确定性 skill 检查
+npm run eval:skill                  # 64 项确定性 skill 检查
 npm run inspect:skill               # 静态安全扫描
 npm run check                       # 完整本地门禁（build · test · refs · eval · inspector）
 ```
@@ -165,7 +165,7 @@ HatchFi 通过 `npm` 脚本封装 Foundry、`cast` 与 Agent 工具链，按用�
 
 | 命令 | 作用 |
 |---|---|
-| `npm run eval:skill` | 62 项确定性检查：尽调闸门、风险档、同意闸、spawn 结构 |
+| `npm run eval:skill` | 64 项确定性检查：尽调闸门、风险档、同意闸、spawn 结构 |
 | `npm run eval:skill:json` | 同上，JSON 报告 |
 
 ### 安全门（安装 / 上传 / 发布 / 分享前）
@@ -292,7 +292,7 @@ HatchFi 是 Pharos **Skill**，不是脚本。Agent 遵循 [`SKILL.md`](./SKILL.
 | 审查环节 | 结果 |
 |---|---|
 | **TDD 测试** | 36 项 Foundry 测试，0 失败；含派息不超发 fuzz 不变量（`claimable + dust ≤ deposit`） |
-| **Skill eval** | `npm run eval:skill` —— 62/62 确定性检查（闸门 · 风险档 · 同意闸 · spawn 结构） |
+| **Skill eval** | `npm run eval:skill` —— 64/64 确定性检查（闸门 · 风险档 · 同意闸 · spawn 结构） |
 | **安全审查**（[`docs/SECURITY.md`](./docs/SECURITY.md)） | 发现项已文档化；修复对应回归测试 |
 | **合规审查** | 修复 mint 绕过持有人/额度上限的合规关键问题 |
 | **生产就绪审查** | 见项目审查记录（validation 文档） |
@@ -322,7 +322,7 @@ HatchFi **已部署在 Pharos Atlantic 测试网并通过 smoke 测试**，下�
 
 Smoke 路径：若 deployer 已通过验证则跳过 `registerIdentity`；下方记录的是 **mint + receipt 断言** 的执行路径。
 
-约 2 分钟可独立复现：`git clone` → `npm run build && npm run test`（36 passed）→ `npm run eval:skill`（62/62）→ 在 PharosScan（Atlantic 测试网）打开合约地址。
+约 2 分钟可独立复现：`git clone` → `npm run build && npm run test`（36 passed）→ `npm run eval:skill`（64/64）→ 在 PharosScan（Atlantic 测试网）打开合约地址。
 
 ---
 
@@ -332,7 +332,7 @@ Smoke 路径：若 deployer 已通过验证则跳过 `registerIdentity`；下方
 - 扩展官方 Pharos Skill Engine 的完整 Agent Skill（`SKILL.md` + **10 份** references）
 - 确定性 spawn → refine → version 流水线，为发行人留下可进化的私有运营 Skill
 - 与 Solidity 源保持同步的自动生成合约能力面 reference
-- 62 项 eval 套件与静态 Skill Inspector 安全门
+- 64 项 eval 套件与静态 Skill Inspector 安全门
 - 36 项 Foundry 测试、已处理完毕的安全审查，以及默认私有 + opt-in 分享的数据主权设计
 
 ---

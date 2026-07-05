@@ -20,7 +20,7 @@
 | 🚦 Diligence gate blocks a sanctioned issuer, then admits a clean one | `npm run gate:cli` | OFAC hit → **RED, mint denied** → attest → **GREEN, mint allowed** → flip flag → denied again |
 | 🔌 Gate + live on-chain reads as agent tools (MCP) | `npm run mcp:probe` | `TOOLS 8` (5 gate + 3 read-only on-chain), `MINT allowed=true attested=true`, live token metadata |
 | 🧪 Compliance contract suite | `npm run build && npm run test` | 36 Foundry tests pass (identity · two checks · freeze · two-phase recovery · dividends) |
-| 📊 Behavioral evals (deterministic, no LLM) | `npm run eval:skill` | `62/62` |
+| 📊 Behavioral evals (deterministic, no LLM) | `npm run eval:skill` | `64/64` |
 | 🔒 Security self-scan before publish | `npm run inspect:skill` | 0 critical / 0 high |
 | 🌐 Live on Pharos Atlantic | [PharosScan](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) | deployed `CompliantRWAToken` + Mock OFAC oracle |
 

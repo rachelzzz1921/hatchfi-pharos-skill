@@ -52,6 +52,20 @@
       "description": "Spawn evolution commands documented"
     },
     {
+      "id": "adapter_langchain_example",
+      "category": "adapters",
+      "file": "lib/hatchfi-gate/scripts/langchain-example.ts",
+      "must_contain": ["toLangChainTools", "diligence_screen"],
+      "description": "Runnable LangChain adapter example wires the diligence skills as tools"
+    },
+    {
+      "id": "adapter_vercel_example",
+      "category": "adapters",
+      "file": "lib/hatchfi-gate/scripts/vercel-example.ts",
+      "must_contain": ["toVercelAiTools", "diligence_rate"],
+      "description": "Runnable Vercel AI SDK adapter example exposes the diligence skills as tools"
+    },
+    {
       "id": "ref_offchain_diligence",
       "category": "references",
       "file": "references/offchain-diligence.md",
