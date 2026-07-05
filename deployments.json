@@ -1,0 +1,21 @@
+{
+  "network": "Pharos Atlantic Testnet",
+  "chainId": 688689,
+  "rpc": "https://atlantic.dplabs-internal.com",
+  "explorer": "https://atlantic.pharosscan.xyz",
+  "contracts": {
+    "CompliantRWAToken": "0xfef7519bebda6c47af49583dbc9e60801f8aa3de",
+    "MockOFACRegistry": "0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400",
+    "DiligenceAttestationRegistry": "",
+    "AssetTokenizationRegistry": ""
+  },
+  "transactions": {
+    "deploy_CompliantRWAToken": "0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d",
+    "deploy_MockOFACRegistry": "0x7ae012f2ac8d388faa808005145054e9db338157a20be2c6f091eba5fa3fa8fa",
+    "smoke_mint": "0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541"
+  },
+  "notes": {
+    "sampleSanctionedAddress": "0x7F367cC41522cE07553e823bf3be79A889DEbe1B",
+    "attestationDeployStatus": "pending"
+  }
+}

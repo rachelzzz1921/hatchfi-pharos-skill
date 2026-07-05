@@ -8,12 +8,14 @@
 
 在 Pharos 上用 Agent 发行合规 RWA，并为该资产保留一个可随使用而精炼的私有运营 Skill。
 
-[![tests](https://img.shields.io/badge/Foundry-24_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
-[![eval](https://img.shields.io/badge/skill_eval-52%2F52-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
+当前版本新增 **可复用 Primitive 层**：`lib/hatchfi-gate`（MCP/LangChain/Vercel 适配）、`web/` 可视化交互 Demo、`npm run judge:readiness` 一键评审检查。
+
+[![tests](https://img.shields.io/badge/Foundry-36_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
+[![eval](https://img.shields.io/badge/skill_eval-62%2F62-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
 [![live](https://img.shields.io/badge/Pharos_Atlantic_Testnet-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
 [![oracle](https://img.shields.io/badge/Mock_OFAC_预言机-已部署-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400)
 [![skill](https://img.shields.io/badge/hatched_Skill-private-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
-[![inspector](https://img.shields.io/badge/Skill_Inspector-10%2F100_LOW-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
+[![inspector](https://img.shields.io/badge/Skill_Inspector-0_critical%2F0_high-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
 
 **[English](./README.md)**  ·  **中文**  ·  [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
@@ -34,8 +36,17 @@ HatchFi 是面向 Pharos 合规 RealFi 的 **Agent 原生发行层**。它将一
 ①  尽调闸门   →   ②  合规发行   →   ③  Skill 孵化（归你）
    三阶段 evidence      ERC-3643 代币，已部署     spawn skills/<SYMBOL>-asset/
    制裁+链上+链下       运行于 Atlantic            默认私有 · 4 份尽调 ref
-   绿/黄/红 → 红档拒绝  身份·合规·冻结             对话中持续精炼
+   绿/黄/红 → 红档拒绝  身份·合规·冻结             可选链上 evidence_hash 存证
 ```
+
+## 研究背景
+
+Agent 编排 RWA 代币化是活跃研究方向（[Borjigin 等，2025 — arXiv:2507.00096](https://arxiv.org/abs/2507.00096)）。论文提出多 Agent + **AI 治理层**；HatchFi 是其**确定性、已落地**对照：
+
+- **采纳**：分阶段 playbook、批准前置才 mint、链上尽调哈希存证（`onchain-attestation.md`）、重复代币化登记（#19）。
+- **不采纳**：AI 治理决策、权威估值 Agent、质押扣减经济——以可复现 RED/YELLOW/GREEN 闸门与 `evidence{}` 审计轨迹替代。
+
+完整对照：[`docs/PAPER_ALIGNMENT.md`](./docs/PAPER_ALIGNMENT.md)。
 
 它扩展官方 [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide)——保留 `assets/networks.json`、写操作预检与 `pharos-base-ops.md`，并在此基础上增加 RWA 专有 playbook、spawn/refine 流水线、合约能力面生成器、eval 套件与静态安全门。
 
@@ -49,9 +60,25 @@ HatchFi 是面向 Pharos 合规 RealFi 的 **Agent 原生发行层**。它将一
 | 三阶段尽调流水线 | 已完成 | 4 份 playbook · [`docs/diligence/INTEGRATION.md`](./docs/diligence/INTEGRATION.md) |
 | OFAC denylist 同步 | 已完成 | 93 个 ETH 地址 · `npm run diligence:sync` · 快照 2026-06-18 |
 | Mock OFAC 预言机（Atlantic） | 已完成 | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · 演示 RED @ `0x7F36…be1B` |
-| Skill eval 套件 | 已完成 | **52/52** · `npm run eval:skill` |
-| MPF 资产 Skill spawn | 已完成 | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) v5 · 子 Skill 含 4 份尽调 ref |
+| Skill eval 套件 | 已完成 | **62/62** · `npm run eval:skill`（Python + Foundry golden 对齐） |
+| MPF 资产 Skill spawn | 已完成 | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) v8 · 子 Skill 含 6 份 diligence ref |
+| 论文驱动 Round 8–10 | 已完成 | `#19`/`#20` · 存证 · 发行后监控 · dry-run · [`PAPER_ALIGNMENT.md`](./docs/PAPER_ALIGNMENT.md) |
+| Diligence Gate primitive + 适配器 | 已完成 | [`lib/hatchfi-gate/`](./lib/hatchfi-gate/SKILL.md) · 4 个工具 |
+| 可视化 Demo + 评委模式 | 已完成 | `npm run web:dev` · `npm run gate:cli` · `npm run judge:package` |
 | GitHub main | 已完成 | [`hatchfi-pharos-skill`](https://github.com/rachelzzz1921/hatchfi-pharos-skill) |
+
+---
+
+## 评委快速验证
+
+```bash
+npm install
+npm run gate:test
+npm run gate:cli
+npm run judge:package
+npm run judge:readiness:strict
+npm run web:dev
+```
 
 ---
 
@@ -63,8 +90,8 @@ curl -L https://foundry.paradigm.xyz | bash && foundryup
 forge install OpenZeppelin/openzeppelin-contracts@v5.1.0 && forge install foundry-rs/forge-std
 
 # 2 · 本地构建与验证（无需钱包）
-npm run build && npm run test       # 24 项 Foundry 测试
-npm run eval:skill                  # 52 项确定性 skill 检查
+npm run build && npm run test       # 36 项 Foundry 测试
+npm run eval:skill                  # 62 项确定性 skill 检查
 npm run inspect:skill               # 静态安全扫描
 npm run check                       # 完整本地门禁（build · test · refs · eval · inspector）
 ```
@@ -93,8 +120,13 @@ HatchFi 通过 `npm` 脚本封装 Foundry、`cast` 与 Agent 工具链，按用�
 | 命令 | 作用 |
 |---|---|
 | `npm run build` | `forge build` |
-| `npm run test` | 24 项 Foundry 测试（含派息 fuzz 不变量） |
+| `npm run test` | Foundry 测试（含恢复身份绑定 + attestation mint gate + 派息 fuzz） |
 | `npm run check` | 完整本地门禁：build · test · 私钥检查 · refs 漂移 · eval · inspector |
+| `npm run gate:test` | TS 确定性闸门测试 |
+| `npm run gate:cli` | 叙事式 CLI 演示（RED -> GREEN -> attest -> gate） |
+| `npm run gate:demo` | CLI JSON 演示（RED 阻断 + GREEN 放行） |
+| `npm run judge:package` | 评委一键包：`gate:test + gate:cli + mcp:probe + judge:readiness` |
+| `npm run judge:readiness` | Atlantic 只读评审检查 |
 
 ### 链上部署与运营
 
@@ -104,6 +136,14 @@ HatchFi 通过 `npm` 脚本封装 Foundry、`cast` 与 Agent 工具链，按用�
 | `npm run deploy:pharos` | 部署 `CompliantRWAToken`，写入 `deployments/pharos.json` |
 | `npm run smoke:pharos` | `mint` + receipt 断言（deployer 已验证则跳过 `registerIdentity`；幂等） |
 | `npm run verify:pharos` | 回读链上状态以对账 |
+
+### Primitive + 适配层
+
+| 命令 | 作用 |
+|---|---|
+| `npm run mcp` | 启动 HatchFi Diligence Gate MCP（stdio） |
+| `npm run web:dev` | 启动交互式 Web Demo |
+| `npm run web:build` | 构建静态 Demo |
 
 ### Spawn 与 Skill 进化
 
@@ -125,7 +165,7 @@ HatchFi 通过 `npm` 脚本封装 Foundry、`cast` 与 Agent 工具链，按用�
 
 | 命令 | 作用 |
 |---|---|
-| `npm run eval:skill` | 52 项确定性检查：尽调闸门、风险档、同意闸、spawn 结构 |
+| `npm run eval:skill` | 62 项确定性检查：尽调闸门、风险档、同意闸、spawn 结构 |
 | `npm run eval:skill:json` | 同上，JSON 报告 |
 
 ### 安全门（安装 / 上传 / 发布 / 分享前）
@@ -144,12 +184,12 @@ HatchFi 通过 `npm` 脚本封装 Foundry、`cast` 与 Agent 工具链，按用�
 Phase A  尽调闸门     →  Phase B  合规发行      →  Phase C  生命周期运营    →  Phase D  Skill 孵化       →  Phase E  安全门
          三阶段 evidence        部署 ERC-3643 代币         白名单 / 冻结 / mint        spawn skills/MPF-asset/      静态 inspector
          制裁+链上+链下         身份·合规·冻结             派息 / 恢复 / 审计          4 份尽调 ref · 私有          prompt/secret/Web3
-         绿/黄/红 · 红档拒绝    24 测试 + 审计留痕         cast logs（12 events）      refine · version · rollback critical/high 阻断
+         绿/黄/红 · 红档拒绝    36 测试 + 审计留痕         cast logs（18 events）      refine · version · rollback critical/high 阻断
 ```
 
 **10 份 Agent playbook**（`references/`）：`onchain-diligence` · `offchain-diligence` · `sanctions-screening` · `compliance-knowledge` · `rwa-issuance` · `rwa-dividend` · `spawn-asset-skill` · `pharos-base-ops` · `pharos-deploy-runbook` · `pharos-verification`
 
-**自动生成的合约能力面**（`npm run refs:generate`）：30 个可调用项（external/public 函数 + public getter）· 12 个 ERC-3643 对齐事件 · 5 个类型化错误 · 24 项 Foundry 测试（含 fuzz 不变量）。
+**自动生成的合约能力面**（`npm run refs:generate`）：44 个可调用项（external/public 函数 + public getter）· 18 个 ERC-3643 对齐事件 · 14 个类型化错误 · 36 项 Foundry 测试（含 fuzz 不变量）。
 
 ---
 
@@ -192,7 +232,7 @@ transfer / mint / forcedTransfer
 
 - **IdentityRegistry** — `isVerified` / `registerIdentity` / `removeIdentity`
 - **ModularCompliance** — `canTransfer` / `maxHolders` / `maxBalancePerInvestor`
-- **Lifecycle** — 冻结 / `forcedTransfer` / `recoveryAddress` / pause
+- **Lifecycle** — 冻结 / `forcedTransfer` / 两阶段 `executeRecoveryAddress` / pause
 - **Dividends** — `depositDividend` / `claimDividend` / `sweepUndistributedDividend`
 
 **权限矩阵**：`onlyOwner`（治理、派息、dust 回收）vs `onlyAgent`（KYC、mint、冻结、监管路径）——详见 [`docs/SECURITY.md`](./docs/SECURITY.md)。
@@ -251,8 +291,8 @@ HatchFi 是 Pharos **Skill**，不是脚本。Agent 遵循 [`SKILL.md`](./SKILL.
 
 | 审查环节 | 结果 |
 |---|---|
-| **TDD 测试** | 24 项 Foundry 测试，0 失败；含派息不超发 fuzz 不变量（`claimable + dust ≤ deposit`） |
-| **Skill eval** | `npm run eval:skill` —— 52/52 确定性检查（闸门 · 风险档 · 同意闸 · spawn 结构） |
+| **TDD 测试** | 36 项 Foundry 测试，0 失败；含派息不超发 fuzz 不变量（`claimable + dust ≤ deposit`） |
+| **Skill eval** | `npm run eval:skill` —— 62/62 确定性检查（闸门 · 风险档 · 同意闸 · spawn 结构） |
 | **安全审查**（[`docs/SECURITY.md`](./docs/SECURITY.md)） | 发现项已文档化；修复对应回归测试 |
 | **合规审查** | 修复 mint 绕过持有人/额度上限的合规关键问题 |
 | **生产就绪审查** | 见项目审查记录（validation 文档） |
@@ -278,11 +318,11 @@ HatchFi **已部署在 Pharos Atlantic 测试网并通过 smoke 测试**，下�
 | **Smoke mint tx** | [`0x7ece3b…b5541`](https://atlantic.pharosscan.xyz/tx/0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541) |
 | **Mock OFAC 预言机** | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · 部署 [`0x7ae012…a8fa`](https://atlantic.pharosscan.xyz/tx/0x7ae012f2ac8d388faa808005145054e9db338157a20be2c6f091eba5fa3fa8fa) |
 | **网络** | Pharos Atlantic 测试网 · chainId `688689` |
-| **Spawned Skill** | [`skills/MPF-asset/SKILL.md`](./skills/MPF-asset/SKILL.md) —— 子 Skill v5 · `TOKEN=0xfef7…` · 4 份尽调 ref |
+| **Spawned Skill** | [`skills/MPF-asset/SKILL.md`](./skills/MPF-asset/SKILL.md) —— 子 Skill v8 · `TOKEN=0xfef7…` · 6 份尽调 ref |
 
 Smoke 路径：若 deployer 已通过验证则跳过 `registerIdentity`；下方记录的是 **mint + receipt 断言** 的执行路径。
 
-约 2 分钟可独立复现：`git clone` → `npm run build && npm run test`（24 passed）→ `npm run eval:skill`（52/52）→ 在 PharosScan（Atlantic 测试网）打开合约地址。
+约 2 分钟可独立复现：`git clone` → `npm run build && npm run test`（36 passed）→ `npm run eval:skill`（62/62）→ 在 PharosScan（Atlantic 测试网）打开合约地址。
 
 ---
 
@@ -292,8 +332,8 @@ Smoke 路径：若 deployer 已通过验证则跳过 `registerIdentity`；下方
 - 扩展官方 Pharos Skill Engine 的完整 Agent Skill（`SKILL.md` + **10 份** references）
 - 确定性 spawn → refine → version 流水线，为发行人留下可进化的私有运营 Skill
 - 与 Solidity 源保持同步的自动生成合约能力面 reference
-- 52 项 eval 套件与静态 Skill Inspector 安全门
-- 24 项 Foundry 测试、已处理完毕的安全审查，以及默认私有 + opt-in 分享的数据主权设计
+- 62 项 eval 套件与静态 Skill Inspector 安全门
+- 36 项 Foundry 测试、已处理完毕的安全审查，以及默认私有 + opt-in 分享的数据主权设计
 
 ---
 
@@ -319,7 +359,7 @@ Smoke 路径：若 deployer 已通过验证则跳过 `registerIdentity`；下方
 ```
 SKILL.md                       Agent 入口：意图 → 能力 → 风险 → reference
 src/CompliantRWAToken.sol      ERC-3643 风格 RWA 代币
-test/CompliantRWAToken.t.sol   24 项测试（含 fuzz 不变量）
+test/CompliantRWAToken.t.sol   27 项测试（含 fuzz 不变量）
 script/Deploy.s.sol            Foundry 部署脚本
 references/                    10 份 cast/forge playbook（含 4 份尽调）
 docs/diligence/              集成说明 · OFAC 同步 · 尽调来源归档

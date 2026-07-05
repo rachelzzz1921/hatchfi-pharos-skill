@@ -8,12 +8,14 @@
 
 Issue a compliant RWA on Pharos with an AI agent — and keep a private operating Skill for that asset that improves as you use it.
 
-[![tests](https://img.shields.io/badge/Foundry-24_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
-[![eval](https://img.shields.io/badge/skill_eval-52%2F52-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
+Now includes a **reusable primitive**: `HatchFi Diligence Gate` (`lib/hatchfi-gate`) with MCP/LangChain/Vercel adapters, a web demo (`web/`), and one-command readiness checks (`npm run judge:readiness`).
+
+[![tests](https://img.shields.io/badge/Foundry-36_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
+[![eval](https://img.shields.io/badge/skill_eval-62%2F62-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
 [![live](https://img.shields.io/badge/Pharos_Atlantic_Testnet-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de)
 [![oracle](https://img.shields.io/badge/Mock_OFAC_Oracle-live-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400)
 [![skill](https://img.shields.io/badge/hatched_Skill-private-c9a227?style=flat-square)](./skills/MPF-asset/SKILL.md)
-[![inspector](https://img.shields.io/badge/Skill_Inspector-10%2F100_LOW-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
+[![inspector](https://img.shields.io/badge/Skill_Inspector-0_critical%2F0_high-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
 
 **English**  ·  [中文](./README.zh.md)  ·  [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
@@ -34,9 +36,18 @@ When an asset is issued, HatchFi also **spawns a private operating Skill for tha
 ①  Diligence Gate   →   ②  Compliant Issuance   →   ③  Skill Hatch (yours)
    3-stage evidence        ERC-3643 token, deployed     spawn skills/<SYMBOL>-asset/
    sanctions+onchain+      on Pharos Atlantic           private-by-default · serves you
-   offchain → GREEN/       identity·compliance·freeze   4 diligence refs · refine
-   YELLOW/RED · RED blocks issuance
+   offchain → GREEN/       identity·compliance·freeze   5 diligence refs · refine
+   YELLOW/RED · optional on-chain evidence_hash attest
 ```
+
+## Research context
+
+Agent-orchestrated RWA tokenization is an active research direction ([Borjigin et al., 2025 — arXiv:2507.00096](https://arxiv.org/abs/2507.00096)). That paper proposes multi-agent workflows with an **AI governance** layer; HatchFi is a **deterministic, deployed** counterpart:
+
+- **Adopts**: staged agent playbooks, approval-before-mint, on-chain diligence hash attestation (`onchain-attestation.md`), duplicate-tokenization registry (#19).
+- **Does not adopt**: AI governance decisions, authoritative valuation agents, stake-slashing economics — replaced by reproducible RED/YELLOW/GREEN gates and `evidence{}` audit trails.
+
+Full mapping: [`docs/PAPER_ALIGNMENT.md`](./docs/PAPER_ALIGNMENT.md).
 
 It extends the official [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide) — keeping `assets/networks.json`, write pre-checks, and `pharos-base-ops.md`, and adding RWA-specific playbooks, a spawn/refine pipeline, a contract-surface generator, an eval harness, and a static security gate on top.
 
@@ -50,9 +61,25 @@ It extends the official [Pharos Skill Engine](https://docs.pharos.xyz/tooling-an
 | Three-stage diligence pipeline | Done | 4 playbooks · [`docs/diligence/INTEGRATION.md`](./docs/diligence/INTEGRATION.md) |
 | OFAC denylist sync | Done | 93 ETH addresses · `npm run diligence:sync` · snapshot 2026-06-18 |
 | Mock OFAC oracle (Atlantic) | Done | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · demo RED @ `0x7F36…be1B` |
-| Skill eval harness | Done | **52/52** · `npm run eval:skill` |
-| MPF asset Skill spawn | Done | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) v5 · 4 diligence refs per child |
+| Skill eval harness | Done | **62/62** · `npm run eval:skill` (Python + Foundry golden parity) |
+| MPF asset Skill spawn | Done | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) v8 · 6 diligence refs per child |
+| Paper-driven Round 8–10 | Done | `#19`/`#20` · attestation · monitoring · dry-run · [`PAPER_ALIGNMENT.md`](./docs/PAPER_ALIGNMENT.md) |
+| Diligence Gate primitive + adapters | Done | [`lib/hatchfi-gate/`](./lib/hatchfi-gate/SKILL.md) · `diligence_screen`/`diligence_rate`/`diligence_gate_mint`/`diligence_get_attestation` |
+| Visible demo + judge mode | Done | `npm run web:dev` · `npm run gate:cli` · `npm run judge:package` |
 | GitHub main | Done | [`hatchfi-pharos-skill`](https://github.com/rachelzzz1921/hatchfi-pharos-skill) |
+
+---
+
+## Judge quick test
+
+```bash
+npm install
+npm run gate:test            # deterministic gate unit checks
+npm run gate:cli             # narrated RED->GREEN->attest->gate flow
+npm run judge:package        # gate:test + gate:cli + mcp:probe + judge:readiness
+npm run judge:readiness:strict # strict mode (requires hardened deployment in deployments/pharos.json)
+npm run web:dev              # visible interactive demo (address -> flags -> rating -> gate mint)
+```
 
 ---
 
@@ -64,8 +91,8 @@ curl -L https://foundry.paradigm.xyz | bash && foundryup
 forge install OpenZeppelin/openzeppelin-contracts@v5.1.0 && forge install foundry-rs/forge-std
 
 # 2 · build + verify locally (no wallet needed)
-npm run build && npm run test       # 24 Foundry tests
-npm run eval:skill                  # 52 deterministic skill checks
+npm run build && npm run test       # 36 Foundry tests
+npm run eval:skill                  # 62 deterministic skill checks
 npm run inspect:skill               # static security scan
 npm run check                       # full local gate (build · test · refs · eval · inspector)
 ```
@@ -94,8 +121,13 @@ HatchFi is operated through `npm` scripts that wrap Foundry, `cast`, and the age
 | Command | What it does |
 |---|---|
 | `npm run build` | `forge build` |
-| `npm run test` | 24 Foundry tests (incl. a fuzz invariant on dividends) |
+| `npm run test` | Foundry tests (incl. recovery identity binding + attestation mint gate + dividend fuzz) |
 | `npm run check` | Full local gate: build · test · key check · refs drift · eval · inspector |
+| `npm run gate:test` | Deterministic diligence gate checks (TS) |
+| `npm run gate:cli` | Narrated CLI flow (RED -> GREEN -> attest -> gate mint) |
+| `npm run gate:demo` | CLI JSON demo: RED block + GREEN attest + mint gate pass |
+| `npm run judge:package` | Judge one-command package: `gate:test + gate:cli + mcp:probe + judge:readiness` |
+| `npm run judge:readiness` | Read-only Atlantic readiness checks (judge-friendly N/N output) |
 
 ### Deploy & operate on-chain
 
@@ -126,7 +158,7 @@ HatchFi is operated through `npm` scripts that wrap Foundry, `cast`, and the age
 
 | Command | What it does |
 |---|---|
-| `npm run eval:skill` | 52 deterministic checks: diligence gate, risk tiers, consent gates, spawn structure |
+| `npm run eval:skill` | 62 deterministic checks: diligence gate, risk tiers, consent gates, spawn structure |
 | `npm run eval:skill:json` | Same suite, machine-readable JSON |
 
 ### Security gate (before install / upload / publish / share)
@@ -136,6 +168,14 @@ HatchFi is operated through `npm` scripts that wrap Foundry, `cast`, and the age
 | `npm run inspect:skill` | Static-only scan — prompt injection, secrets, dangerous patterns, Web3/Solidity risks |
 | `npm run inspect:skill:md` / `:json` | Write report to `docs/SKILL_SECURITY_REPORT.{md,json}` |
 | `npm run publish:check` | Inspector + full `check.sh` — run this before sharing |
+
+### Reusable primitive + adapters
+
+| Command | What it does |
+|---|---|
+| `npm run mcp` | Start MCP stdio server for HatchFi Diligence Gate |
+| `npm run web:dev` | Start interactive React demo |
+| `npm run web:build` | Build static web demo bundle |
 
 ### Diligence (sanctions + background + on-chain)
 
@@ -153,13 +193,13 @@ HatchFi is operated through `npm` scripts that wrap Foundry, `cast`, and the age
 Phase A  Diligence Gate     →  Phase B  Compliant Issuance  →  Phase C  Lifecycle Ops     →  Phase D  Skill Hatch        →  Phase E  Security Gate
          3-stage evidence          deploy ERC-3643 token            whitelist / freeze / mint     spawn skills/MPF-asset/     static-only inspector
          sanctions+onchain+        identity·compliance·freeze       dividends / recovery / audit  4 diligence refs · private  prompt/secret/Web3/Solidity
-         offchain → GREEN/         24 tests + audit trail           cast logs (12 events)         refine · version · rollback block critical/high
+         offchain → GREEN/         36 tests + audit trail           cast logs (18 events)         refine · version · rollback block critical/high
          YELLOW/RED · RED blocks
 ```
 
 **10 agent playbooks** in `references/`: `onchain-diligence` · `offchain-diligence` · `sanctions-screening` · `compliance-knowledge` · `rwa-issuance` · `rwa-dividend` · `spawn-asset-skill` · `pharos-base-ops` · `pharos-deploy-runbook` · `pharos-verification`
 
-**Auto-generated contract surface** (`npm run refs:generate`): 30 callable entries (external/public functions + public getters) · 12 ERC-3643-aligned events · 5 typed errors · 24 Foundry tests including a fuzz invariant.
+**Auto-generated contract surface** (`npm run refs:generate`): 44 callable entries (external/public functions + public getters) · 18 ERC-3643-aligned events · 14 typed errors · 36 Foundry tests including a fuzz invariant.
 
 ---
 
@@ -202,7 +242,7 @@ Function and event names follow **ERC-3643 (T-REX)** so the contract can be spli
 
 - **IdentityRegistry** — `isVerified` / `registerIdentity` / `removeIdentity`
 - **ModularCompliance** — `canTransfer` / `maxHolders` / `maxBalancePerInvestor`
-- **Lifecycle** — freeze / `forcedTransfer` / `recoveryAddress` / pause
+- **Lifecycle** — freeze / `forcedTransfer` / two-phase `executeRecoveryAddress` / pause
 - **Dividends** — `depositDividend` / `claimDividend` / `sweepUndistributedDividend`
 
 **Permission matrix**: `onlyOwner` (governance, dividends, dust sweep) vs `onlyAgent` (KYC, mint, freeze, regulatory paths) — full table in [`docs/SECURITY.md`](./docs/SECURITY.md).
@@ -261,8 +301,8 @@ Before release, HatchFi went through a layered review loop. Issues found were fi
 
 | Review gate | Outcome |
 |---|---|
-| **TDD test suite** | 24 Foundry tests, 0 failed, including a fuzz invariant proving dividends can't over-distribute (`claimable + dust ≤ deposit`) |
-| **Skill eval suite** | `npm run eval:skill` — 52/52 deterministic checks on gates, risk tiers, consent, and spawn structure |
+| **TDD test suite** | 36 Foundry tests, 0 failed, including a fuzz invariant proving dividends can't over-distribute (`claimable + dust ≤ deposit`) |
+| **Skill eval suite** | `npm run eval:skill` — 62/62 deterministic checks on gates, risk tiers, consent, and spawn structure |
 | **Security review** ([`docs/SECURITY.md`](./docs/SECURITY.md)) | Findings documented; fixes pinned by named regression tests |
 | **Compliance review** | Found and closed a compliance-critical gap (`mint` bypassing holder/balance caps) — issuance now enforces the same `canTransfer` rules as transfers |
 | **Production-readiness review** | Documented in project review notes (see validation docs) |
@@ -288,11 +328,11 @@ HatchFi is deployed and smoke-tested on **Pharos Atlantic Testnet**.
 | **Smoke mint tx** | [`0x7ece3b…b5541`](https://atlantic.pharosscan.xyz/tx/0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541) |
 | **Mock OFAC oracle** | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · deploy [`0x7ae012…a8fa`](https://atlantic.pharosscan.xyz/tx/0x7ae012f2ac8d388faa808005145054e9db338157a20be2c6f091eba5fa3fa8fa) |
 | **Network** | Pharos Atlantic Testnet · chainId `688689` |
-| **Spawned Skill** | [`skills/MPF-asset/SKILL.md`](./skills/MPF-asset/SKILL.md) — child skill v5 · `TOKEN=0xfef7…` · 4 diligence refs |
+| **Spawned Skill** | [`skills/MPF-asset/SKILL.md`](./skills/MPF-asset/SKILL.md) — child skill v8 · `TOKEN=0xfef7…` · 6 diligence refs |
 
 Smoke path: `registerIdentity` is skipped when the deployer is already verified; **mint + receipt assert** is the executed write path recorded below.
 
-Anyone can verify independently in ~2 minutes: `git clone` → `npm run build && npm run test` (24 passed) → `npm run eval:skill` (52/52) → open the contract on PharosScan (Atlantic Testnet).
+Anyone can verify independently in ~2 minutes: `git clone` → `npm run build && npm run test` (36 passed) → `npm run eval:skill` (62/62) → open the contract on PharosScan (Atlantic Testnet).
 
 ---
 
@@ -302,8 +342,8 @@ Anyone can verify independently in ~2 minutes: `git clone` → `npm run build &&
 - A full agent Skill (`SKILL.md` + **10 references**) that extends the official Pharos Skill Engine
 - A deterministic spawn → refine → version pipeline that leaves the issuer a private, evolving operating Skill
 - An auto-generated contract-surface reference kept in sync with the Solidity source
-- A 52-check eval harness and a static Skill Inspector security gate
-- 24 Foundry tests, a security review with all findings addressed, and data sovereignty with opt-in sharing
+- A 62-check eval harness and a static Skill Inspector security gate
+- 36 Foundry tests, a security review with all findings addressed, and data sovereignty with opt-in sharing
 
 ---
 
@@ -329,7 +369,7 @@ Anyone can verify independently in ~2 minutes: `git clone` → `npm run build &&
 ```
 SKILL.md                       Agent entry: intent → capability → risk → reference
 src/CompliantRWAToken.sol      ERC-3643-style RWA token
-test/CompliantRWAToken.t.sol   24 tests (incl. fuzz invariant)
+test/CompliantRWAToken.t.sol   27 tests (incl. fuzz invariant)
 script/Deploy.s.sol            Foundry deploy script
 references/                    10 cast/forge playbooks (incl. 4 diligence)
 docs/diligence/              integration notes · OFAC sync · diligence source archive

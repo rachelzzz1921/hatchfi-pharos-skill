@@ -1,0 +1,29 @@
+{
+  "network": "Pharos Atlantic Testnet",
+  "chainId": 688689,
+  "rpcUrlEnv": "PHAROS_RPC_URL",
+  "contractName": "CompliantRWAToken",
+  "contractAddress": "0xfef7519bebda6c47af49583dbc9e60801f8aa3de",
+  "deploymentTx": "0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d",
+  "deployedAt": "2026-06-17T06:27:16Z",
+  "constructorArgs": {
+    "name": "Manhattan Property Fund",
+    "symbol": "MPF",
+    "maxHolders": "100",
+    "maxBalancePerInvestor": "1000000000000000000000000"
+  },
+  "explorer": {
+    "address": "https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de",
+    "tx": "https://atlantic.pharosscan.xyz/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d"
+  },
+  "backupExplorer": {
+    "address": "https://pharos-testnet.socialscan.io/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de",
+    "tx": "https://pharos-testnet.socialscan.io/tx/0x71ebe568c6d41390cfc6b6f452c30c85d38d0b4ddead941d19383a7e39417e4d"
+  },
+  "integrationTests": {
+    "smokeMintTx": "0x7ece3b86646685fbf9312bf91b68fc18ae694c3ccd50e8fdba148d6348bb5541",
+    "sampleHolder": "0xA54A3C2766a80d3AFe7C4Bf00D5bcfF9e1892bc4",
+    "expectedHolderCount": "1",
+    "expectedIsVerified": true
+  }
+}

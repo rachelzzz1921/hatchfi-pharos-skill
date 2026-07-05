@@ -1,0 +1,19 @@
+{
+  "network": "pharos_atlantic",
+  "chainId": 688689,
+  "contracts": {
+    "DiligenceAttestationRegistry": {
+      "address": "",
+      "deployTx": "",
+      "explorer": ""
+    },
+    "AssetTokenizationRegistry": {
+      "address": "",
+      "deployTx": "",
+      "explorer": ""
+    }
+  },
+  "deployer": "",
+  "deployedAt": "",
+  "note": "Populate after forge script DeployAttestation.s.sol --broadcast on Atlantic testnet"
+}

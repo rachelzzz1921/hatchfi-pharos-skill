@@ -11,6 +11,8 @@
     { "id": 14, "check": "legal_wrapper_profile", "layer": "offchain", "trigger": "no_prospectus_or_wrapper_mismatch", "flag": "risk" },
     { "id": 17, "check": "tokenization_rights", "layer": "offchain", "trigger": "no_underlying_consent", "flag": "risk" },
     { "id": 18, "check": "distribution_eligibility", "layer": "offchain", "trigger": "jurisdiction_blocked", "flag": "risk" },
+    { "id": 19, "check": "duplicate_tokenization", "layer": "offchain", "trigger": "fingerprint_maps_other_token", "flag": "risk" },
+    { "id": 20, "check": "liquidity_exit_path", "layer": "offchain", "trigger": "no_exit_declared", "flag": "warn" },
     { "id": 13, "check": "custodian_attestation", "layer": "offchain", "trigger": "no_por", "flag": "warn" },
     { "id": 15, "check": "audit_recency", "layer": "offchain", "trigger": "audit_stale_12mo", "flag": "warn" },
     { "id": 8, "check": "contract_verified", "layer": "onchain", "trigger": "unverified_source", "flag": "warn" },

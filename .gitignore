@@ -6,11 +6,16 @@
 # Foundry
 cache/
 out/
-lib/
 broadcast/
+# Ignore vendored Foundry libs but keep our own hatchfi-gate primitive.
+# NOTE: must be `lib/*` (not `lib/`) or git won't recurse to re-include the subdir.
+lib/*
+!lib/hatchfi-gate/
+!lib/hatchfi-gate/**
 
 # Node (if any)
 node_modules/
+dist-web/
 
 # Local agent state (may contain addresses; regenerate on deploy)
 state.json

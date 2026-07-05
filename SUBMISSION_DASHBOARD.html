@@ -272,8 +272,8 @@
       <span class="zh">面向 Pharos 合规 RealFi 的 Agent 原生发行层——扩展官方 Skill Engine，已在 <strong>Atlantic 测试网</strong> 部署并通过 smoke 测试。</span>
     </p>
     <div class="badges">
-      <span class="badge ok">24 Foundry tests</span>
-      <span class="badge ok"><span class="en">skill eval 52/52</span><span class="zh">skill eval 52/52</span></span>
+      <span class="badge ok">36 Foundry tests</span>
+      <span class="badge ok"><span class="en">skill eval 62/62</span><span class="zh">skill eval 62/62</span></span>
       <span class="badge live"><span class="en">Atlantic testnet</span><span class="zh">Atlantic 测试网</span></span>
       <span class="badge live"><span class="en">Mock OFAC oracle</span><span class="zh">Mock OFAC 预言机</span></span>
       <span class="badge gold"><span class="en">private Skill · refines</span><span class="zh">私有 Skill · 可精炼</span></span>
@@ -292,6 +292,7 @@
       <a class="nav-brand" href="#top">HatchFi</a>
       <span class="nav-jump"><span class="en">Jump to</span><span class="zh">跳转</span></span>
       <div class="nav-links" role="navigation">
+        <a href="#research" data-section="research"><span class="en">Research</span><span class="zh">研究</span></a>
         <a href="#progress" data-section="progress"><span class="en">Progress</span><span class="zh">进度</span></a>
         <a href="#live" data-section="live"><span class="en">Live</span><span class="zh">链上</span></a>
         <a href="#ecosystem" data-section="ecosystem"><span class="en">Ecosystem</span><span class="zh">生态</span></a>
@@ -347,6 +348,64 @@
     </div>
   </section>
 
+  <!-- RESEARCH ALIGNMENT -->
+  <section id="research">
+    <div class="kicker"><span class="en">Research-backed · deliberately different</span><span class="zh">学术背书 · 刻意差异化</span></div>
+    <h2><span class="en">A deterministic, deployed instance of agent-orchestrated tokenization</span><span class="zh">Agent 编排代币化的确定性、已落地实例</span></h2>
+    <p class="lead">
+      <span class="en">Agent-orchestrated RWA tokenization is a serious research direction — see Borjigin, Zhou, He (2025) <a class="ref" href="https://arxiv.org/abs/2507.00096" target="_blank">arXiv:2507.00096</a>. That paper proposes multi-agent workflows with an <strong>AI governance</strong> layer. HatchFi adopts the orchestration and approval-before-mint ideas, but replaces the AI black box with <strong>reproducible RED/YELLOW/GREEN gates</strong> and adds <strong>on-chain diligence hash attestation</strong> on Atlantic testnet.</span>
+      <span class="zh">Agent 编排 RWA 代币化是正经研究方向——见 Borjigin 等 (2025) <a class="ref" href="https://arxiv.org/abs/2507.00096" target="_blank">arXiv:2507.00096</a>。论文提出多 Agent + <strong>AI 治理层</strong>。HatchFi 采纳编排与批准前置思路，但用<strong>可复现红黄绿闸门</strong>替代 AI 黑箱，并在 Atlantic 测试网增加<strong>链上尽调哈希存证</strong>。</span>
+    </p>
+    <div class="grid-2">
+      <div class="card">
+        <h3><span class="en">Paper adopts → HatchFi implements</span><span class="zh">论文采纳 → HatchFi 落地</span></h3>
+        <ul class="disc" style="margin-top:0.5rem;">
+          <li><span class="k">Verification</span><span><code>onchain-diligence</code> + <code>offchain-diligence</code></span></li>
+          <li><span class="k">Compliance</span><span>ERC-3643 <code>isVerified</code> + <code>canTransfer</code></span></li>
+          <li><span class="k">#19 duplicate</span><span><code>AssetTokenizationRegistry</code></span></li>
+          <li><span class="k">Post-issuance</span><span><code>post-issuance-monitoring</code> · #10b without AI freeze</span></li>
+          <li><span class="k">On-chain record</span><span><code>DiligenceAttestationRegistry</code> · <a class="ref" href="references/onchain-attestation.md">playbook</a> · <code>npm run evidence:hash</code> · <code>attest:dry-run</code> · Foundry golden parity</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="en">Paper has → HatchFi skips (on purpose)</span><span class="zh">论文有 → HatchFi 刻意不做</span></h3>
+        <ul class="disc" style="margin-top:0.5rem;">
+          <li><span class="k">AI Governance</span><span><span class="en">→ pure-function rating</span><span class="zh">→ 纯函数评级</span></span></li>
+          <li><span class="k">Valuation Agent</span><span><span class="en">→ diligence signal only</span><span class="zh">→ 仅尽调信号</span></span></li>
+          <li><span class="k">ABT stake slash</span><span><span class="en">→ roadmap narrative</span><span class="zh">→ roadmap 叙事</span></span></li>
+          <li><span class="k">Phase 2</span><span><span class="en">contract-enforced mint gate</span><span class="zh">合约强制 mint 闸门</span></span></li>
+        </ul>
+      </div>
+    </div>
+    <h3 style="margin-top:1.3rem;"><span class="en">Competitive position (agent layer)</span><span class="zh">竞品定位（Agent 层）</span></h3>
+    <table style="margin-top:0.6rem;">
+      <thead>
+        <tr>
+          <th></th>
+          <th><span class="en">Platform (Tokeny / Securitize)</span><span class="zh">平台层</span></th>
+          <th><span class="en">AI discovery only</span><span class="zh">仅 AI 发现</span></th>
+          <th><span class="en">HatchFi</span><span class="zh">HatchFi</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="k"><span class="en">Agent pipeline</span><span class="zh">Agent 流水线</span></td><td>—</td><td>partial</td><td class="mono" style="color:var(--teal);">full</td></tr>
+        <tr><td class="k">ERC-3643</td><td class="mono" style="color:var(--teal);">yes</td><td>—</td><td class="mono" style="color:var(--teal);">yes</td></tr>
+        <tr><td class="k"><span class="en">Deterministic diligence</span><span class="zh">确定性尽调</span></td><td>—</td><td>partial</td><td class="mono" style="color:var(--teal);">yes</td></tr>
+        <tr><td class="k"><span class="en">Skill spawn</span><span class="zh">Skill 繁殖</span></td><td>—</td><td>—</td><td class="mono" style="color:var(--teal);">yes</td></tr>
+      </tbody>
+    </table>
+    <p class="lead" style="font-size:0.9rem;margin-top:0.9rem;">
+      <span class="en">Full mapping: <a class="ref" href="docs/PAPER_ALIGNMENT.md">docs/PAPER_ALIGNMENT.md</a>. Honest boundary: mint gate is <strong>agent-enforced</strong> in Phase 1; contract hardening is Phase 2. Testnet registries do not replace global land-title oracles.</span>
+      <span class="zh">完整对照：<a class="ref" href="docs/PAPER_ALIGNMENT.md">docs/PAPER_ALIGNMENT.md</a>。诚实边界：Phase 1 mint 闸门由 <strong>agent 强制</strong>；合约硬化为 Phase 2。测试网 registry 不能替代全球产权登记。</span>
+    </p>
+    <div class="highlight">
+      <p><strong><span class="en">Pitch</span><span class="zh">答辩句</span>:</strong>
+        <span class="en">Paper = qualitative blueprint · HatchFi = running on Atlantic with deterministic gates + optional on-chain evidence hash.</span>
+        <span class="zh">论文 = 定性蓝图 · HatchFi = Atlantic 已跑通 + 确定性闸门 + 可选链上 evidence 哈希。</span>
+      </p>
+    </div>
+  </section>
+
   <!-- FULL PIPELINE -->
   <section>
     <div class="kicker"><span class="en">End-to-end pipeline</span><span class="zh">端到端流水线</span></div>
@@ -354,17 +413,17 @@
     <pre class="ascii"><span class="gd">Phase A</span>  Diligence Gate          <span class="gd">Phase B</span>  Compliant Issuance       <span class="gd">Phase C</span>  Lifecycle Ops          <span class="gd">Phase D</span>  Skill Hatch          <span class="gd">Phase E</span>  Security Gate
 ─────────  ───────────────         ─────────  ──────────────────       ─────────  ───────────────         ─────────  ───────────          ─────────  ─────────────
 read-only  GREEN/YELLOW/RED        deploy     ERC-3643 token           whitelist  register/freeze/mint    spawn      skills/MPF-asset/     static     Skill Inspector
-3-stage    sanctions+onchain+       mint       identity·compliance·     dividends  deposit/claim/sweep     private    4 diligence refs      scan       prompt/secret/Web3
-evidence   offchain → state         smoke      freeze triple gate       recovery   forcedTransfer/pause    refine     PERMISSIONS.md        reports    MD/JSON/SARIF-ready
-           → state.diligence       preflight  24 tests + audit         audit      cast logs (12 events)   opt-in     consent.shares       blocker   critical/high</pre>
+3-stage    sanctions+onchain+       mint       identity·compliance·     dividends  deposit/claim/sweep     private    6 diligence refs      scan       prompt/secret/Web3
+evidence   offchain → attest hash   smoke      freeze triple gate       recovery   forcedTransfer/pause    refine     PERMISSIONS.md        reports    MD/JSON/SARIF-ready
+           → state.diligence       preflight  36 tests + audit         monitor    #10b read-only          opt-in     consent.shares       blocker   critical/high</pre>
     <div class="grid-2">
       <div class="card">
-        <h3><span class="en">10 agent playbooks</span><span class="zh">10 份 Agent playbook</span></h3>
-        <p><code>onchain-diligence</code> · <code>offchain-diligence</code> · <code>sanctions-screening</code> · <code>compliance-knowledge</code> · <code>rwa-issuance</code> · <code>rwa-dividend</code> · <code>spawn-asset-skill</code> · <code>pharos-base-ops</code> · <code>pharos-deploy-runbook</code> · <code>pharos-verification</code></p>
+        <h3><span class="en">12 agent playbooks</span><span class="zh">12 份 Agent playbook</span></h3>
+        <p><code>onchain-diligence</code> · <code>offchain-diligence</code> · <code>sanctions-screening</code> · <code>compliance-knowledge</code> · <code>onchain-attestation</code> · <code>post-issuance-monitoring</code> · <code>rwa-issuance</code> · <code>rwa-dividend</code> · <code>spawn-asset-skill</code> · <code>pharos-base-ops</code> · <code>pharos-deploy-runbook</code> · <code>pharos-verification</code></p>
       </div>
       <div class="card">
         <h3><span class="en">Contract surface (auto-generated)</span><span class="zh">合约能力面（自动生成）</span></h3>
-        <p><span class="en"><code>refs:generate</code> parses the Solidity source → <strong>30</strong> callable entries · <strong>12</strong> ERC-3643-aligned events · <strong>5</strong> typed errors · <strong>24</strong> Foundry tests incl. fuzz invariant. <code>refs:check</code> fails on drift.</span><span class="zh"><code>refs:generate</code> 解析 Solidity 源 → <strong>30</strong> 个可调用项 · <strong>12</strong> 个 ERC-3643 对齐事件 · <strong>5</strong> 个类型化错误 · <strong>24</strong> 项 Foundry 测试含 fuzz 不变量。<code>refs:check</code> 漂移即失败。</span></p>
+        <p><span class="en"><code>refs:generate</code> parses the Solidity source → <strong>30</strong> callable entries · <strong>12</strong> ERC-3643-aligned events · <strong>5</strong> typed errors · <strong>33</strong> Foundry tests incl. cross-language golden vectors. <code>refs:check</code> fails on drift.</span><span class="zh"><code>refs:generate</code> 解析 Solidity 源 → <strong>30</strong> 个可调用项 · <strong>12</strong> 个 ERC-3643 对齐事件 · <strong>5</strong> 个类型化错误 · <strong>33</strong> 项 Foundry 测试含跨语言 golden 向量。<code>refs:check</code> 漂移即失败。</span></p>
       </div>
       <div class="card">
         <h3><span class="en">Security gate</span><span class="zh">上传前安全门</span></h3>
@@ -484,12 +543,17 @@ evidence   offchain → state         smoke      freeze triple gate       recove
       <div class="item">
         <div class="t">Rounds 1–6 · <span class="en">foundation</span><span class="zh">基础</span></div>
         <h4><span class="en">Contract · deploy · smoke · spawn · eval · inspector</span><span class="zh">合约 · 部署 · smoke · spawn · eval · inspector</span></h4>
-        <p><span class="en">ERC-3643-style <code>CompliantRWAToken</code> · MPF @ Atlantic · 24 Foundry tests · Skill Inspector 10/100 LOW · private <code>skills/MPF-asset/</code>.</span><span class="zh">ERC-3643 风格 <code>CompliantRWAToken</code> · MPF @ Atlantic · 24 项 Foundry 测试 · Skill Inspector 10/100 LOW · 私有 <code>skills/MPF-asset/</code>。</span></p>
+        <p><span class="en">ERC-3643-style <code>CompliantRWAToken</code> · MPF @ Atlantic · 36 Foundry tests · Skill Inspector 10/100 LOW · private <code>skills/MPF-asset/</code>.</span><span class="zh">ERC-3643 风格 <code>CompliantRWAToken</code> · MPF @ Atlantic · 36 项 Foundry 测试 · Skill Inspector 10/100 LOW · 私有 <code>skills/MPF-asset/</code>。</span></p>
       </div>
       <div class="item">
         <div class="t">Round 7 · <span class="en">diligence expansion</span><span class="zh">尽调扩展</span></div>
-        <h4><span class="en">4 playbooks · OFAC sync · Mock oracle · spawn v5 · 52/52 eval</span><span class="zh">4 份 playbook · OFAC 同步 · Mock 预言机 · spawn v5 · 52/52 eval</span></h4>
+        <h4><span class="en">4 playbooks · OFAC sync · Mock oracle · spawn v5 · 62/62 eval</span><span class="zh">4 份 playbook · OFAC 同步 · Mock 预言机 · spawn v5 · 62/62 eval</span></h4>
         <p><span class="en"><code>onchain-diligence</code> · <code>offchain-diligence</code> · <code>sanctions-screening</code> · <code>compliance-knowledge</code> · <a class="ref" href="docs/diligence/INTEGRATION.md">INTEGRATION.md</a> · 93-address OFAC snapshot · <a class="ref" href="deployments/mock_ofac_atlantic.json">MockOFACRegistry</a> @ <a class="ref" href="https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400" target="_blank">0x4FD3…F400</a>.</span><span class="zh"><code>onchain-diligence</code> · <code>offchain-diligence</code> · <code>sanctions-screening</code> · <code>compliance-knowledge</code> · <a class="ref" href="docs/diligence/INTEGRATION.md">INTEGRATION.md</a> · 93 地址 OFAC 快照 · <a class="ref" href="deployments/mock_ofac_atlantic.json">MockOFACRegistry</a> @ <a class="ref" href="https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400" target="_blank">0x4FD3…F400</a>。</span></p>
+      </div>
+      <div class="item">
+        <div class="t">Round 8 · <span class="en">paper-driven</span><span class="zh">论文驱动</span></div>
+        <h4><span class="en">#19/#20 · attestation registries · PAPER_ALIGNMENT.md</span><span class="zh">#19/#20 · 存证 registry · PAPER_ALIGNMENT.md</span></h4>
+        <p><span class="en"><code>DiligenceAttestationRegistry</code> + <code>AssetTokenizationRegistry</code> · <code>onchain-attestation.md</code> · <a class="ref" href="docs/PAPER_ALIGNMENT.md">paper mapping</a> · 36 Foundry tests.</span><span class="zh"><code>DiligenceAttestationRegistry</code> + <code>AssetTokenizationRegistry</code> · <code>onchain-attestation.md</code> · <a class="ref" href="docs/PAPER_ALIGNMENT.md">论文对照</a> · 36 项 Foundry 测试。</span></p>
       </div>
       <div class="item">
         <div class="t"><span class="en">Shipped</span><span class="zh">已发布</span></div>
@@ -553,8 +617,8 @@ evidence   offchain → state         smoke      freeze triple gate       recove
       <text x="550" y="276" text-anchor="middle" font-size="11.5" fill="#b7c2bb">any fail → revert</text>
     </svg>
     <p class="lead" style="font-size:0.9rem;margin-top:0.9rem;">
-      <span class="en"><strong>mint</strong> enforces identity + compliance caps; <strong>forcedTransfer</strong> is a regulatory path (verified recipient only). Backed by 24 Foundry tests and a <a class="ref" href="docs/SECURITY.md">SECURITY.md</a> audit trail.</span>
-      <span class="zh"><strong>mint</strong> 强制身份 + 合规上限；<strong>forcedTransfer</strong> 为监管路径（仅需收款方已验证）。背后是 24 项 Foundry 测试 + <a class="ref" href="docs/SECURITY.md">SECURITY.md</a> 审计记录。</span>
+      <span class="en"><strong>mint</strong> enforces identity + compliance caps; <strong>forcedTransfer</strong> is a regulatory path (verified recipient only). Backed by 36 Foundry tests and a <a class="ref" href="docs/SECURITY.md">SECURITY.md</a> audit trail.</span>
+      <span class="zh"><strong>mint</strong> 强制身份 + 合规上限；<strong>forcedTransfer</strong> 为监管路径（仅需收款方已验证）。背后是 36 项 Foundry 测试 + <a class="ref" href="docs/SECURITY.md">SECURITY.md</a> 审计记录。</span>
     </p>
 
     <h3><span class="en">Pre-issuance diligence gate (Phase A)</span><span class="zh">发行前尽调闸门（Phase A）</span></h3>
@@ -621,7 +685,7 @@ evidence   offchain → state         smoke      freeze triple gate       recove
         <g font-family="SF Mono, JetBrains Mono, monospace">
           <rect x="24" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#2dd4bf" stroke-opacity="0.5"/>
           <text x="83" y="94" text-anchor="middle" fill="#6ee7d8" font-size="10">① TDD</text>
-          <text x="83" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">24 tests · fuzz</text>
+          <text x="83" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">36 tests · fuzz</text>
           <rect x="158" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#2dd4bf" stroke-opacity="0.5"/>
           <text x="217" y="94" text-anchor="middle" fill="#6ee7d8" font-size="10">② Security</text>
           <text x="217" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">SECURITY.md</text>
@@ -665,7 +729,7 @@ evidence   offchain → state         smoke      freeze triple gate       recove
         <g font-family="PingFang SC, SF Pro Text, sans-serif">
           <rect x="24" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#2dd4bf" stroke-opacity="0.5"/>
           <text x="83" y="94" text-anchor="middle" fill="#6ee7d8" font-size="10">① TDD 测试</text>
-          <text x="83" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">24 项 · fuzz</text>
+          <text x="83" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">36 项 · fuzz</text>
           <rect x="158" y="72" width="118" height="56" rx="8" fill="#131a16" stroke="#2dd4bf" stroke-opacity="0.5"/>
           <text x="217" y="94" text-anchor="middle" fill="#6ee7d8" font-size="10">② 安全审计</text>
           <text x="217" y="112" text-anchor="middle" fill="#b7c2bb" font-size="9.5">SECURITY.md</text>
@@ -759,12 +823,12 @@ evidence   offchain → state         smoke      freeze triple gate       recove
       </div>
       <div class="card">
         <h3><span class="en">Local (2 minutes)</span><span class="zh">本地（2 分钟）</span></h3>
-        <p class="mono" style="font-size:0.78rem;line-height:1.55;color:var(--text-2);">git clone hatchfi-pharos-skill<br/>npm run build && npm run test<br/>npm run eval:skill<br/># → 24 passed · 52/52 eval</p>
+        <p class="mono" style="font-size:0.78rem;line-height:1.55;color:var(--text-2);">git clone hatchfi-pharos-skill<br/>npm run build && npm run test<br/>npm run eval:skill<br/># → 24 passed · 62/62 eval</p>
       </div>
     </div>
     <div class="highlight" style="margin-top:1rem;">
       <p><span class="en"><strong>Submission scope:</strong> ERC-3643-style RWA on Atlantic Testnet (three-stage diligence gate) · agent Skill extending the Pharos Skill Engine · 10 playbooks · spawn → refine → version pipeline · auto-generated contract surface · 52-check eval harness · Skill Inspector gate · Foundry tests · Mock OFAC oracle · security review documented · data sovereignty with opt-in sharing.</span></p>
-      <p><span class="zh"><strong>提交范围：</strong>Atlantic 测试网上 ERC-3643 风格 RWA（三阶段尽调闸门）· 扩展 Pharos Skill Engine 的 agent Skill · 10 份 playbook · spawn → refine → version 流水线 · 自动生成合约能力面 · 52 项 eval · Skill Inspector 门 · Foundry 测试 · Mock OFAC 预言机 · 安全审查已文档化 · 数据主权 + opt-in 分享。</span></p>
+      <p><span class="zh"><strong>提交范围：</strong>Atlantic 测试网上 ERC-3643 风格 RWA（三阶段尽调闸门）· 扩展 Pharos Skill Engine 的 agent Skill · 10 份 playbook · spawn → refine → version 流水线 · 自动生成合约能力面 · 62 项 eval · Skill Inspector 门 · Foundry 测试 · Mock OFAC 预言机 · 安全审查已文档化 · 数据主权 + opt-in 分享。</span></p>
     </div>
   </section>
 
@@ -838,13 +902,20 @@ npm run refine:asset                   <span class="gd"># refine PREFERENCES.md 
         sections.forEach(function (s) { observer.observe(s.el); });
       }
 
+      function scrollToSection(target) {
+        var navEl = document.getElementById('sticky-nav');
+        var navH = navEl ? navEl.offsetHeight : 52;
+        var y = target.getBoundingClientRect().top + window.scrollY - navH - 16;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      }
+
       links.forEach(function (a) {
         a.addEventListener('click', function (e) {
           var id = a.getAttribute('data-section');
           var target = document.getElementById(id);
           if (target) {
             e.preventDefault();
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            scrollToSection(target);
             setActive(id);
             history.replaceState(null, '', '#' + id);
           }
@@ -860,7 +931,9 @@ npm run refine:asset                   <span class="gd"># refine PREFERENCES.md 
       var backTop = document.getElementById('back-top');
       if (backTop) {
         backTop.addEventListener('click', function () {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          var topEl = document.getElementById('top');
+          var targetY = topEl ? Math.max(0, topEl.offsetTop - 16) : 0;
+          window.scrollTo({ top: targetY, behavior: 'auto' });
           history.replaceState(null, '', '#top');
         });
       }
