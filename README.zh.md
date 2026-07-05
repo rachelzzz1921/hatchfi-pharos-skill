@@ -76,9 +76,21 @@ npm install
 npm run gate:test
 npm run gate:cli
 npm run judge:package
-npm run judge:readiness:strict
-npm run web:dev
+npm run judge:readiness:strict   # 链上信任模型严格检查 — 6/6（hardened 部署已上线）
+npm run web:dev                  # 三步引导式 demo（场景 → 巨型 RED/YELLOW/GREEN 判定 → MCP playground）
 ```
+
+### 评审标准 → 命令 → 证据
+
+| 评审标准 | 运行 | 你会看到的证据 |
+|---|---|---|
+| **契合 Pharos 愿景** — RWA · 协议级合规 · agentic | 读 [`SKILL.md`](./SKILL.md) 流水线 | 三段尽调→发行→繁殖；ERC-3643 两道检查；MPF 已上线 Atlantic |
+| **技术完整度** | `npm run build && npm run test` | 36 项 Foundry 测试（角色分离 · 两阶段恢复 · attestation 门禁 mint · 按比例派息） |
+| **分钟级可验证、无需钱包** | `npm run judge:package` | `gate:test` PASS · 叙事式 RED→GREEN · `TOOLS 8` · readiness |
+| **组合性 / agent 集成** | `npm run mcp:probe` | 8 个 MCP 工具（5 闸门 + 3 链上只读）+ LangChain/Vercel 适配器 |
+| **安全姿态** | `npm run inspect:skill` | 0 critical / 0 high — skill 发布前自扫 |
+| **链上证明** | [PharosScan](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3) · `rwa_token_metadata` | 已部署 hardened `CompliantRWAToken` + attestation registry 已接线 + Mock OFAC 预言机 |
+| **确定性 / 可审计** | `npm run eval:skill` · `npm run evidence:hash` | 64/64 evals；evidence hash 在 Python **与** Solidity 中可复算（[协议文档](./docs/diligence-attestation-protocol.md)） |
 
 ---
 
