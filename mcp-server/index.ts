@@ -9,11 +9,12 @@ import {
   toMcpTools,
   callMcpTool,
 } from "../lib/hatchfi-gate/src";
+import { onChainTools, isOnChainTool, callOnChainTool } from "./onchain-tools";
 
 const registry = new InMemoryAttestationRegistry();
 const gate = new DiligenceGate(registry);
 const skills = createDiligenceSkills(gate);
-const tools = toMcpTools(skills);
+const tools = [...toMcpTools(skills), ...onChainTools];
 
 const server = new Server(
   { name: "hatchfi-diligence-gate", version: "1.0.0" },
@@ -46,7 +47,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const name = request.params.name;
   const args = request.params.arguments ?? {};
   try {
-    const result = await callMcpTool(skills, name, args);
+    const result = isOnChainTool(name)
+      ? await callOnChainTool(name, args as Record<string, unknown>)
+      : await callMcpTool(skills, name, args);
     return json(result);
   } catch (error) {
     return err(error instanceof Error ? error.message : String(error));

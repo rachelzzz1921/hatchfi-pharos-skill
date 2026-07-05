@@ -16,9 +16,9 @@
 
 | Intent | Command | Evidence you'll see |
 |---|---|---|
-| ✅ One-shot judge check | `npm run judge:package` | `gate:test` PASS · narrated RED→GREEN CLI · `TOOLS 5` · readiness summary |
+| ✅ One-shot judge check | `npm run judge:package` | `gate:test` PASS · narrated RED→GREEN CLI · `TOOLS 8` · readiness summary |
 | 🚦 Diligence gate blocks a sanctioned issuer, then admits a clean one | `npm run gate:cli` | OFAC hit → **RED, mint denied** → attest → **GREEN, mint allowed** → flip flag → denied again |
-| 🔌 Gate exposed as agent tools (MCP) | `npm run mcp:probe` | `TOOLS 5`, `MINT allowed=true attested=true` |
+| 🔌 Gate + live on-chain reads as agent tools (MCP) | `npm run mcp:probe` | `TOOLS 8` (5 gate + 3 read-only on-chain), `MINT allowed=true attested=true`, live token metadata |
 | 🧪 Compliance contract suite | `npm run build && npm run test` | 36 Foundry tests pass (identity · two checks · freeze · two-phase recovery · dividends) |
 | 📊 Behavioral evals (deterministic, no LLM) | `npm run eval:skill` | `62/62` |
 | 🔒 Security self-scan before publish | `npm run inspect:skill` | 0 critical / 0 high |
@@ -51,6 +51,13 @@ HatchFi now exposes a reusable deterministic gate module under `lib/hatchfi-gate
 - `diligence_rate`
 - `diligence_gate_mint`
 - `diligence_get_attestation`
+- `diligence_attest`
+
+The MCP server also ships **read-only on-chain tools** (no key / no funds — `cast call` equivalents over the live deployed token):
+
+- `rwa_token_metadata` — name / symbol / totalSupply / holderCount / caps
+- `rwa_is_verified` — is an address a KYC-registered holder?
+- `rwa_can_transfer` — ERC-3643 transfer-compliance pre-check (allowed + reason)
 
 Validation commands:
 

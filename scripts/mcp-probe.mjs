@@ -5,7 +5,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 const client = new Client({ name: "debug-client", version: "1.0.0" }, { capabilities: {} });
 const transport = new StdioClientTransport({
   command: "npx",
-  args: ["tsx", "mcp-server/index.ts", "--run-id", process.env.DEBUG_RUN_ID || "probe-run"],
+  args: ["tsx", "mcp-server/index.ts"],
   cwd: process.cwd(),
   env: process.env,
 });
@@ -68,11 +68,17 @@ const att = await client.callTool({
   name: "diligence_get_attestation",
   arguments: { evidenceHash: "0xprobe-hash" },
 });
+// Read-only on-chain tool — best-effort (may return an error object on RPC rate limit).
+const onchain = await client.callTool({
+  name: "rwa_token_metadata",
+  arguments: {},
+});
 
 console.log("TOOLS", tools.tools.length);
 console.log("SCREEN", JSON.stringify(screen));
 console.log("ATTEST", JSON.stringify(attested));
 console.log("MINT", JSON.stringify(mint));
 console.log("ATT", JSON.stringify(att));
+console.log("ONCHAIN", JSON.stringify(onchain));
 
 await client.close();
