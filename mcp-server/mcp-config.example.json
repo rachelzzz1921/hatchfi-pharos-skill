@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "hatchfi-diligence-gate": {
+      "command": "npx",
+      "args": ["tsx", "mcp-server/index.ts"],
+      "cwd": "ABSOLUTE_PATH_TO/pharos-rwa-skill"
+    }
+  }
+}
