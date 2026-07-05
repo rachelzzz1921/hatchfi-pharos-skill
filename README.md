@@ -78,8 +78,20 @@ npm run gate:test            # deterministic gate unit checks
 npm run gate:cli             # narrated RED->GREEN->attest->gate flow
 npm run judge:package        # gate:test + gate:cli + mcp:probe + judge:readiness
 npm run judge:readiness:strict # strict mode (requires hardened deployment in deployments/pharos.json)
-npm run web:dev              # visible interactive demo (address -> flags -> rating -> gate mint)
+npm run web:dev              # guided 3-step demo (scenario -> giant RED/YELLOW/GREEN verdict -> MCP playground)
 ```
+
+### Judging criteria → command → evidence
+
+| Criterion | Run this | Evidence you'll see |
+|---|---|---|
+| **Pharos vision fit** — RWA · protocol-native compliance · agentic | read [`SKILL.md`](./SKILL.md) pipeline | 3-stage diligence → issuance → spawn; ERC-3643 two checks; MPF live on Atlantic |
+| **Technical completeness** | `npm run build && npm run test` | 36 Foundry tests (roles · two-phase recovery · attestation-gated mint · pro-rata dividends) |
+| **Verifiable in minutes, no wallet** | `npm run judge:package` | `gate:test` PASS · narrated RED→GREEN · `TOOLS 8` · readiness |
+| **Composability / agent integration** | `npm run mcp:probe` | 8 MCP tools (5 gate + 3 live on-chain reads) + LangChain/Vercel adapters |
+| **Security posture** | `npm run inspect:skill` | 0 critical / 0 high — the Skill scans itself before publish |
+| **On-chain proof** | [PharosScan](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) · `rwa_token_metadata` | deployed `CompliantRWAToken` + Mock OFAC oracle |
+| **Determinism / auditability** | `npm run eval:skill` · `npm run evidence:hash` | 62/62 evals; evidence hash reproducible in Python **and** Solidity ([protocol](./docs/diligence-attestation-protocol.md)) |
 
 ---
 
