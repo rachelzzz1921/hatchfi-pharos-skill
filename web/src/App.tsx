@@ -5,23 +5,15 @@ import {
   InMemoryAttestationRegistry,
   createDiligenceSkills,
   callMcpTool,
+  evaluateDiligence,
 } from "../../lib/hatchfi-gate/src";
+import type { DiligenceFlags } from "../../lib/hatchfi-gate/src";
 
 const registry = new InMemoryAttestationRegistry();
 const gate = new DiligenceGate(registry);
 const skills = createDiligenceSkills(gate);
 
-type Flags = {
-  sanctionsHit: boolean;
-  duplicateTokenization: boolean;
-  liquidityExitMissing: boolean;
-  rightsUnclear: boolean;
-  docsIncomplete: boolean;
-  kycExpiredOrMissing: boolean;
-  onchainAnomaly: boolean;
-};
-
-const defaultFlags: Flags = {
+const ALL_FALSE: DiligenceFlags = {
   sanctionsHit: false,
   duplicateTokenization: false,
   liquidityExitMissing: false,
@@ -31,75 +23,150 @@ const defaultFlags: Flags = {
   onchainAnomaly: false,
 };
 
+type Scenario = {
+  id: string;
+  label: string;
+  blurb: string;
+  expected: "GREEN" | "YELLOW" | "RED";
+  subject: string;
+  evidenceHash: string;
+  assetFingerprint: string;
+  flags: DiligenceFlags;
+};
+
+const SCENARIOS: Scenario[] = [
+  {
+    id: "clean",
+    label: "Clean institutional issuer",
+    blurb: "Sanctions clear · KYC valid · rights + docs + exit path complete",
+    expected: "GREEN",
+    subject: "0xA54A3C2766a80d3AFe7C4Bf00D5bcfF9e1892bc4",
+    evidenceHash: "0xgreen-demo-hash",
+    assetFingerprint: "0xe8d343f2ca60abadc7ac491a9272fa3b4a19eadfe82629924c4d52794e4c65f3",
+    flags: { ...ALL_FALSE },
+  },
+  {
+    id: "ofac",
+    label: "OFAC-sanctioned counterparty",
+    blurb: "Sanctions screen hits the Mock OFAC oracle — a hard red line",
+    expected: "RED",
+    subject: "0x7F367cC41522cE07553e823bf3be79A889DEbe1B",
+    evidenceHash: "0xred-ofac-hash",
+    assetFingerprint: "0x11c1a0d5e0f4b2a7c3d9e8f6a1b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e4",
+    flags: { ...ALL_FALSE, sanctionsHit: true },
+  },
+  {
+    id: "kyc",
+    label: "Issuer with expired KYC",
+    blurb: "Off-chain KYC has lapsed — cannot admit until refreshed",
+    expected: "RED",
+    subject: "0x2E1b342132f2C619F1A2E4d7f0B8bE0aA8F4C5D6",
+    evidenceHash: "0xred-kyc-hash",
+    assetFingerprint: "0x22d2b1e6f1a5c3b8d4eaf907b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f5",
+    flags: { ...ALL_FALSE, kycExpiredOrMissing: true },
+  },
+  {
+    id: "liquidity",
+    label: "Thin liquidity / no exit path",
+    blurb: "No documented redemption route — admit with caution (YELLOW)",
+    expected: "YELLOW",
+    subject: "0x3F2c453243a3D72aA2B3F5e8f1C9cF1bB9a5D6E7",
+    evidenceHash: "0xyellow-liq-hash",
+    assetFingerprint: "0x33e3c2f7a2b6d4c9e5fbfa18c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f506",
+    flags: { ...ALL_FALSE, liquidityExitMissing: true },
+  },
+];
+
+const FLAG_LABELS: Record<keyof DiligenceFlags, string> = {
+  sanctionsHit: "Sanctions hit",
+  duplicateTokenization: "Duplicate tokenization",
+  kycExpiredOrMissing: "KYC expired / missing",
+  liquidityExitMissing: "Liquidity exit missing",
+  rightsUnclear: "Rights unclear",
+  docsIncomplete: "Documents incomplete",
+  onchainAnomaly: "On-chain anomaly",
+};
+
+const RATING_COPY: Record<string, { verb: string; note: string }> = {
+  GREEN: { verb: "ADMITTED", note: "All checks pass — issuance is allowed to proceed." },
+  YELLOW: { verb: "ADMITTED · REVIEW", note: "Soft flags raised — allowed, but flagged for human review." },
+  RED: { verb: "BLOCKED", note: "A hard red line tripped — the gate refuses issuance." },
+};
+
+const TOOL_NAMES = [
+  "diligence_screen",
+  "diligence_rate",
+  "diligence_attest",
+  "diligence_gate_mint",
+  "diligence_get_attestation",
+];
+
 export default function App() {
-  const [subject, setSubject] = useState("0xA54A3C2766a80d3AFe7C4Bf00D5bcfF9e1892bc4");
-  const [assetFingerprint, setAssetFingerprint] = useState("0xe8d343f2ca60abadc7ac491a9272fa3b4a19eadfe82629924c4d52794e4c65f3");
-  const [evidenceHash, setEvidenceHash] = useState("0xgreen-demo-hash");
-  const [flags, setFlags] = useState<Flags>(defaultFlags);
-  const [screenOutput, setScreenOutput] = useState<string>("");
+  const [scenarioId, setScenarioId] = useState<string>("clean");
+  const [flags, setFlags] = useState<DiligenceFlags>({ ...ALL_FALSE });
+  const [subject, setSubject] = useState(SCENARIOS[0].subject);
+  const [evidenceHash, setEvidenceHash] = useState(SCENARIOS[0].evidenceHash);
+  const [assetFingerprint, setAssetFingerprint] = useState(SCENARIOS[0].assetFingerprint);
   const [mintOutput, setMintOutput] = useState<string>("");
-  const [mcpOutput, setMcpOutput] = useState<string>("");
+  const [mintAllowed, setMintAllowed] = useState<boolean | null>(null);
   const [toolName, setToolName] = useState("diligence_screen");
-  const [activeTab, setActiveTab] = useState<"demo" | "docs">("demo");
+  const [mcpOutput, setMcpOutput] = useState<string>("");
+
+  const decision = useMemo(() => evaluateDiligence(flags), [flags]);
 
   const input = useMemo(
-    () => ({
-      subject,
-      assetFingerprint,
-      evidenceHash,
-      flags,
-    }),
+    () => ({ subject, assetFingerprint, evidenceHash, flags }),
     [subject, assetFingerprint, evidenceHash, flags]
   );
 
-  async function runScreen() {
-    try {
-      const result = await gate.screen(input);
-      setScreenOutput(JSON.stringify(result, null, 2));
-    } catch (error) {
-      setScreenOutput(String(error));
-    }
+  const mcpRequest = useMemo(() => {
+    const args =
+      toolName === "diligence_get_attestation"
+        ? { evidenceHash }
+        : toolName === "diligence_gate_mint"
+        ? { to: subject, amount: "1000000000000000000", evidenceHash, flags }
+        : input;
+    return { tool: toolName, arguments: args };
+  }, [toolName, input, subject, evidenceHash, flags]);
+
+  function selectScenario(s: Scenario) {
+    setScenarioId(s.id);
+    setFlags({ ...s.flags });
+    setSubject(s.subject);
+    setEvidenceHash(s.evidenceHash);
+    setAssetFingerprint(s.assetFingerprint);
+    setMintOutput("");
+    setMintAllowed(null);
+    setMcpOutput("");
   }
 
-  async function attestCurrent() {
-    try {
-      const result = await gate.attest(input);
-      setScreenOutput(JSON.stringify({ attested: result }, null, 2));
-    } catch (error) {
-      setScreenOutput(String(error));
-    }
+  function toggleFlag(key: keyof DiligenceFlags) {
+    setScenarioId("custom");
+    setFlags((prev) => ({ ...prev, [key]: !prev[key] }));
+    setMintOutput("");
+    setMintAllowed(null);
   }
 
-  async function runGateMint() {
+  async function runAttestAndMint() {
     try {
-      const attestationBefore = await gate.getAttestation(evidenceHash);
+      await gate.attest(input);
       const result = await gate.gateMint({
         to: subject,
         amount: "1000000000000000000",
         evidenceHash,
         flags,
       });
+      setMintAllowed(result.allowed);
       setMintOutput(JSON.stringify(result, null, 2));
     } catch (error) {
+      setMintAllowed(false);
       setMintOutput(String(error));
     }
   }
 
-  function toggleFlag(key: keyof Flags) {
-    setFlags((prev) => ({ ...prev, [key]: !prev[key] }));
-  }
-
   async function runTool() {
     try {
-      const args =
-        toolName === "diligence_get_attestation"
-          ? { evidenceHash }
-          : toolName === "diligence_attest"
-          ? input
-          : toolName === "diligence_gate_mint"
-          ? { to: subject, amount: "1000000000000000000", evidenceHash, flags }
-          : input;
-      const result = await callMcpTool(skills, toolName, args);
+      const result = await callMcpTool(skills, toolName, mcpRequest.arguments);
       setMcpOutput(JSON.stringify(result, null, 2));
     } catch (error) {
       setMcpOutput(String(error));
@@ -110,90 +177,114 @@ export default function App() {
     <main className="layout">
       <header className="header">
         <h1>HatchFi Diligence Gate</h1>
-        <p>Deterministic RED/YELLOW/GREEN gate + MCP-ready tools.</p>
-        <div className="tabs">
-          <button onClick={() => setActiveTab("demo")} className={activeTab === "demo" ? "active" : ""}>
-            Demo
-          </button>
-          <button onClick={() => setActiveTab("docs")} className={activeTab === "docs" ? "active" : ""}>
-            Docs
-          </button>
-        </div>
+        <p>
+          A deterministic RED / YELLOW / GREEN admission gate for compliant RWA issuance — the same
+          pure-function engine that ships as CLI, MCP tools, and an on-chain attestation.
+        </p>
       </header>
 
-      {activeTab === "docs" ? (
-        <section className="card">
-          <h2>Judge Quick Test</h2>
-          <ol>
-            <li>Set sanctions hit to true and click <code>Run Diligence</code> → must return <strong>RED</strong>.</li>
-            <li>Turn all flags off and click <code>Run Diligence</code> → must return <strong>GREEN</strong>.</li>
-            <li>Click <code>Attest Current</code>, then <code>Gate Mint</code> → <code>allowed: true</code>.</li>
-            <li>Try MCP tool runner on the right with all four tools.</li>
-          </ol>
-          <pre>{`npm run gate:demo
-npm run gate:test
-npm run judge:readiness`}</pre>
-        </section>
-      ) : (
-        <section className="grid">
-          <div className="card">
-            <h2>Inputs</h2>
-            <label>
-              Subject
-              <input value={subject} onChange={(e) => setSubject(e.target.value)} />
-            </label>
-            <label>
-              Asset Fingerprint
-              <input value={assetFingerprint} onChange={(e) => setAssetFingerprint(e.target.value)} />
-            </label>
-            <label>
-              Evidence Hash
-              <input value={evidenceHash} onChange={(e) => setEvidenceHash(e.target.value)} />
-            </label>
+      {/* STEP 1 */}
+      <section className="step">
+        <div className="step-head">
+          <span className="step-num">1</span>
+          <h2>Pick a scenario</h2>
+        </div>
+        <div className="scenarios">
+          {SCENARIOS.map((s) => (
+            <button
+              key={s.id}
+              className={`scenario ${scenarioId === s.id ? "active" : ""} r-${s.expected}`}
+              onClick={() => selectScenario(s)}
+            >
+              <span className={`pill r-${s.expected}`}>{s.expected}</span>
+              <strong>{s.label}</strong>
+              <span className="blurb">{s.blurb}</span>
+            </button>
+          ))}
+        </div>
+        <details className="advanced">
+          <summary>Advanced — toggle individual diligence flags</summary>
+          <div className="flags">
+            {(Object.keys(FLAG_LABELS) as (keyof DiligenceFlags)[]).map((k) => (
+              <button key={k} className={flags[k] ? "on" : ""} onClick={() => toggleFlag(k)}>
+                {FLAG_LABELS[k]}: {flags[k] ? "true" : "false"}
+              </button>
+            ))}
+          </div>
+        </details>
+      </section>
 
-            <div className="flags">
-              {Object.keys(flags).map((k) => (
-                <button
-                  key={k}
-                  className={flags[k as keyof Flags] ? "on" : ""}
-                  onClick={() => toggleFlag(k as keyof Flags)}
-                >
-                  {k}: {flags[k as keyof Flags] ? "true" : "false"}
-                </button>
+      {/* STEP 2 */}
+      <section className="step">
+        <div className="step-head">
+          <span className="step-num">2</span>
+          <h2>Read the verdict</h2>
+        </div>
+        <div className={`verdict r-${decision.rating}`}>
+          <div className="verdict-main">
+            <span className="rating">{decision.rating}</span>
+            <span className="verb">{RATING_COPY[decision.rating].verb}</span>
+          </div>
+          <p className="verdict-note">{RATING_COPY[decision.rating].note}</p>
+        </div>
+        <ul className="checks">
+          {decision.checks.map((c) => (
+            <li key={c.key} className={c.passed ? "pass" : "fail"}>
+              <span className="mark">{c.passed ? "✓" : "✗"}</span>
+              <span className="ckey">{c.key}</span>
+              <span className="creason">{c.reason}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mint-row">
+          <button onClick={runAttestAndMint}>Attest evidence → run mint gate</button>
+          {mintAllowed !== null && (
+            <span className={`mint-badge ${mintAllowed ? "ok" : "no"}`}>
+              mint {mintAllowed ? "ALLOWED" : "DENIED"}
+            </span>
+          )}
+        </div>
+        {mintOutput && <pre className="io">{mintOutput}</pre>}
+      </section>
+
+      {/* STEP 3 */}
+      <section className="step">
+        <div className="step-head">
+          <span className="step-num">3</span>
+          <h2>Same gate, as MCP tools</h2>
+        </div>
+        <p className="muted">
+          Every surface calls the identical engine. Pick a tool to see the exact request an agent
+          would send and the response it gets back.
+        </p>
+        <div className="mcp">
+          <div className="mcp-controls">
+            <select value={toolName} onChange={(e) => setToolName(e.target.value)}>
+              {TOOL_NAMES.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
               ))}
+            </select>
+            <button onClick={runTool}>Run tool</button>
+          </div>
+          <div className="mcp-io">
+            <div>
+              <h3>Request</h3>
+              <pre className="io">{JSON.stringify(mcpRequest, null, 2)}</pre>
             </div>
-
-            <div className="actions">
-              <button onClick={runScreen}>Run Diligence</button>
-              <button onClick={attestCurrent}>Attest Current</button>
-              <button onClick={runGateMint}>Gate Mint</button>
+            <div>
+              <h3>Response</h3>
+              <pre className="io">{mcpOutput || "Run the tool to see the JSON response."}</pre>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="card">
-            <h2>Diligence Output</h2>
-            <pre>{screenOutput || "Run diligence to see result."}</pre>
-            <h2>Mint Gate Output</h2>
-            <pre>{mintOutput || "Run gate mint to see result."}</pre>
-          </div>
-
-          <div className="card">
-            <h2>MCP Tool Playground</h2>
-            <label>
-              Tool
-              <select value={toolName} onChange={(e) => setToolName(e.target.value)}>
-                <option value="diligence_screen">diligence_screen</option>
-                <option value="diligence_rate">diligence_rate</option>
-                <option value="diligence_attest">diligence_attest</option>
-                <option value="diligence_gate_mint">diligence_gate_mint</option>
-                <option value="diligence_get_attestation">diligence_get_attestation</option>
-              </select>
-            </label>
-            <button onClick={runTool}>Run Tool</button>
-            <pre>{mcpOutput || "Run selected tool to inspect JSON result."}</pre>
-          </div>
-        </section>
-      )}
+      <footer className="footer">
+        Verify locally — no wallet needed:{" "}
+        <code>npm run gate:cli</code> · <code>npm run mcp:probe</code> · <code>npm run gate:test</code>
+      </footer>
     </main>
   );
 }

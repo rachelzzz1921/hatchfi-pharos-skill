@@ -10,6 +10,22 @@
 
 ---
 
+## Capability Index — verify in 60 seconds (intent → command → evidence)
+
+> Judge quickstart. **No wallet or private key required** for any command below (Foundry is needed only for `build`/`test`). The full operational capability index (intent → capability → risk tier → reference) is further down.
+
+| Intent | Command | Evidence you'll see |
+|---|---|---|
+| ✅ One-shot judge check | `npm run judge:package` | `gate:test` PASS · narrated RED→GREEN CLI · `TOOLS 5` · readiness summary |
+| 🚦 Diligence gate blocks a sanctioned issuer, then admits a clean one | `npm run gate:cli` | OFAC hit → **RED, mint denied** → attest → **GREEN, mint allowed** → flip flag → denied again |
+| 🔌 Gate exposed as agent tools (MCP) | `npm run mcp:probe` | `TOOLS 5`, `MINT allowed=true attested=true` |
+| 🧪 Compliance contract suite | `npm run build && npm run test` | 36 Foundry tests pass (identity · two checks · freeze · two-phase recovery · dividends) |
+| 📊 Behavioral evals (deterministic, no LLM) | `npm run eval:skill` | `62/62` |
+| 🔒 Security self-scan before publish | `npm run inspect:skill` | 0 critical / 0 high |
+| 🌐 Live on Pharos Atlantic | [PharosScan](https://atlantic.pharosscan.xyz/address/0xfef7519bebda6c47af49583dbc9e60801f8aa3de) | deployed `CompliantRWAToken` + Mock OFAC oracle |
+
+---
+
 ## Prerequisites
 
 1. Foundry installed: `which cast && which forge`
