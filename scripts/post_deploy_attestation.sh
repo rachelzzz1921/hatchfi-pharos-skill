@@ -40,7 +40,7 @@ for tx, receipt in zip(run.get("transactions", []), run.get("receipts", [])):
 now = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 data = {
     "network": "pharos_atlantic",
-    "chainId": CHAIN_ID,
+    "chainId": 688689,
     "contracts": contracts,
     "deployer": "$DEPLOYER",
     "deployedAt": now,

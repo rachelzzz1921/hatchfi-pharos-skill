@@ -3,17 +3,17 @@
   "chainId": 688689,
   "contracts": {
     "DiligenceAttestationRegistry": {
-      "address": "",
+      "address": "0x0d21aED2e3d4c64B2e0Df556C7514b80CC4AB94F",
       "deployTx": "",
-      "explorer": ""
+      "explorer": "https://atlantic.pharosscan.xyz/address/0x0d21aED2e3d4c64B2e0Df556C7514b80CC4AB94F"
     },
     "AssetTokenizationRegistry": {
-      "address": "",
+      "address": "0x2Da088a783c0964821b4A3780aA18C69eDc3a333",
       "deployTx": "",
-      "explorer": ""
+      "explorer": "https://atlantic.pharosscan.xyz/address/0x2Da088a783c0964821b4A3780aA18C69eDc3a333"
     }
   },
-  "deployer": "",
-  "deployedAt": "",
-  "note": "Populate after forge script DeployAttestation.s.sol --broadcast on Atlantic testnet"
+  "deployer": "0xA54A3C2766a80d3AFe7C4Bf00D5bcfF9e1892bc4",
+  "deployedAt": "2026-07-06T01:30:00Z",
+  "note": "DiligenceAttestationRegistry + AssetTokenizationRegistry for onchain-attestation.md"
 }
