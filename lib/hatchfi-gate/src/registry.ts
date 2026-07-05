@@ -1,12 +1,6 @@
 import { createPublicClient, http } from "viem";
 import type { AttestationRecord, Rating } from "./types";
 
-function resolveDebugRunId(): string {
-  const globalRunId = (globalThis as { __DEBUG_RUN_ID__?: string }).__DEBUG_RUN_ID__;
-  const envRunId = typeof process !== "undefined" ? process.env?.DEBUG_RUN_ID : undefined;
-  return globalRunId || envRunId || "self-run-1";
-}
-
 export interface AttestationRegistry {
   getAttestation(evidenceHash: string): Promise<AttestationRecord | null>;
   listBySubject(subject: string): Promise<AttestationRecord[]>;
@@ -19,9 +13,6 @@ export class InMemoryAttestationRegistry implements AttestationRegistry {
 
   async getAttestation(evidenceHash: string): Promise<AttestationRecord | null> {
     const record = this.byHash.get(evidenceHash) ?? null;
-    // #region agent log
-    fetch('http://127.0.0.1:7779/ingest/38568ce7-58ee-4c7f-a00e-e2b0c820d2e6',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8bafd4'},body:JSON.stringify({sessionId:'8bafd4',runId:resolveDebugRunId(),hypothesisId:'H26',location:'lib/hatchfi-gate/src/registry.ts:getAttestation',message:'In-memory attestation read',data:{marker:'registry-instr-v2',evidenceHash,found:Boolean(record),cacheSize:this.byHash.size},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     return record;
   }
 
@@ -34,9 +25,6 @@ export class InMemoryAttestationRegistry implements AttestationRegistry {
     const key = record.subject.toLowerCase();
     const current = this.bySubject.get(key) ?? [];
     this.bySubject.set(key, [record, ...current]);
-    // #region agent log
-    fetch('http://127.0.0.1:7779/ingest/38568ce7-58ee-4c7f-a00e-e2b0c820d2e6',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8bafd4'},body:JSON.stringify({sessionId:'8bafd4',runId:resolveDebugRunId(),hypothesisId:'H27',location:'lib/hatchfi-gate/src/registry.ts:putAttestation',message:'In-memory attestation stored',data:{marker:'registry-instr-v2',evidenceHash:record.evidenceHash,subject:record.subject,cacheSize:this.byHash.size},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
   }
 }
 
