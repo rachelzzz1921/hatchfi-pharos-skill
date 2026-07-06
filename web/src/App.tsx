@@ -83,6 +83,17 @@ type LogEntry = {
   payload: string;
 };
 
+type Pref = { key: string; value: string; at: string; consented: boolean };
+
+// Seeded from skills/MPF-asset/PREFERENCES.md — the profile a real issuer had sedimented.
+const SEEDED_PREFS: Pref[] = [
+  { key: "pref_jurisdictions", value: "840, 826", at: "2026-06-17T12:00:00Z", consented: true },
+  { key: "pref_cadence", value: "quarterly", at: "2026-06-17T12:00:00Z", consented: true },
+  { key: "pref_autoReject", value: "RED", at: "2026-06-17T12:00:00Z", consented: true },
+];
+
+const PREF_KEYS = ["pref_jurisdictions", "pref_cadence", "pref_holderCap", "pref_autoReject"];
+
 const T: Record<Lang, Record<string, string>> = {
   en: {
     brand: "HatchFi",
@@ -124,6 +135,20 @@ const T: Record<Lang, Record<string, string>> = {
     response: "Response",
     runTool: "Run tool",
     runToolHint: "Run the tool to see the JSON response.",
+    pzStep: "Owner preferences · the skill sediments your rules",
+    pzHint:
+      "Private by default. Repeatedly confirmed preferences settle into the issuer's profile (with consent) and pre-fill the next issuance — the more you use it, the better it fits.",
+    pzProfile: "Sedimented profile",
+    pzHistory: "Refine history · audit trail",
+    pzDepositBtn: "Sediment rule",
+    pzConsent: "🔑 Record this in my private profile (local only, never shared)",
+    pzPrivate: "Private overlay — never copied when the skill is shared.",
+    pzPrefill: "Next issuance pre-fills from your profile:",
+    pzNeedConsent: "Tick consent to sediment — private by default.",
+    pref_jurisdictions: "Default jurisdictions (ISO 3166)",
+    pref_cadence: "Dividend cadence",
+    pref_holderCap: "Default holder cap",
+    pref_autoReject: "Auto-reject rating",
     footer: "Verify locally — no wallet needed:",
     reason_sanctions_ok: "No sanctions hit",
     reason_sanctions_no: "Sanctions hit detected",
@@ -202,6 +227,20 @@ const T: Record<Lang, Record<string, string>> = {
     response: "响应",
     runTool: "运行工具",
     runToolHint: "运行工具以查看 JSON 响应。",
+    pzStep: "业主偏好 · 技能沉淀你的规则",
+    pzHint:
+      "默认私有。反复确认的偏好经同意沉淀进发行方 profile，并在下次发行时预填——越用越贴合。",
+    pzProfile: "已沉淀 profile",
+    pzHistory: "Refine 审计历史",
+    pzDepositBtn: "沉淀规则",
+    pzConsent: "🔑 记入我的私有 profile（仅本地，绝不分享）",
+    pzPrivate: "私有覆盖层——分享技能时绝不复制。",
+    pzPrefill: "下次发行将从你的 profile 预填：",
+    pzNeedConsent: "勾选同意后方可沉淀——默认私有。",
+    pref_jurisdictions: "默认法域 (ISO 3166)",
+    pref_cadence: "派息频率",
+    pref_holderCap: "默认持有人上限",
+    pref_autoReject: "自动拒绝评级",
     footer: "本地验证——无需钱包：",
     reason_sanctions_ok: "无制裁命中",
     reason_sanctions_no: "检测到制裁命中",
@@ -273,7 +312,35 @@ export default function App() {
   const [toolName, setToolName] = useState("diligence_screen");
   const [mcpOutput, setMcpOutput] = useState<string>("");
 
+  // Personalization — preferences the issuer sediments over use (private, consented).
+  // Append-only log; the current profile is the last value per key. Seeded from
+  // skills/MPF-asset/PREFERENCES.md so the flywheel is visible, not just narrated.
+  const [prefLog, setPrefLog] = useState<Pref[]>(SEEDED_PREFS);
+  const [depKey, setDepKey] = useState<string>("pref_holderCap");
+  const [depVal, setDepVal] = useState<string>("100");
+  const [depConsent, setDepConsent] = useState(false);
+
   const t = T[lang];
+
+  const profile = useMemo(() => {
+    const m = new Map<string, Pref>();
+    for (const p of prefLog) m.set(p.key, p);
+    return [...m.values()];
+  }, [prefLog]);
+
+  function depositPreference() {
+    if (!depConsent || !depVal.trim()) return;
+    const at = new Date().toISOString().replace(/\.\d+Z$/, "Z");
+    const entry: Pref = { key: depKey, value: depVal.trim(), at, consented: true };
+    setPrefLog((prev) => [...prev, entry]);
+    setDepConsent(false);
+    pushLog({
+      tool: "personalization:deposit",
+      summary: `🔑 ${t[depKey]} = ${entry.value} · sedimented (consented, private)`,
+      tone: "info",
+      payload: JSON.stringify(entry, null, 2),
+    });
+  }
 
   const input = useMemo(
     () => ({ subject, assetFingerprint, evidenceHash, flags }),
@@ -578,6 +645,71 @@ export default function App() {
             </div>
           </div>
         </details>
+      </section>
+
+      {/* STEP 4 · personalization — the flywheel, made visible */}
+      <section className="step">
+        <div className="step-head">
+          <span className="step-num">4</span>
+          <h2>{t.pzStep}</h2>
+        </div>
+        <p className="muted">{t.pzHint}</p>
+
+        <div className="pz-grid">
+          <div className="pz-col">
+            <h3 className="io-label">{t.pzProfile}</h3>
+            <ul className="pz-profile">
+              {profile.map((p) => (
+                <li key={p.key}>
+                  <span className="pz-k">{t[p.key] ?? p.key}</span>
+                  <span className="pz-v">{p.value}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="pz-prefill">
+              {t.pzPrefill}{" "}
+              <strong>{profile.map((p) => `${t[p.key] ?? p.key}=${p.value}`).join(" · ")}</strong>
+            </p>
+            <p className="pz-private">{t.pzPrivate}</p>
+          </div>
+
+          <div className="pz-col">
+            <h3 className="io-label">{t.pzHistory}</h3>
+            <ul className="pz-history">
+              {[...prefLog].reverse().map((p, i) => (
+                <li key={i}>
+                  <span className="pz-at">{p.at.slice(0, 10)}</span>
+                  <span className="pz-k">{t[p.key] ?? p.key}</span>
+                  <span className="pz-v">= {p.value}</span>
+                  <span className="pz-consent">🔑 consented</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="pz-deposit">
+          <select value={depKey} onChange={(e) => setDepKey(e.target.value)}>
+            {PREF_KEYS.map((k) => (
+              <option key={k} value={k}>{t[k]}</option>
+            ))}
+          </select>
+          <input
+            className="pz-input"
+            value={depVal}
+            onChange={(e) => setDepVal(e.target.value)}
+            placeholder="value"
+            aria-label="preference value"
+          />
+          <label className="pz-consent-box">
+            <input type="checkbox" checked={depConsent} onChange={(e) => setDepConsent(e.target.checked)} />
+            {t.pzConsent}
+          </label>
+          <button className="primary" onClick={depositPreference} disabled={!depConsent || !depVal.trim()}>
+            {t.pzDepositBtn}
+          </button>
+          {!depConsent && <span className="pz-need">{t.pzNeedConsent}</span>}
+        </div>
       </section>
 
       <footer className="footer">

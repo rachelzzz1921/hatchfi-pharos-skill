@@ -121,6 +121,10 @@ async function main() {
   console.log(`  The asset spawns its own private operating Skill ${c.dim("(address baked in, playbooks scoped)")}`);
   console.log(c.dim("    → skills/MPF-asset/  ·  spawn → refine → version → rollback"));
   emit("D", "spawn:asset", "ok", "Private operating Skill hatched for the asset (skills/MPF-asset)");
+  await sleep(AUTO ? 300 : 600);
+  console.log(`  Sediment the issuer's rules into a ${c.gold("private profile")} ${c.dim("(jurisdictions · cadence · auto-reject RED — consented)")}`);
+  console.log(c.dim("    → next issuance pre-fills from the profile; sharing never copies it"));
+  emit("D", "personalization:refine", "ok", "Owner preferences sedimented into the private Skill (consent-gated, never shared)");
   await pause("Verify →");
 
   // ── Phase E · Verify ────────────────────────────────────────────────

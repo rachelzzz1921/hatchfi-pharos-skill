@@ -191,6 +191,25 @@ try {
     else fail("MCP", "e2e:mcp", `Tool ${tool} failed`, { tool, snippet: mcpText?.slice(0, 120) });
   }
 
+  // Step 4 · personalization — sediment a rule (consent-gated), profile + audit grow
+  const prefsBefore = await page.locator(".pz-profile li").count();
+  const histBefore = await page.locator(".pz-history li").count();
+  await page.locator(".pz-deposit select").selectOption("pref_holderCap");
+  await page.locator(".pz-input").fill("250");
+  // deposit stays disabled until consent is ticked
+  const depDisabledNoConsent = await page.locator(".pz-deposit button").isDisabled();
+  await page.locator(".pz-consent-box input").check();
+  await page.locator(".pz-deposit button").click();
+  await page.waitForTimeout(250);
+  const prefsAfter = await page.locator(".pz-profile li").count();
+  const histAfter = await page.locator(".pz-history li").count();
+  const auditHasDeposit = await page.evaluate(() => document.body.innerText.includes("personalization:deposit"));
+  if (depDisabledNoConsent && prefsAfter > prefsBefore && histAfter > histBefore && auditHasDeposit) {
+    pass("PERSONALIZATION", "e2e:personalization", "consent-gated deposit sediments a rule + logs it", { prefsBefore, prefsAfter });
+  } else {
+    fail("PERSONALIZATION", "e2e:personalization", "personalization deposit did not sediment", { depDisabledNoConsent, prefsBefore, prefsAfter, histBefore, histAfter, auditHasDeposit });
+  }
+
   // Overflow guards (the request-panel hash previously blew out the page)
   await noHorizontalOverflow("desktop");
   await page.setViewportSize({ width: 375, height: 812 });
