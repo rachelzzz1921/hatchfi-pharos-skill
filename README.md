@@ -18,7 +18,7 @@ Now includes a **reusable primitive**: `HatchFi Diligence Gate` (`lib/hatchfi-ga
 [![inspector](https://img.shields.io/badge/Skill_Inspector-0_critical%2F0_high-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
 
-**English**  ·  [中文](./README.zh.md)  ·  [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
+**English**  ·  [中文](./README.zh.md)  ·  [Pitch Deck](./docs/deck/index.html)  ·  [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
 
 Built for the [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide) · works on Pharos Atlantic Testnet
 

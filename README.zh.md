@@ -18,7 +18,7 @@
 [![inspector](https://img.shields.io/badge/Skill_Inspector-0_critical%2F0_high-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
 
-**[English](./README.md)**  ·  **中文**  ·  [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
+**[English](./README.md)  ·  [Pitch Deck 中文版](./docs/deck/index.zh.html)**  ·  **中文**  ·  [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
 
 基于 [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide) 构建 · 运行于 Pharos Atlantic 测试网
 
