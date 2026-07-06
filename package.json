@@ -20,6 +20,7 @@
     "spawn:rollback": "python3 scripts/spawn_skill_versions.py rollback",
     "refs:generate": "python3 scripts/generate_contract_refs.py",
     "denylist:generate": "python3 scripts/generate_denylist_module.py",
+    "sync:addresses": "python3 scripts/sync_addresses.py",
     "refs:check": "python3 scripts/generate_contract_refs.py --check-drift",
     "eval:skill": "python3 scripts/run_skill_eval.py",
     "eval:skill:json": "python3 scripts/run_skill_eval.py --format json",
