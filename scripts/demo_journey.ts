@@ -92,8 +92,9 @@ async function main() {
 
   // ── Phase B · Issuance ──────────────────────────────────────────────
   phaseHeader("B", "Compliant issuance");
-  if (BROADCAST && process.env.PRIVATE_KEY) {
+  if (BROADCAST) {
     console.log(c.gold("  Broadcasting real deploy to Pharos Atlantic…"));
+    // deploy_pharos.sh reads PRIVATE_KEY from the environment itself and fails if unset.
     const r = spawnSync("npm", ["run", "deploy:pharos"], { stdio: "inherit" });
     emit("B", "deploy:pharos", r.status === 0 ? "ok" : "fail", "CompliantRWAToken deployed to Atlantic");
   } else {

@@ -8,7 +8,7 @@
     "high": 0,
     "medium": 0,
     "low": 11,
-    "info": 210
+    "info": 214
   },
   "static_only": true,
   "findings": [
@@ -160,6 +160,16 @@
       "line": 30,
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "--broadcast --slow --legacy --with-gas-price 3000000000 --gas-limit 3500000",
+      "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
+    },
+    {
+      "severity": "info",
+      "category": "pharos-web3",
+      "rule": "declared_write_capability",
+      "path": "docs/VIDEO_STORYBOARD.md",
+      "line": 25,
+      "message": "On-chain write capability is present and declared in SKILL.md.",
+      "evidence": "`npm run demo:journey -- --auto` for a rehearsal/timing pass, or `-- --broadcast` (with a funded",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
     },
     {
@@ -527,7 +537,7 @@
       "category": "pharos-web3",
       "rule": "declared_write_capability",
       "path": "package.json",
-      "line": 32,
+      "line": 33,
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "\"deploy:attestation\": \"bash scripts/preflight.sh && forge script script/DeployAttestation.s.sol:DeployAttestation --rpc-url ${PHAROS_RPC_URL:-https://atlantic.dplabs-internal.com} --private-key $PRIVATE_KEY --broadcast -",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
@@ -1590,6 +1600,36 @@
       "line": 108,
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "\"unpause\": \"cast send <token> \\\"unpause()\\\" --rpc-url $RPC --private-key $PK\",",
+      "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
+    },
+    {
+      "severity": "info",
+      "category": "pharos-web3",
+      "rule": "declared_write_capability",
+      "path": "scripts/demo_journey.ts",
+      "line": 11,
+      "message": "On-chain write capability is present and declared in SKILL.md.",
+      "evidence": "*   npm run demo:journey -- --broadcast   # real Atlantic deploy in phase B (needs PRIVATE_KEY)",
+      "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
+    },
+    {
+      "severity": "info",
+      "category": "pharos-web3",
+      "rule": "declared_write_capability",
+      "path": "scripts/demo_journey.ts",
+      "line": 14,
+      "message": "On-chain write capability is present and declared in SKILL.md.",
+      "evidence": "* to a narrated dry-run; --broadcast runs the actual deploy scripts.",
+      "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
+    },
+    {
+      "severity": "info",
+      "category": "pharos-web3",
+      "rule": "declared_write_capability",
+      "path": "scripts/demo_journey.ts",
+      "line": 21,
+      "message": "On-chain write capability is present and declared in SKILL.md.",
+      "evidence": "const BROADCAST = process.argv.includes(\"--broadcast\");",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
     },
     {

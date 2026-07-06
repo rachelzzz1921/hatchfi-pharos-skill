@@ -2,7 +2,7 @@
 
 - **Target**: `.`
 - **Score**: **22/100 MEDIUM**
-- **Counts**: critical=0 · high=0 · medium=0 · low=11 · info=210
+- **Counts**: critical=0 · high=0 · medium=0 · low=11 · info=214
 - **Mode**: static-only; target code was not executed; secrets are redacted.
 
 ✅ No blocking findings. Review medium/low/info items before sharing.
@@ -26,6 +26,7 @@
 | **INFO** | `pharos-web3/declared_write_capability` | `SKILL.md:240` | `\| Balance / token query / send PHRS / generic verify \| cast balance / cast call / cast send / forge verify \| 🟢/🔴 \| pharos-base-ops \|` | Keep preflight, human-confirm, and receipt assertions mandatory. |
 | **INFO** | `pharos-web3/declared_write_capability` | `docs/COMPLETED_VALIDATION.md:104` | `npm run deploy:pharos   # preflight + forge script --broadcast` | Keep preflight, human-confirm, and receipt assertions mandatory. |
 | **INFO** | `pharos-web3/declared_write_capability` | `docs/QUICKSTART.md:30` | `--broadcast --slow --legacy --with-gas-price 3000000000 --gas-limit 3500000` | Keep preflight, human-confirm, and receipt assertions mandatory. |
+| **INFO** | `pharos-web3/declared_write_capability` | `docs/VIDEO_STORYBOARD.md:25` | ``npm run demo:journey -- --auto` for a rehearsal/timing pass, or `-- --broadcast` (with a funded` | Keep preflight, human-confirm, and receipt assertions mandatory. |
 | **INFO** | `pharos-web3/declared_write_capability` | `docs/WORKED_EXAMPLE.md:87` | `cast send $TOKEN "registerIdentity(address,uint16,bytes32)" $INV 840 $ID --rpc-url $RPC --private-key $PK` | Keep preflight, human-confirm, and receipt assertions mandatory. |
 | **INFO** | `pharos-web3/declared_write_capability` | `docs/WORKED_EXAMPLE.md:89` | `cast send $REGISTRY "attest(bytes32,address,uint8,bytes32)" $EVID $INV 2 $FP --rpc-url $RPC --private-key $PK` | Keep preflight, human-confirm, and receipt assertions mandatory. |
 | **INFO** | `pharos-web3/declared_write_capability` | `docs/WORKED_EXAMPLE.md:91` | `cast send $TOKEN "mint(address,uint256,bytes32)" $INV 1000000000000000000000 $EVID --rpc-url $RPC --private-key $PK` | Keep preflight, human-confirm, and receipt assertions mandatory. |
@@ -62,7 +63,7 @@
 | **INFO** | `pharos-web3/declared_write_capability` | `docs/locale/zh/references/rwa-issuance.md:217` | `cast send <token> "claimDividend()" --rpc-url $RPC --private-key $PK         # 持有人自领` | Keep preflight, human-confirm, and receipt assertions mandatory. |
 | **INFO** | `data-leakage/env_harvesting` | `mcp-server/onchain-tools.ts:8` | `const RPC = process.env.PHAROS_RPC_URL \|\| "https://atlantic.dplabs-internal.com";` | Read only the specific env vars needed; never enumerate or export all env. |
 | **INFO** | `data-leakage/env_harvesting` | `mcp-server/onchain-tools.ts:11` | `const envAddr = process.env.PHAROS_TOKEN_ADDRESS;` | Read only the specific env vars needed; never enumerate or export all env. |
-| **INFO** | `pharos-web3/declared_write_capability` | `package.json:32` | `"deploy:attestation": "bash scripts/preflight.sh && forge script script/DeployAttestation.s.sol:DeployAttestation --rpc-url ${PHAROS_RPC_URL:-https://atlantic.dplabs-internal.com} --private-key $PRIVATE_KEY --broadcast -` | Keep preflight, human-confirm, and receipt assertions mandatory. |
+| **INFO** | `pharos-web3/declared_write_capability` | `package.json:33` | `"deploy:attestation": "bash scripts/preflight.sh && forge script script/DeployAttestation.s.sol:DeployAttestation --rpc-url ${PHAROS_RPC_URL:-https://atlantic.dplabs-internal.com} --private-key $PRIVATE_KEY --broadcast -` | Keep preflight, human-confirm, and receipt assertions mandatory. |
 | **INFO** | `pharos-web3/declared_write_capability` | `references/generated/contract-surface.json:10` | `"cast_hint": "cast send <token> \"registerIdentity(address,uint16,bytes32)\" <investor> <country> <identityId> --rpc-url $RPC --private-key $PK"` | Keep preflight, human-confirm, and receipt assertions mandatory. |
 | **INFO** | `pharos-web3/declared_write_capability` | `references/generated/contract-surface.json:18` | `"cast_hint": "cast send <token> \"batchRegisterIdentity(address[],uint16[],bytes32[])\" \"[<a1>]\" \"[<c1>]\" \"[<id1>]\" --rpc-url $RPC --private-key $PK"` | Keep preflight, human-confirm, and receipt assertions mandatory. |
 | **INFO** | `pharos-web3/declared_write_capability` | `references/generated/contract-surface.json:26` | `"cast_hint": "cast send <token> \"removeIdentity(address)\" <investor> --rpc-url $RPC --private-key $PK"` | Keep preflight, human-confirm, and receipt assertions mandatory. |
@@ -169,6 +170,9 @@
 | **INFO** | `pharos-web3/declared_write_capability` | `scripts/contract_surface.py:105` | `"removeRecoveryOperator": "cast send <token> \"removeRecoveryOperator(address)\" <account> --rpc-url $RPC --private-key $PK",` | Keep preflight, human-confirm, and receipt assertions mandatory. |
 | **INFO** | `pharos-web3/declared_write_capability` | `scripts/contract_surface.py:107` | `"pause": "cast send <token> \"pause()\" --rpc-url $RPC --private-key $PK",` | Keep preflight, human-confirm, and receipt assertions mandatory. |
 | **INFO** | `pharos-web3/declared_write_capability` | `scripts/contract_surface.py:108` | `"unpause": "cast send <token> \"unpause()\" --rpc-url $RPC --private-key $PK",` | Keep preflight, human-confirm, and receipt assertions mandatory. |
+| **INFO** | `pharos-web3/declared_write_capability` | `scripts/demo_journey.ts:11` | `*   npm run demo:journey -- --broadcast   # real Atlantic deploy in phase B (needs PRIVATE_KEY)` | Keep preflight, human-confirm, and receipt assertions mandatory. |
+| **INFO** | `pharos-web3/declared_write_capability` | `scripts/demo_journey.ts:14` | `* to a narrated dry-run; --broadcast runs the actual deploy scripts.` | Keep preflight, human-confirm, and receipt assertions mandatory. |
+| **INFO** | `pharos-web3/declared_write_capability` | `scripts/demo_journey.ts:21` | `const BROADCAST = process.argv.includes("--broadcast");` | Keep preflight, human-confirm, and receipt assertions mandatory. |
 | **INFO** | `pharos-web3/declared_write_capability` | `scripts/deploy_mock_ofac.sh:15` | `--rpc-url "$RPC" --private-key "$PRIVATE_KEY" --broadcast --legacy \` | Keep preflight, human-confirm, and receipt assertions mandatory. |
 | **INFO** | `pharos-web3/declared_write_capability` | `scripts/deploy_pharos.sh:54` | `--broadcast \` | Keep preflight, human-confirm, and receipt assertions mandatory. |
 | **INFO** | `data-leakage/env_harvesting` | `scripts/post-deploy.sh:38` | `name = os.environ.get("ASSET_NAME", "Manhattan Property Fund")` | Read only the specific env vars needed; never enumerate or export all env. |
