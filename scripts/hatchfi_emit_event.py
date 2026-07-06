@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -19,6 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 EVENTS_DIR = ROOT / ".hatchfi"
 EVENTS_FILE = EVENTS_DIR / "run-events.jsonl"
 LATEST_FILE = EVENTS_DIR / "run-latest.json"
+WEB_PUBLIC = ROOT / "web" / "public" / "run-events.jsonl"
 
 
 def utc_now() -> str:
@@ -35,6 +37,7 @@ def emit(
     address: str | None = None,
     evidence: str | None = None,
     extra: dict | None = None,
+    sync_web: bool = False,
 ) -> dict:
     event: dict = {
         "ts": utc_now(),
@@ -56,8 +59,20 @@ def emit(
     with EVENTS_FILE.open("a", encoding="utf-8") as f:
         f.write(json.dumps(event, ensure_ascii=False) + "\n")
     LATEST_FILE.write_text(json.dumps(event, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    if sync_web and WEB_PUBLIC.parent.exists():
+        shutil.copyfile(EVENTS_FILE, WEB_PUBLIC)  # dev server serves this; UI polls every 3s
     _mirror_progress(event)
     return event
+
+
+def reset_feed(sync_web: bool = False) -> None:
+    """Start a fresh run — truncate the feed so a demo shows zero-to-one from empty."""
+    EVENTS_DIR.mkdir(exist_ok=True)
+    EVENTS_FILE.write_text("", encoding="utf-8")
+    if LATEST_FILE.exists():
+        LATEST_FILE.unlink()
+    if sync_web and WEB_PUBLIC.parent.exists():
+        WEB_PUBLIC.write_text("", encoding="utf-8")
 
 
 def _mirror_progress(event: dict) -> None:
@@ -100,7 +115,12 @@ def main() -> int:
     parser.add_argument("--address")
     parser.add_argument("--evidence")
     parser.add_argument("--extra", help="JSON object merged into the event")
+    parser.add_argument("--sync-web", action="store_true", help="Also update web/public/run-events.jsonl (live dev-server feed)")
+    parser.add_argument("--reset", action="store_true", help="Truncate the feed before emitting (fresh run)")
     args = parser.parse_args()
+
+    if args.reset:
+        reset_feed(sync_web=args.sync_web)
 
     extra = json.loads(args.extra) if args.extra else None
     emit(
@@ -112,6 +132,7 @@ def main() -> int:
         address=args.address,
         evidence=args.evidence,
         extra=extra,
+        sync_web=args.sync_web,
     )
     print(f"hatchfi_event: {args.step} → {args.status}")
     return 0

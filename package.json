@@ -39,6 +39,7 @@
     "sync:zh-diligence": "python3 scripts/sync_zh_diligence_refs.py",
     "gate:demo": "tsx lib/hatchfi-gate/scripts/demo.ts",
     "gate:cli": "tsx lib/hatchfi-gate/scripts/cli.ts",
+    "demo:journey": "tsx scripts/demo_journey.ts",
     "example:langchain": "tsx lib/hatchfi-gate/scripts/langchain-example.ts",
     "example:vercel": "tsx lib/hatchfi-gate/scripts/vercel-example.ts",
     "gate:test": "tsx lib/hatchfi-gate/scripts/test.ts",
