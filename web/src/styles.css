@@ -134,6 +134,21 @@ body {
 .pill.r-YELLOW { color: var(--yellow); border-color: var(--yellow); background: rgba(224, 184, 58, 0.1); }
 .pill.r-RED { color: var(--red); border-color: var(--red); background: rgba(239, 91, 107, 0.1); }
 
+.subject-row {
+  display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: center;
+  margin-top: 15px; padding: 12px 14px;
+  background: var(--panel-2); border: 1px solid var(--border-soft); border-radius: var(--r-ctl);
+}
+.subject-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--gold); font-weight: 700;
+}
+.subject-addr {
+  font-family: var(--mono); font-size: 12px; color: var(--text);
+  background: transparent; border: none; padding: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
 .advanced { margin-top: 15px; }
 .advanced summary { color: var(--muted); cursor: pointer; font-size: 13px; padding: 10px 0; }
 .advanced summary:hover { color: var(--text); }
@@ -144,6 +159,49 @@ body {
   font-family: var(--sans);
 }
 .flags button.on { color: var(--red); border-color: var(--red); background: rgba(239, 91, 107, 0.08); }
+
+/* Step 2 — operator pipeline */
+.pipeline-status {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: 14px 0 16px; padding: 12px 14px;
+  background: var(--panel-2); border: 1px solid var(--border-soft); border-radius: var(--r-ctl);
+  font-family: var(--mono); font-size: 12.5px;
+}
+.pipeline-status .ps { color: var(--muted); }
+.pipeline-status .ps.r-GREEN { color: var(--green); font-weight: 700; }
+.pipeline-status .ps.r-YELLOW { color: var(--yellow); font-weight: 700; }
+.pipeline-status .ps.r-RED { color: var(--red); font-weight: 700; }
+.pipeline-status .ps-arrow { color: var(--border); }
+
+.action-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+button.primary:disabled {
+  background: var(--panel-2); color: var(--muted); border-color: var(--border);
+  cursor: not-allowed; filter: none;
+}
+
+/* Step 3 — audit log console */
+.console {
+  background: #060f0b; border: 1px solid var(--border-soft); border-radius: var(--r-ctl);
+  max-height: 300px; overflow-y: auto; font-family: var(--mono);
+}
+.console-empty { padding: 18px 16px; color: var(--muted); font-size: 12.5px; }
+.console-line { border-bottom: 1px solid var(--border-soft); }
+.console-line:last-child { border-bottom: none; }
+.console-head {
+  display: grid; grid-template-columns: 70px minmax(120px, auto) 1fr 20px;
+  gap: 12px; align-items: baseline; width: 100%;
+  padding: 9px 14px; background: transparent; border: none; cursor: pointer;
+  font-family: var(--mono); font-size: 12px; text-align: left; color: var(--text);
+}
+.console-head:hover { background: rgba(255, 255, 255, 0.02); }
+.console-time { color: var(--muted); }
+.console-tool { color: var(--gold); }
+.console-summary { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tone-ok .console-summary { color: var(--green); }
+.tone-warn .console-summary { color: var(--yellow); }
+.tone-no .console-summary { color: var(--red); }
+.console-caret { color: var(--muted); }
+.console-payload { margin: 0 14px 12px; max-height: 220px; }
 
 /* Step 2 — verdict is the hero */
 .verdict {

@@ -5,34 +5,28 @@
 - Run `npm run web:dev`
 - Open the demo page — a guided 3-step flow
 
-## 1) Show RED block (30s)
+## 1) Show RED block (35s)
 
-1. **Step 1** — click the **OFAC-sanctioned counterparty** scenario
-2. **Step 2** — a giant **RED · BLOCKED** verdict card appears; the `sanctions` check row is ✗
-3. Click **Attest evidence → run mint gate** → badge shows **mint DENIED**
+1. **Step 1** — pick the **OFAC-sanctioned counterparty**
+2. **Step 2** — point out ② and ③ are **locked**. Press **① Run screening** → giant **RED · BLOCKED**, `sanctions` ✗
+3. Press **② Attest evidence**, then **③ Attempt mint** → status bar reads `Screening: RED → Attestation: recorded (RED) → Mint: MINT DENIED`
 4. Narration:
-   - "The deterministic gate returns RED with an explicit failed check."
-   - "This is fail-closed — attestation of a RED rating cannot pass, so mint is blocked."
+   - "You're the compliance operator. Each action unlocks the next — the same order the contract enforces."
+   - "A RED attestation exists but is not passable, so the mint is refused. Fail-closed."
 
-## 2) Show GREEN path (35s)
+## 2) Show GREEN path (30s)
 
-1. **Step 1** — click the **Clean institutional issuer** scenario
-2. **Step 2** — verdict flips to **GREEN · ADMITTED**; all seven checks are ✓
-3. Click **Attest evidence → run mint gate** → badge shows **mint ALLOWED**
-4. Narration:
-   - "Same pipeline, clean issuer — GREEN and attested."
-   - "The mint gate allows only when both the decision and the attestation pass."
-
-## 3) Show MCP composability (30s)
-
-1. **Step 3** — pick a tool in the MCP playground; the Request pane shows the exact JSON an agent sends
-2. Click **Run tool** and read the Response pane. Try:
-   - `diligence_screen`
-   - `diligence_rate`
-   - `diligence_gate_mint`
-   - `diligence_get_attestation`
+1. **Step 1** — pick **Clean institutional issuer**, run ① ② ③ again
+2. Verdict flips to **GREEN · ADMITTED**, badge shows **✓ MINT ALLOWED**
 3. Narration:
-   - "Every surface — CLI, MCP, web — calls the identical pure-function engine."
+   - "Same three actions, clean counterparty — the gate admits and the mint passes."
+
+## 3) Show the audit trail + MCP composability (30s)
+
+1. **Step 3** — scroll the **audit log**: six timestamped entries, one per action; expand one to show the raw JSON
+2. Open **Raw MCP tool access** — the Request pane is the exact JSON an agent sends; run `diligence_gate_mint`
+3. Narration:
+   - "Every operator action is on the record — and an AI agent calls the identical tools over MCP."
 
 ## 4) Show judge commands (15s)
 

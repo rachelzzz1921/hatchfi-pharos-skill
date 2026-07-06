@@ -75,18 +75,27 @@ try {
     fail("HERO", "e2e:hero", "Live chip href wrong", { chipHref });
   }
 
-  // Step 1: four scenario presets
+  // Step 1: four counterparty presets
   const cardCount = await page.locator(".scenarios .scenario").count();
-  if (cardCount === 4) pass("STEP1", "e2e:scenarios", "4 scenario cards render", { cardCount });
-  else fail("STEP1", "e2e:scenarios", "Scenario card count wrong", { cardCount });
+  if (cardCount === 4) pass("STEP1", "e2e:scenarios", "4 counterparty cards render", { cardCount });
+  else fail("STEP1", "e2e:scenarios", "Counterparty card count wrong", { cardCount });
 
-  // RED path: OFAC scenario → RED verdict → mint DENIED
+  // Operator gating: attest + mint locked until screening ran
+  const act = (n) => page.locator(".action-row button").nth(n);
+  const initiallyLocked =
+    (await act(1).isDisabled()) && (await act(2).isDisabled()) && !(await page.locator(".verdict").count());
+  if (initiallyLocked) pass("GATING", "e2e:gating", "attest+mint locked before screening", {});
+  else fail("GATING", "e2e:gating", "pipeline not locked initially", {});
+
+  // RED path: OFAC counterparty → screen → RED → attest → mint DENIED
   await page.locator(".scenarios .scenario").nth(1).click();
+  await page.waitForTimeout(200);
+  await act(0).click();
   await page.waitForTimeout(250);
   const redVerdict = await page.locator(".verdict .rating").textContent();
   const redClass = await page.locator(".verdict").getAttribute("class");
   if (redVerdict === "RED" && redClass?.includes("r-RED")) {
-    pass("RED", "e2e:verdict", "OFAC scenario yields RED verdict", {});
+    pass("RED", "e2e:verdict", "OFAC screening yields RED verdict", {});
   } else {
     fail("RED", "e2e:verdict", "RED verdict missing", { redVerdict, redClass });
   }
@@ -94,34 +103,46 @@ try {
   if (failedCheck === "sanctions") pass("RED", "e2e:checks", "sanctions check marked failed", {});
   else fail("RED", "e2e:checks", "sanctions check not marked failed", { failedCheck });
 
-  await page.locator(".mint-row button").click();
+  await act(1).click();
+  await page.waitForTimeout(200);
+  await act(2).click();
   await page.waitForTimeout(250);
   const deniedBadge = await page.locator(".mint-badge").textContent();
-  const gateResult = await page.locator(".gate-result pre").textContent();
-  if (deniedBadge?.includes("DENIED") && gateResult?.includes('"allowed": false')) {
-    pass("RED", "e2e:mint", "RED path mint denied", {});
+  const redStatus = await page.locator(".pipeline-status").textContent();
+  if (deniedBadge?.includes("DENIED") && redStatus?.includes("DENIED")) {
+    pass("RED", "e2e:mint", "RED path mint denied via gated pipeline", {});
   } else {
-    fail("RED", "e2e:mint", "RED path mint not denied", { deniedBadge, snippet: gateResult?.slice(0, 100) });
+    fail("RED", "e2e:mint", "RED path mint not denied", { deniedBadge, redStatus });
   }
 
-  // GREEN path: clean scenario → GREEN verdict → mint ALLOWED
+  // GREEN path: clean counterparty → screen → attest → mint ALLOWED
   await page.locator(".scenarios .scenario").nth(0).click();
+  await page.waitForTimeout(200);
+  await act(0).click();
   await page.waitForTimeout(250);
   const greenVerdict = await page.locator(".verdict .rating").textContent();
-  if (greenVerdict === "GREEN") pass("GREEN", "e2e:verdict", "Clean scenario yields GREEN", {});
+  if (greenVerdict === "GREEN") pass("GREEN", "e2e:verdict", "Clean screening yields GREEN", {});
   else fail("GREEN", "e2e:verdict", "GREEN verdict missing", { greenVerdict });
 
-  await page.locator(".mint-row button").click();
+  await act(1).click();
+  await page.waitForTimeout(200);
+  await act(2).click();
   await page.waitForTimeout(250);
   const allowedBadge = await page.locator(".mint-badge").textContent();
-  const gateResult2 = await page.locator(".gate-result pre").textContent();
-  if (allowedBadge?.includes("ALLOWED") && gateResult2?.includes('"allowed": true')) {
+  if (allowedBadge?.includes("ALLOWED")) {
     pass("GREEN", "e2e:mint", "GREEN path mint allowed after attest", {});
   } else {
-    fail("GREEN", "e2e:mint", "GREEN mint not allowed", { allowedBadge, snippet: gateResult2?.slice(0, 100) });
+    fail("GREEN", "e2e:mint", "GREEN mint not allowed", { allowedBadge });
   }
 
-  // Step 3: MCP playground round-trips for all five gate tools
+  // Audit log: 6 operator actions recorded (3 RED + 3 GREEN)
+  const logCount = await page.locator(".console-line").count();
+  if (logCount >= 6) pass("LOG", "e2e:log", "audit log recorded all operator actions", { logCount });
+  else fail("LOG", "e2e:log", "audit log incomplete", { logCount });
+
+  // Raw MCP tools (inside disclosure): round-trips for all five gate tools
+  await page.locator(".step").nth(2).locator("details.advanced summary").click();
+  await page.waitForTimeout(200);
   const tools = [
     "diligence_screen",
     "diligence_rate",
@@ -155,7 +176,7 @@ try {
     step1: document.querySelector(".step-head h2")?.textContent,
     reason: document.querySelector(".checks .creason")?.textContent,
   }));
-  if (zhState.lang === "zh-CN" && zhState.step1 === "选择场景" && /[一-鿿]/.test(zhState.reason || "")) {
+  if (zhState.lang === "zh-CN" && zhState.step1 === "选择交易对手" && /[一-鿿]/.test(zhState.reason || "")) {
     pass("LANG", "e2e:lang", "ZH mode translates UI + check reasons", zhState);
   } else {
     fail("LANG", "e2e:lang", "ZH toggle incomplete", zhState);

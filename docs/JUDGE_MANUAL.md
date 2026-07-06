@@ -16,12 +16,12 @@ npm run build && npm run test   # 36 Foundry tests (needs Foundry)
 npm run web:dev
 ```
 
-Open the app — a guided 3-step flow — and verify:
+Open the app — you are the issuer's **compliance operator**, and mint is locked behind the gate:
 
-1. **Step 1** — click the **OFAC-sanctioned counterparty** scenario.
-2. **Step 2** — a giant **RED · BLOCKED** verdict appears; the `sanctions` check is ✗. Click **Attest evidence → run mint gate** → **mint DENIED**.
-3. Switch to **Clean institutional issuer** → **GREEN · ADMITTED**; the mint gate now returns **mint ALLOWED**.
-4. **Step 3** — pick any tool in the MCP playground to see the exact request/response an agent would exchange.
+1. **Step 1** — pick the **OFAC-sanctioned counterparty**.
+2. **Step 2** — press **① Run screening** → a giant **RED · BLOCKED** verdict (`sanctions` ✗). Then **② Attest evidence** and **③ Attempt mint** → **MINT DENIED**. Note ② and ③ stay locked until the previous step ran — exactly like the on-chain contract.
+3. Switch to **Clean institutional issuer** → ①②③ again → **GREEN · ADMITTED → MINT ALLOWED**.
+4. **Step 3** — every action you took is in the **audit log** (timestamped, expandable JSON). Open **Raw MCP tool access** to see the same tools an agent calls.
 
 ## Trust model hardening highlights
 

@@ -1,13 +1,16 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import {
   DiligenceGate,
   InMemoryAttestationRegistry,
   createDiligenceSkills,
   callMcpTool,
-  evaluateDiligence,
 } from "../../lib/hatchfi-gate/src";
-import type { DiligenceFlags } from "../../lib/hatchfi-gate/src";
+import type {
+  AttestationRecord,
+  DiligenceFlags,
+  GateDecision,
+} from "../../lib/hatchfi-gate/src";
 
 const registry = new InMemoryAttestationRegistry();
 const gate = new DiligenceGate(registry);
@@ -72,35 +75,55 @@ const SCENARIOS: Scenario[] = [
   },
 ];
 
+type LogEntry = {
+  time: string;
+  tool: string;
+  summary: string;
+  tone: "ok" | "warn" | "no" | "info";
+  payload: string;
+};
+
 const T: Record<Lang, Record<string, string>> = {
   en: {
     brand: "HatchFi",
     brandZh: "链孵",
-    tagline: "Where compliant RWAs hatch into Agent Skills",
+    tagline: "Compliance Operator Console",
     intro:
-      "A deterministic RED / YELLOW / GREEN admission gate for compliant RWA issuance — one pure-function engine shipped as CLI, MCP tools, and an on-chain attestation-gated mint.",
+      "You are the issuer's compliance operator. Before any MPF shares can be minted, the counterparty must pass this diligence gate — screen them, attest the evidence, then attempt the mint. The gate, not you, decides.",
     liveChip: "Live on Pharos Atlantic · strict 6/6",
-    step1: "Pick a scenario",
-    step2: "Read the verdict",
-    step3: "Same gate, as MCP tools",
-    advanced: "Advanced — toggle individual diligence flags",
-    attestMint: "Attest evidence → run mint gate",
-    mintAllowed: "mint ALLOWED",
-    mintDenied: "mint DENIED",
-    mcpIntro:
-      "Every surface calls the identical engine. Pick a tool to see the exact request an agent would send and the response it gets back.",
+    step1: "Choose a counterparty",
+    step2: "Operate the gate",
+    step2Hint:
+      "Three actions, in order — each unlocks the next, exactly like the on-chain contract: mint() reverts unless the evidence hash is attested and passable.",
+    step3: "Audit log · every action, on the record",
+    step3Hint:
+      "Each button above called a real gate tool. This is the operator's trail — and below it, the same tools an AI agent would call over MCP.",
+    advanced: "Advanced — edit individual diligence flags",
+    actScreen: "Run screening",
+    actAttest: "Attest evidence",
+    actMint: "Attempt mint",
+    stScreen: "Screening",
+    stAttest: "Attestation",
+    stMint: "Mint",
+    stPending: "—",
+    stRecorded: "recorded",
+    counterparty: "Counterparty",
+    evidence: "Evidence",
+    mintAllowed: "MINT ALLOWED",
+    mintDenied: "MINT DENIED",
+    verdictGREEN: "ADMITTED",
+    verdictYELLOW: "ADMITTED · REVIEW",
+    verdictRED: "BLOCKED",
+    noteGREEN: "All checks pass — attest the evidence, then mint.",
+    noteYELLOW: "Soft flags raised — the gate admits, but flags for human review.",
+    noteRED: "A hard red line tripped. You can still try to attest and mint — watch the gate refuse.",
+    logEmpty: "No actions yet. Run the screening in step 2 — every call lands here.",
+    rawTools: "Raw MCP tool access (what an agent sees)",
     request: "Request",
     response: "Response",
     runTool: "Run tool",
     runToolHint: "Run the tool to see the JSON response.",
     footer: "Verify locally — no wallet needed:",
-    verdictGREEN: "ADMITTED",
-    verdictYELLOW: "ADMITTED · REVIEW",
-    verdictRED: "BLOCKED",
-    noteGREEN: "All checks pass — issuance is allowed to proceed.",
-    noteYELLOW: "Soft flags raised — allowed, but flagged for human review.",
-    noteRED: "A hard red line tripped — the gate refuses issuance.",
-    gateResult: "Gate result",
     reason_sanctions_ok: "No sanctions hit",
     reason_sanctions_no: "Sanctions hit detected",
     reason_duplicateTokenization_ok: "No duplicate tokenization detected",
@@ -130,34 +153,54 @@ const T: Record<Lang, Record<string, string>> = {
     flag_rightsUnclear: "Rights unclear",
     flag_docsIncomplete: "Documents incomplete",
     flag_onchainAnomaly: "On-chain anomaly",
+    log_screen_ok: "screening passed — GREEN",
+    log_screen_warn: "screening admitted with review — YELLOW",
+    log_screen_no: "screening blocked — RED",
+    log_attest: "evidence attested to registry",
+    log_attest_red: "RED evidence recorded — not passable for mint",
+    log_mint_ok: "mint ALLOWED — decision passed and evidence attested",
+    log_mint_no: "mint DENIED by gate",
   },
   zh: {
     brand: "链孵",
     brandZh: "HatchFi",
-    tagline: "合规 RWA 在这里孵化为 Agent Skill",
+    tagline: "合规操作员控制台",
     intro:
-      "面向合规 RWA 发行的确定性 RED / YELLOW / GREEN 准入闸门——同一个纯函数引擎，以 CLI、MCP 工具与链上 attestation 门禁 mint 三种形态交付。",
+      "你是发行方的合规操作员。任何 MPF 份额 mint 之前，交易对手必须先过这道尽调闸门——先筛查、再存证、然后尝试 mint。做决定的是闸门，不是你。",
     liveChip: "已上线 Pharos Atlantic · strict 6/6",
-    step1: "选择场景",
-    step2: "查看判定",
-    step3: "同一闸门 · MCP 工具形态",
-    advanced: "高级 — 逐项切换尽调标志",
-    attestMint: "存证 evidence → 运行 mint 闸门",
-    mintAllowed: "mint 放行",
-    mintDenied: "mint 拒绝",
-    mcpIntro: "所有形态调用同一引擎。选择一个工具，查看 agent 实际发送的请求与收到的响应。",
+    step1: "选择交易对手",
+    step2: "操作闸门",
+    step2Hint:
+      "三个动作，按顺序执行——每一步解锁下一步，与链上合约行为完全一致：evidence hash 未存证或不可通过时 mint() 直接 revert。",
+    step3: "审计日志 · 每个动作都有记录",
+    step3Hint:
+      "上面每个按钮都调用了真实的闸门工具。这是操作员的留痕——下方是 AI agent 通过 MCP 调用的同一批工具。",
+    advanced: "高级 — 逐项编辑尽调标志",
+    actScreen: "运行筛查",
+    actAttest: "存证 evidence",
+    actMint: "尝试 mint",
+    stScreen: "筛查",
+    stAttest: "存证",
+    stMint: "Mint",
+    stPending: "—",
+    stRecorded: "已记录",
+    counterparty: "交易对手",
+    evidence: "证据",
+    mintAllowed: "MINT 放行",
+    mintDenied: "MINT 拒绝",
+    verdictGREEN: "准入",
+    verdictYELLOW: "准入 · 需复核",
+    verdictRED: "拦截",
+    noteGREEN: "全部检查通过——先存证，再 mint。",
+    noteYELLOW: "存在软性标志——闸门放行，但标记人工复核。",
+    noteRED: "触碰硬红线。你仍可尝试存证和 mint——看闸门如何拒绝。",
+    logEmpty: "尚无操作。在第 2 步运行筛查——每次调用都会落在这里。",
+    rawTools: "底层 MCP 工具（agent 看到的形态）",
     request: "请求",
     response: "响应",
     runTool: "运行工具",
     runToolHint: "运行工具以查看 JSON 响应。",
     footer: "本地验证——无需钱包：",
-    verdictGREEN: "准入",
-    verdictYELLOW: "准入 · 需复核",
-    verdictRED: "拦截",
-    noteGREEN: "全部检查通过——允许继续发行。",
-    noteYELLOW: "存在软性标志——放行，但标记人工复核。",
-    noteRED: "触碰硬红线——闸门拒绝发行。",
-    gateResult: "闸门结果",
     reason_sanctions_ok: "无制裁命中",
     reason_sanctions_no: "检测到制裁命中",
     reason_duplicateTokenization_ok: "未发现重复代币化",
@@ -187,6 +230,13 @@ const T: Record<Lang, Record<string, string>> = {
     flag_rightsUnclear: "权利不清晰",
     flag_docsIncomplete: "文件不完整",
     flag_onchainAnomaly: "链上异常",
+    log_screen_ok: "筛查通过 — GREEN",
+    log_screen_warn: "筛查放行但需复核 — YELLOW",
+    log_screen_no: "筛查拦截 — RED",
+    log_attest: "evidence 已存证到 registry",
+    log_attest_red: "RED evidence 已记录——mint 不可通过",
+    log_mint_ok: "mint 放行——判定通过且 evidence 已存证",
+    log_mint_no: "mint 被闸门拒绝",
   },
 };
 
@@ -198,6 +248,10 @@ const TOOL_NAMES = [
   "diligence_get_attestation",
 ];
 
+function now(): string {
+  return new Date().toLocaleTimeString("en-GB", { hour12: false });
+}
+
 export default function App() {
   const [lang, setLang] = useState<Lang>("en");
   const [scenarioId, setScenarioId] = useState<string>("clean");
@@ -205,13 +259,19 @@ export default function App() {
   const [subject, setSubject] = useState(SCENARIOS[0].subject);
   const [evidenceHash, setEvidenceHash] = useState(SCENARIOS[0].evidenceHash);
   const [assetFingerprint, setAssetFingerprint] = useState(SCENARIOS[0].assetFingerprint);
-  const [mintOutput, setMintOutput] = useState<string>("");
-  const [mintAllowed, setMintAllowed] = useState<boolean | null>(null);
+
+  // Operator pipeline state — each stage unlocks the next
+  const [screened, setScreened] = useState<GateDecision | null>(null);
+  const [attested, setAttested] = useState<AttestationRecord | null>(null);
+  const [minted, setMinted] = useState<{ allowed: boolean } | null>(null);
+  const [logEntries, setLogEntries] = useState<LogEntry[]>([]);
+  const [openLog, setOpenLog] = useState<number | null>(null);
+  const logRef = useRef<HTMLDivElement>(null);
+
   const [toolName, setToolName] = useState("diligence_screen");
   const [mcpOutput, setMcpOutput] = useState<string>("");
 
   const t = T[lang];
-  const decision = useMemo(() => evaluateDiligence(flags), [flags]);
 
   const input = useMemo(
     () => ({ subject, assetFingerprint, evidenceHash, flags }),
@@ -228,49 +288,91 @@ export default function App() {
     return { tool: toolName, arguments: args };
   }, [toolName, input, subject, evidenceHash, flags]);
 
+  function pushLog(entry: Omit<LogEntry, "time">) {
+    setLogEntries((prev) => [...prev, { time: now(), ...entry }]);
+    setTimeout(() => logRef.current?.scrollTo({ top: 999999, behavior: "smooth" }), 60);
+  }
+
+  function resetPipeline() {
+    setScreened(null);
+    setAttested(null);
+    setMinted(null);
+  }
+
   function selectScenario(s: Scenario) {
     setScenarioId(s.id);
     setFlags({ ...s.flags });
     setSubject(s.subject);
     setEvidenceHash(s.evidenceHash);
     setAssetFingerprint(s.assetFingerprint);
-    setMintOutput("");
-    setMintAllowed(null);
-    setMcpOutput("");
+    resetPipeline();
   }
 
   function toggleFlag(key: keyof DiligenceFlags) {
     setScenarioId("custom");
     setFlags((prev) => ({ ...prev, [key]: !prev[key] }));
-    setMintOutput("");
-    setMintAllowed(null);
+    resetPipeline();
   }
 
-  async function runAttestAndMint() {
-    try {
-      await gate.attest(input);
-      const result = await gate.gateMint({
-        to: subject,
-        amount: "1000000000000000000",
-        evidenceHash,
-        flags,
-      });
-      setMintAllowed(result.allowed);
-      setMintOutput(JSON.stringify(result, null, 2));
-    } catch (error) {
-      setMintAllowed(false);
-      setMintOutput(String(error));
-    }
+  async function runScreen() {
+    const decision = await gate.screen(input);
+    setScreened(decision);
+    setAttested(null);
+    setMinted(null);
+    const tone = decision.rating === "GREEN" ? "ok" : decision.rating === "YELLOW" ? "warn" : "no";
+    pushLog({
+      tool: "diligence_screen",
+      summary: `${subject.slice(0, 8)}… → ${t[`log_screen_${tone}`]}`,
+      tone,
+      payload: JSON.stringify(decision, null, 2),
+    });
+  }
+
+  async function runAttest() {
+    const record = await gate.attest(input);
+    setAttested(record);
+    setMinted(null);
+    const isRed = record.rating === "RED";
+    pushLog({
+      tool: "diligence_attest",
+      summary: `${record.evidenceHash.slice(0, 14)}… (${record.rating}) — ${isRed ? t.log_attest_red : t.log_attest}`,
+      tone: isRed ? "warn" : "info",
+      payload: JSON.stringify(record, null, 2),
+    });
+  }
+
+  async function runMint() {
+    const result = await gate.gateMint({
+      to: subject,
+      amount: "1000000000000000000",
+      evidenceHash,
+      flags,
+    });
+    setMinted({ allowed: result.allowed });
+    pushLog({
+      tool: "diligence_gate_mint",
+      summary: result.allowed ? t.log_mint_ok : t.log_mint_no,
+      tone: result.allowed ? "ok" : "no",
+      payload: JSON.stringify(result, null, 2),
+    });
   }
 
   async function runTool() {
     try {
       const result = await callMcpTool(skills, toolName, mcpRequest.arguments);
       setMcpOutput(JSON.stringify(result, null, 2));
+      pushLog({
+        tool: `mcp:${toolName}`,
+        summary: `agent called ${toolName}`,
+        tone: "info",
+        payload: JSON.stringify(result, null, 2),
+      });
     } catch (error) {
       setMcpOutput(String(error));
     }
   }
+
+  const verdict = screened;
 
   return (
     <main className="layout">
@@ -306,7 +408,7 @@ export default function App() {
         </a>
       </header>
 
-      {/* STEP 1 */}
+      {/* STEP 1 · counterparty */}
       <section className="step">
         <div className="step-head">
           <span className="step-num">1</span>
@@ -325,6 +427,12 @@ export default function App() {
             </button>
           ))}
         </div>
+        <div className="subject-row">
+          <span className="subject-label">{t.counterparty}</span>
+          <code className="subject-addr">{subject}</code>
+          <span className="subject-label">{t.evidence}</span>
+          <code className="subject-addr">{evidenceHash}</code>
+        </div>
         <details className="advanced">
           <summary>{t.advanced}</summary>
           <div className="flags">
@@ -337,84 +445,127 @@ export default function App() {
         </details>
       </section>
 
-      {/* STEP 2 */}
+      {/* STEP 2 · operate */}
       <section className="step">
         <div className="step-head">
           <span className="step-num">2</span>
           <h2>{t.step2}</h2>
         </div>
-        <div key={decision.rating} className={`verdict r-${decision.rating}`}>
-          <div className="verdict-main">
-            <span className="rating">{decision.rating}</span>
-            <span className="verb">{t[`verdict${decision.rating}`]}</span>
-          </div>
-          <p className="verdict-note">{t[`note${decision.rating}`]}</p>
+        <p className="muted">{t.step2Hint}</p>
+
+        <div className="pipeline-status" role="status">
+          <span className={`ps ${verdict ? `r-${verdict.rating}` : ""}`}>
+            {t.stScreen}: {verdict ? verdict.rating : t.stPending}
+          </span>
+          <span className="ps-arrow">→</span>
+          <span className={`ps ${attested ? (attested.rating === "RED" ? "r-RED" : "r-GREEN") : ""}`}>
+            {t.stAttest}: {attested ? `${t.stRecorded} (${attested.rating})` : t.stPending}
+          </span>
+          <span className="ps-arrow">→</span>
+          <span className={`ps ${minted ? (minted.allowed ? "r-GREEN" : "r-RED") : ""}`}>
+            {t.stMint}: {minted ? (minted.allowed ? t.mintAllowed : t.mintDenied) : t.stPending}
+          </span>
         </div>
-        <ul className="checks" key={`checks-${decision.rating}-${scenarioId}`}>
-          {decision.checks.map((c, i) => (
-            <li
-              key={c.key}
-              className={c.passed ? "pass" : "fail"}
-              style={{ animationDelay: `${i * 55}ms` }}
-            >
-              <span className="mark">{c.passed ? "✓" : "✗"}</span>
-              <span className="ckey">{c.key}</span>
-              <span className="creason">{t[`reason_${c.key}_${c.passed ? "ok" : "no"}`] ?? c.reason}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="mint-row">
-          <button
-            className={decision.allowed ? "primary" : "primary danger"}
-            onClick={runAttestAndMint}
-          >
-            {t.attestMint}
+
+        <div className="action-row">
+          <button className="primary" onClick={runScreen}>
+            ① {t.actScreen}
           </button>
-          {mintAllowed !== null && (
-            <span className={`mint-badge ${mintAllowed ? "ok" : "no"}`}>
-              {mintAllowed ? `✓ ${t.mintAllowed}` : `✗ ${t.mintDenied}`}
-            </span>
-          )}
+          <button className="primary" onClick={runAttest} disabled={!screened}>
+            ② {t.actAttest}
+          </button>
+          <button
+            className={verdict && verdict.rating === "RED" ? "primary danger" : "primary"}
+            onClick={runMint}
+            disabled={!attested}
+          >
+            ③ {t.actMint}
+          </button>
         </div>
-        {mintOutput && (
-          <div className="gate-result">
-            <h3 className="io-label">{t.gateResult}</h3>
-            <pre className="io">{mintOutput}</pre>
-          </div>
+
+        {verdict && (
+          <>
+            <div key={verdict.rating + scenarioId} className={`verdict r-${verdict.rating}`}>
+              <div className="verdict-main">
+                <span className="rating">{verdict.rating}</span>
+                <span className="verb">{t[`verdict${verdict.rating}`]}</span>
+                {minted !== null && (
+                  <span className={`mint-badge ${minted.allowed ? "ok" : "no"}`}>
+                    {minted.allowed ? `✓ ${t.mintAllowed}` : `✗ ${t.mintDenied}`}
+                  </span>
+                )}
+              </div>
+              <p className="verdict-note">{t[`note${verdict.rating}`]}</p>
+            </div>
+            <ul className="checks" key={`checks-${verdict.rating}-${scenarioId}`}>
+              {verdict.checks.map((c, i) => (
+                <li
+                  key={c.key}
+                  className={c.passed ? "pass" : "fail"}
+                  style={{ animationDelay: `${i * 55}ms` }}
+                >
+                  <span className="mark">{c.passed ? "✓" : "✗"}</span>
+                  <span className="ckey">{c.key}</span>
+                  <span className="creason">
+                    {t[`reason_${c.key}_${c.passed ? "ok" : "no"}`] ?? c.reason}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
       </section>
 
-      {/* STEP 3 */}
+      {/* STEP 3 · audit log + raw tools */}
       <section className="step">
         <div className="step-head">
           <span className="step-num">3</span>
           <h2>{t.step3}</h2>
         </div>
-        <p className="muted">{t.mcpIntro}</p>
-        <div className="mcp">
-          <div className="mcp-controls">
-            <select value={toolName} onChange={(e) => setToolName(e.target.value)}>
-              {TOOL_NAMES.map((tn) => (
-                <option key={tn} value={tn}>
-                  {tn}
-                </option>
-              ))}
-            </select>
-            <button className="primary" onClick={runTool}>
-              {t.runTool}
-            </button>
-          </div>
-          <div className="mcp-io">
-            <div>
-              <h3>{t.request}</h3>
-              <pre className="io">{JSON.stringify(mcpRequest, null, 2)}</pre>
+        <p className="muted">{t.step3Hint}</p>
+
+        <div className="console" ref={logRef}>
+          {logEntries.length === 0 && <div className="console-empty">{t.logEmpty}</div>}
+          {logEntries.map((e, i) => (
+            <div key={i} className={`console-line tone-${e.tone}`}>
+              <button className="console-head" onClick={() => setOpenLog(openLog === i ? null : i)}>
+                <span className="console-time">{e.time}</span>
+                <span className="console-tool">{e.tool}</span>
+                <span className="console-summary">{e.summary}</span>
+                <span className="console-caret">{openLog === i ? "▾" : "▸"}</span>
+              </button>
+              {openLog === i && <pre className="io console-payload">{e.payload}</pre>}
             </div>
-            <div>
-              <h3>{t.response}</h3>
-              <pre className="io">{mcpOutput || t.runToolHint}</pre>
-            </div>
-          </div>
+          ))}
         </div>
+
+        <details className="advanced" style={{ marginTop: 16 }}>
+          <summary>{t.rawTools}</summary>
+          <div className="mcp" style={{ marginTop: 12 }}>
+            <div className="mcp-controls">
+              <select value={toolName} onChange={(e) => setToolName(e.target.value)}>
+                {TOOL_NAMES.map((tn) => (
+                  <option key={tn} value={tn}>
+                    {tn}
+                  </option>
+                ))}
+              </select>
+              <button className="primary" onClick={runTool}>
+                {t.runTool}
+              </button>
+            </div>
+            <div className="mcp-io">
+              <div>
+                <h3>{t.request}</h3>
+                <pre className="io">{JSON.stringify(mcpRequest, null, 2)}</pre>
+              </div>
+              <div>
+                <h3>{t.response}</h3>
+                <pre className="io">{mcpOutput || t.runToolHint}</pre>
+              </div>
+            </div>
+          </div>
+        </details>
       </section>
 
       <footer className="footer">
