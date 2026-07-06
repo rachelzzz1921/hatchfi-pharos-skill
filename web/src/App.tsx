@@ -379,7 +379,7 @@ export default function App() {
       <header className="hero">
         <div className="hero-top">
           <div className="brand">
-            <img src="/logo.png" alt="HatchFi logo" className="brand-logo" />
+            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="HatchFi logo" className="brand-logo" />
             <div className="brand-name">
               <h1>
                 {t.brand} <span className="brand-alt">· {t.brandZh}</span>
