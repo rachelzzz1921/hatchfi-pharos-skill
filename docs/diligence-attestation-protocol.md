@@ -66,7 +66,7 @@ flowchart TD
 | Registry | `isPassableFor(evidenceHash, target)` | `isPassable` AND bound to `target` — the mint gate |
 | Registry | `revoke(evidenceHash)` / `validityWindow` | registrar revocation · time-boxed validity |
 | Registry | `isGreen` / `attestationByHash` / `latestAttestation` | Read-only lookups |
-| Token | `mint(to, amount, evidenceHash)` | Reverts unless `isPassable(evidenceHash)` |
+| Token | `mint(to, amount, evidenceHash)` | Reverts unless `isPassableFor(evidenceHash, to)` |
 
 ## Reproduce (no wallet)
 
