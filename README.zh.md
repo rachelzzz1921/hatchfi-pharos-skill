@@ -71,7 +71,8 @@ Agent 编排 RWA 代币化是活跃研究方向（[Borjigin 等，2025 — arXiv
 | Diligence Gate primitive + 适配器 | 已完成 | [`lib/hatchfi-gate/`](./lib/hatchfi-gate/SKILL.md) · 8 个 MCP 工具 · LangChain/Vercel · 统一 envelope |
 | Attestation 硬化 (J2) | `src/` 已完成 · 重部署待充值 | 过期 + 撤销 + recipient 绑定 mint · 9 项 Foundry 测试 · [`docs/SECURITY.md`](./docs/SECURITY.md) |
 | Agent 可观测性 | 已完成 | **Agent Run** 看板 `#/agent-run` · harness `.hatchfi/run-events.jsonl` · [`SKILL.md` 汇报协议](./SKILL.md) |
-| 可视化 Demo + 评委模式 | 已完成 | `npm run web:dev` · `npm run gate:cli` · `npm run judge:package` · `npm run agent:run:seed` |
+| 可视化 Demo + 评委模式 | 已完成 | `npm run web:dev` · `npm run gate:cli
+npm run demo:journey             # 叙事式零到一全流程（实时点亮 Agent Run 面板）` · `npm run judge:package` · `npm run agent:run:seed` |
 | GitHub Pages 站点 | 已完成（workflow） | landing + console + deck + dashboard · 在仓库 Settings → Pages 启用 |
 | GitHub · 硬化分支 | 已完成 | [`agent/6h-hardening-sweep`](https://github.com/rachelzzz1921/hatchfi-pharos-skill/pull/1) · 领先 main 31 commits |
 

@@ -83,6 +83,7 @@ It extends the official [Pharos Skill Engine](https://docs.pharos.xyz/tooling-an
 npm install
 npm run gate:test            # deterministic gate unit checks
 npm run gate:cli             # narrated RED->GREEN->attest->gate flow
+npm run demo:journey         # narrated zero-to-one lifecycle (fills the live Agent Run dashboard)
 npm run judge:package        # gate:test + gate:cli + mcp:probe + judge:readiness
 npm run judge:readiness:strict # strict on-chain trust-model checks — 6/6 (hardened deployment live)
 npm run web:dev              # operator console (#/) + Agent Run dashboard (#/agent-run)
