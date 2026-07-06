@@ -1,21 +1,43 @@
 import { evaluateDiligence } from "./engine";
 import type { AttestationRegistry } from "./registry";
-import type { AttestationRecord, DiligenceInput, GateDecision, MintGateInput, Rating } from "./types";
+import { screenAddress } from "./screening";
+import type {
+  AttestationRecord,
+  DiligenceFlags,
+  DiligenceInput,
+  GateDecision,
+  MintGateInput,
+  Rating,
+  ScreeningResult,
+} from "./types";
 
 export class DiligenceGate {
   constructor(private readonly registry: AttestationRegistry) {}
 
+  /**
+   * Perform diligence for a subject. Sanctions are RESOLVED against the shipped
+   * OFAC snapshot (a real set-membership check on the address) and OR'd with any
+   * caller-supplied flag — so a sanctioned address is caught even if the caller
+   * claims it is clean. Off-chain flags (KYC, docs, rights…) stay caller-supplied.
+   */
+  private decide(subject: string, flags: DiligenceFlags): { decision: GateDecision; screening: ScreeningResult } {
+    const screening = screenAddress(subject);
+    const effective: DiligenceFlags = { ...flags, sanctionsHit: flags.sanctionsHit || screening.sanctioned };
+    const decision = evaluateDiligence(effective);
+    return { decision: { ...decision, screening }, screening };
+  }
+
   async screen(input: DiligenceInput): Promise<GateDecision> {
-    return evaluateDiligence(input.flags);
+    return this.decide(input.subject, input.flags).decision;
   }
 
   async rate(input: DiligenceInput): Promise<{ rating: Rating; decision: GateDecision }> {
-    const decision = evaluateDiligence(input.flags);
+    const { decision } = this.decide(input.subject, input.flags);
     return { rating: decision.rating, decision };
   }
 
   async attest(input: DiligenceInput): Promise<AttestationRecord> {
-    const decision = evaluateDiligence(input.flags);
+    const { decision } = this.decide(input.subject, input.flags);
     const record: AttestationRecord = {
       evidenceHash: input.evidenceHash ?? "",
       subject: input.subject,
@@ -33,7 +55,7 @@ export class DiligenceGate {
     decision: GateDecision;
     attested: boolean;
   }> {
-    const decision = evaluateDiligence(input.flags);
+    const { decision } = this.decide(input.to, input.flags);
     const attestation = await this.registry.getAttestation(input.evidenceHash);
     const attested = attestation !== null && attestation.rating !== "RED";
 

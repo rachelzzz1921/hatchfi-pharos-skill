@@ -33,11 +33,23 @@ export const GateCheckSchema = z.object({
 });
 export type GateCheck = z.infer<typeof GateCheckSchema>;
 
+export const ScreeningResultSchema = z.object({
+  subject: z.string(),
+  sanctioned: z.boolean(),
+  source: z.string(),
+  matched: z.boolean(),
+  listSize: z.number().int().nonnegative(),
+  checkedAt: z.number().int().nonnegative(),
+});
+
 export const GateDecisionSchema = z.object({
   rating: RatingSchema,
   allowed: z.boolean(),
   reasons: z.array(z.string()),
   checks: z.array(GateCheckSchema),
+  // Evidence of the sanctions check actually performed (set-membership against
+  // the shipped OFAC snapshot / live oracle) — present when screening ran.
+  screening: ScreeningResultSchema.optional(),
 });
 export type GateDecision = z.infer<typeof GateDecisionSchema>;
 

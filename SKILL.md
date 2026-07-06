@@ -53,6 +53,8 @@ HatchFi now exposes a reusable deterministic gate module under `lib/hatchfi-gate
 - `diligence_get_attestation`
 - `diligence_attest`
 
+**Screening is performed, not declared**: `diligence_screen` resolves the subject address against the shipped OFAC snapshot (93 addresses, `assets/knowledge/denylist_ofac_eth.json`) via set membership — a sanctioned address is flagged RED even if the caller claims it is clean. The result carries a `screening` evidence block (source · matched · listSize). Off-chain flags (KYC, docs, rights) remain caller-supplied by design (they come from off-chain diligence).
+
 Every skill-surface response (MCP · LangChain · Vercel AI · web playground · CLI demos) carries a **unified envelope** `{ success, skill, version, data }` — agents route on it without caring which surface answered.
 
 The MCP server also ships **read-only on-chain tools** (no key / no funds — `cast call` equivalents over the live deployed token):

@@ -1,7 +1,7 @@
 {
   "name": "pharos-rwa-skill",
   "private": true,
-  "description": "Compliant RWA Issuance Agent — Foundry + Pharos Atlantic deploy scripts",
+  "description": "Compliant RWA Issuance Agent \u2014 Foundry + Pharos Atlantic deploy scripts",
   "scripts": {
     "build": "forge build",
     "test": "forge test -vvv",
@@ -19,6 +19,7 @@
     "spawn:versions": "python3 scripts/spawn_skill_versions.py list",
     "spawn:rollback": "python3 scripts/spawn_skill_versions.py rollback",
     "refs:generate": "python3 scripts/generate_contract_refs.py",
+    "denylist:generate": "python3 scripts/generate_denylist_module.py",
     "refs:check": "python3 scripts/generate_contract_refs.py --check-drift",
     "eval:skill": "python3 scripts/run_skill_eval.py",
     "eval:skill:json": "python3 scripts/run_skill_eval.py --format json",

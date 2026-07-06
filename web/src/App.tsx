@@ -320,9 +320,12 @@ export default function App() {
     setAttested(null);
     setMinted(null);
     const tone = decision.rating === "GREEN" ? "ok" : decision.rating === "YELLOW" ? "warn" : "no";
+    const hit = decision.screening?.matched
+      ? ` · OFAC snapshot HIT (${decision.screening.listSize} addrs)`
+      : ` · OFAC snapshot clear (${decision.screening?.listSize ?? 0} addrs)`;
     pushLog({
       tool: "diligence_screen",
-      summary: `${subject.slice(0, 8)}… → ${t[`log_screen_${tone}`]}`,
+      summary: `${subject.slice(0, 8)}… → ${t[`log_screen_${tone}`]}${hit}`,
       tone,
       payload: JSON.stringify(decision, null, 2),
     });

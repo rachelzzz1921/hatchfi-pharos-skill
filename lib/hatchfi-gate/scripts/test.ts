@@ -58,7 +58,20 @@ async function main() {
   assert.equal(postGateGreen.allowed, true);
   assert.equal(postGateGreen.attested, true);
 
-  console.log("PASS: hatchfi-gate deterministic checks + mint gating");
+  // Real screening: a snapshot-sanctioned address is caught by set-membership
+  // even when the caller declares it clean (sanctionsHit:false).
+  const listSanctioned = await gate.screen({
+    subject: "0x7F367cC41522cE07553e823bf3be79A889DEbe1B", // in the OFAC snapshot
+    assetFingerprint: "0xasset",
+    evidenceHash: "0xhash-list",
+    flags: { ...greenInput.flags }, // all false — caller claims clean
+  });
+  assert.equal(listSanctioned.rating, "RED");
+  assert.equal(listSanctioned.screening?.matched, true);
+  assert.equal(listSanctioned.screening?.sanctioned, true);
+  assert.equal(listSanctioned.checks.find((c) => c.key === "sanctions")?.passed, false);
+
+  console.log("PASS: hatchfi-gate deterministic checks + mint gating + real OFAC screening");
 }
 
 main().catch((error) => {
