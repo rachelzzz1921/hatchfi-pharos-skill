@@ -24,6 +24,7 @@
     "refs:check": "python3 scripts/generate_contract_refs.py --check-drift",
     "eval:skill": "python3 scripts/run_skill_eval.py",
     "eval:skill:json": "python3 scripts/run_skill_eval.py --format json",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.web.json --noEmit",
     "badges:update": "python3 scripts/update_badges.py",
     "refresh:ofac": "bash scripts/refresh_ofac_denylist.sh",
     "merge:ofac": "python3 scripts/merge_ofac_denylist.py",

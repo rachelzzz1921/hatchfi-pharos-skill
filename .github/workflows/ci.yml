@@ -18,6 +18,8 @@ jobs:
           node-version: "20"
           cache: npm
       - run: npm ci
+      - name: Typecheck (node + web)
+        run: npm run typecheck
       - name: Behavioral evals (expect 64/64)
         run: npm run eval:skill
       - name: Gate primitive tests
