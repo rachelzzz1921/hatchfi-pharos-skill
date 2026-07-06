@@ -78,7 +78,7 @@ npm run gate:test            # deterministic gate unit checks
 npm run gate:cli             # narrated RED->GREEN->attest->gate flow
 npm run judge:package        # gate:test + gate:cli + mcp:probe + judge:readiness
 npm run judge:readiness:strict # strict on-chain trust-model checks — 6/6 (hardened deployment live)
-npm run web:dev              # guided 3-step demo (scenario -> giant RED/YELLOW/GREEN verdict -> MCP playground)
+npm run web:dev              # compliance operator console (screen -> attest -> mint, audit-logged, EN/ZH)
 ```
 
 ### Judging criteria → command → evidence

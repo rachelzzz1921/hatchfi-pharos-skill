@@ -77,7 +77,7 @@ npm run gate:test
 npm run gate:cli
 npm run judge:package
 npm run judge:readiness:strict   # 链上信任模型严格检查 — 6/6（hardened 部署已上线）
-npm run web:dev                  # 三步引导式 demo（场景 → 巨型 RED/YELLOW/GREEN 判定 → MCP playground）
+npm run web:dev                  # 合规操作员控制台（筛查 → 存证 → mint，审计留痕，中英双语）
 ```
 
 ### 评审标准 → 命令 → 证据
