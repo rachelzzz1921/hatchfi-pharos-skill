@@ -22,6 +22,10 @@ Now includes a **reusable primitive**: `HatchFi Diligence Gate` (`lib/hatchfi-ga
 
 Built for the [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide) · works on Pharos Atlantic Testnet
 
+<img src="./docs/assets/operator-console.gif" alt="HatchFi operator console — screen, attest, mint" width="720" />
+
+<sub>The compliance operator console: OFAC counterparty → RED → mint denied · clean issuer → GREEN → mint allowed. <a href="./docs/deck/index.html">Deck</a> · <a href="https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3">Live on Atlantic</a></sub>
+
 </div>
 
 ---

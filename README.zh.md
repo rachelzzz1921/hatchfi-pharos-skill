@@ -22,6 +22,11 @@
 
 基于 [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide) 构建 · 运行于 Pharos Atlantic 测试网
 
+
+<img src="./docs/assets/operator-console.gif" alt="HatchFi 合规操作员控制台" width="720" />
+
+<sub>合规操作员控制台：OFAC 交易对手 → RED → mint 拒绝 · 干净发行人 → GREEN → mint 放行。<a href="./docs/deck/index.zh.html">中文 Deck</a> · <a href="https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3">Atlantic 实况</a></sub>
+
 </div>
 
 ---
