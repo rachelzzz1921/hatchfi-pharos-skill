@@ -536,8 +536,8 @@ evidence   offchain → attest hash   smoke      freeze triple gate       recove
     <div class="kicker"><span class="en">Project progress</span><span class="zh">项目进度</span></div>
     <h2><span class="en">Where HatchFi stands today</span><span class="zh">HatchFi 当前进度</span></h2>
     <p class="lead">
-      <span class="en">Core issuance is live on Atlantic. Round 7 expanded diligence from a single read-only gate into a <strong>three-stage pipeline</strong> (sanctions · on-chain · off-chain), synced OFAC data, deployed a Mock oracle, respawned MPF v5, and pushed everything to GitHub.</span>
-      <span class="zh">核心发行已在 Atlantic 落地。第 7 轮将尽调从单一只读闸门扩展为<strong>三阶段流水线</strong>（制裁 · 链上 · 链下），同步 OFAC 数据、部署 Mock 预言机、重新 spawn MPF v5，并推送至 GitHub。</span>
+      <span class="en">Core issuance is live on Atlantic. Round 7 expanded diligence into a <strong>three-stage pipeline</strong>. Round 9–10 added attestation hardening (source), a <strong>6h hardening sweep</strong> branch, and an <strong>Agent Run</strong> observability layer with harness NDJSON + reporting protocol — see <a class="ref" href="https://github.com/rachelzzz1921/hatchfi-pharos-skill/pull/1">PR #1</a>.</span>
+      <span class="zh">核心发行已在 Atlantic 落地。第 7 轮扩展为三阶段尽调流水线。第 9–10 轮加入 attestation 硬化（源码）、<strong>6h 硬化 sweep</strong> 分支，以及 harness NDJSON + 汇报协议的 <strong>Agent Run</strong> 可观测层 — 见 <a class="ref" href="https://github.com/rachelzzz1921/hatchfi-pharos-skill/pull/1">PR #1</a>。</span>
     </p>
     <div class="timeline">
       <div class="item">
@@ -556,9 +556,19 @@ evidence   offchain → attest hash   smoke      freeze triple gate       recove
         <p><span class="en"><code>DiligenceAttestationRegistry</code> + <code>AssetTokenizationRegistry</code> · <code>onchain-attestation.md</code> · <a class="ref" href="docs/PAPER_ALIGNMENT.md">paper mapping</a> · 45 Foundry tests.</span><span class="zh"><code>DiligenceAttestationRegistry</code> + <code>AssetTokenizationRegistry</code> · <code>onchain-attestation.md</code> · <a class="ref" href="docs/PAPER_ALIGNMENT.md">论文对照</a> · 45 项 Foundry 测试。</span></p>
       </div>
       <div class="item">
+        <div class="t">Round 9 · <span class="en">6h hardening sweep</span><span class="zh">6h 硬化 sweep</span></div>
+        <h4><span class="en">Attestation J2 · sync_addresses · SECURITY.md · strict judge 6/6</span><span class="zh">Attestation J2 · sync_addresses · SECURITY.md · strict judge 6/6</span></h4>
+        <p><span class="en">Expiry + revoke + recipient-bound mint in <code>src/</code> (9 Foundry tests) · on-chain token still pre-hardening until redeploy · <a class="ref" href="docs/SECURITY.md">SECURITY.md</a> · <a class="ref" href="https://github.com/rachelzzz1921/hatchfi-pharos-skill/pull/1">PR #1</a>.</span><span class="zh"><code>src/</code> 中过期 + 撤销 + recipient 绑定 mint（9 项 Foundry 测试）· 链上 token 仍为硬化前版本（待重部署）· <a class="ref" href="docs/SECURITY.md">SECURITY.md</a> · <a class="ref" href="https://github.com/rachelzzz1921/hatchfi-pharos-skill/pull/1">PR #1</a>。</span></p>
+      </div>
+      <div class="item">
+        <div class="t">Round 10 · <span class="en">agent observability</span><span class="zh">Agent 可观测性</span></div>
+        <h4><span class="en">Agent Run dashboard · harness event bus · reporting protocol</span><span class="zh">Agent Run 看板 · harness 事件总线 · 汇报协议</span></h4>
+        <p><span class="en"><code>#/agent-run</code> live stepper + audit history · <code>.hatchfi/run-events.jsonl</code> NDJSON · wired into preflight/post-deploy/smoke/spawn/judge · <a class="ref" href="SKILL.md">SKILL.md Reporting Protocol</a> · <a class="ref" href="docs/ARCHITECTURE.md">ARCHITECTURE.md</a>.</span><span class="zh"><code>#/agent-run</code> 实时步骤条 + 审计历史 · <code>.hatchfi/run-events.jsonl</code> NDJSON · 接入 preflight/post-deploy/smoke/spawn/judge · <a class="ref" href="SKILL.md">SKILL.md 汇报协议</a> · <a class="ref" href="docs/ARCHITECTURE.md">ARCHITECTURE.md</a>。</span></p>
+      </div>
+      <div class="item">
         <div class="t"><span class="en">Shipped</span><span class="zh">已发布</span></div>
-        <h4><span class="en">GitHub main · latest pushed</span><span class="zh">GitHub main · latest pushed</span></h4>
-        <p><a class="ref" href="https://github.com/rachelzzz1921/hatchfi-pharos-skill" target="_blank">github.com/rachelzzz1921/hatchfi-pharos-skill</a></p>
+        <h4><span class="en">GitHub · PR #1 · Pages workflow</span><span class="zh">GitHub · PR #1 · Pages workflow</span></h4>
+        <p><a class="ref" href="https://github.com/rachelzzz1921/hatchfi-pharos-skill" target="_blank">github.com/rachelzzz1921/hatchfi-pharos-skill</a> · <a class="ref" href="https://github.com/rachelzzz1921/hatchfi-pharos-skill/pull/1">PR #1 agent/6h-hardening-sweep</a> · <span class="en">Pages on merge →</span><span class="zh">合并后 Pages →</span> <a class="ref" href="https://rachelzzz1921.github.io/hatchfi-pharos-skill/" target="_blank">rachelzzz1921.github.io/hatchfi-pharos-skill</a></p>
       </div>
     </div>
   </section>

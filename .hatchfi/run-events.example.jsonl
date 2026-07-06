@@ -1,0 +1,10 @@
+{"ts": "2026-07-06T01:00:00Z", "phase": "A", "step": "diligence:screen", "status": "ok", "summary": "Stage 0–2 complete · target GREEN · OFAC 93-address snapshot", "evidence": "0x037f2c541c4ee272c7de1f54b68cfe08b35b5d9e104bb4c308dffd5bec66c88c"}
+{"ts": "2026-07-06T01:05:00Z", "phase": "A", "step": "diligence:attest", "status": "ok", "summary": "On-chain attestation recorded (hash-only, no PII)", "address": "0x0d21aED2e3d4c64B2e0Df556C7514b80CC4AB94F"}
+{"ts": "2026-07-06T01:12:00Z", "phase": "B", "step": "preflight:pharos", "status": "ok", "summary": "Atlantic chainId 688689 · deploy wallet balance sufficient"}
+{"ts": "2026-07-06T01:18:00Z", "phase": "B", "step": "deploy:pharos", "status": "ok", "summary": "CompliantRWAToken deployed · Manhattan Property Fund (MPF)", "address": "0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3", "tx": "0xd00bcc18e78f85eaa9f62ee907a6adac13c9a45f6f7266699e57487beb61a023"}
+{"ts": "2026-07-06T01:22:00Z", "phase": "B", "step": "smoke:pharos", "status": "ok", "summary": "registerIdentity + mint 1 MPF · receipt status==1", "tx": "0x1b212771313c0ad0b382f99c69c027bdd5265e0cc64b619792adbd9038063905"}
+{"ts": "2026-07-06T01:28:00Z", "phase": "C", "step": "lifecycle:register", "status": "ok", "summary": "Investor whitelisted · jurisdiction US (840)"}
+{"ts": "2026-07-06T01:35:00Z", "phase": "D", "step": "spawn:asset", "status": "ok", "summary": "Private operating skill materialized · skills/MPF-asset v9", "evidence": "skills/MPF-asset/SKILL.md"}
+{"ts": "2026-07-06T01:40:00Z", "phase": "E", "step": "eval:skill", "status": "ok", "summary": "Deterministic behavioral eval · 64/64 passed"}
+{"ts": "2026-07-06T01:42:00Z", "phase": "E", "step": "inspect:skill", "status": "ok", "summary": "Skill Inspector static gate · 0 critical / 0 high"}
+{"ts": "2026-07-06T01:45:00Z", "phase": "E", "step": "judge:readiness:strict", "status": "ok", "summary": "Atlantic readiness · 6/6 checks (token + OFAC oracle live)"}

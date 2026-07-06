@@ -115,6 +115,12 @@ print(f"Explorer: {data['explorer']['address']}")
 
 PY
 
+python3 scripts/hatchfi_emit_event.py --phase B --step deploy:pharos --status ok \
+  --summary "CompliantRWAToken deployed" \
+  --address "$(python3 -c "import json; print(json.load(open('deployments/pharos.json'))['contractAddress'])")" \
+  --tx "$(python3 -c "import json; print(json.load(open('deployments/pharos.json'))['deploymentTx'])")" \
+  2>/dev/null || true
+
 # 同步 state.json asset 段（若存在 schema）
 if [ -f state.schema.json ]; then
   python3 << 'PY' || true

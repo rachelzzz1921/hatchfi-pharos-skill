@@ -18,9 +18,9 @@ Now includes a **reusable primitive**: `HatchFi Diligence Gate` (`lib/hatchfi-ga
 [![inspector](https://img.shields.io/badge/Skill_Inspector-0_critical%2F0_high-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
 
-**English**  ·  [中文](./README.zh.md)  ·  [Pitch Deck](./docs/deck/index.html)  ·  [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
+**English**  ·  [中文](./README.zh.md)  ·  [Pitch Deck](./docs/deck/index.html)  ·  [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)  ·  [Agent Run `#/agent-run`](./web/) *(local: `npm run web:dev`)*
 
-Built for the [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide) · works on Pharos Atlantic Testnet
+Built for the [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide) · works on Pharos Atlantic Testnet · **[PR #1 — 6h hardening sweep](https://github.com/rachelzzz1921/hatchfi-pharos-skill/pull/1)**
 
 <img src="./docs/assets/operator-console.gif" alt="HatchFi operator console — screen, attest, mint" width="720" />
 
@@ -66,11 +66,14 @@ It extends the official [Pharos Skill Engine](https://docs.pharos.xyz/tooling-an
 | OFAC denylist sync | Done | 93 ETH addresses · `npm run diligence:sync` · snapshot 2026-06-18 |
 | Mock OFAC oracle (Atlantic) | Done | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · demo RED @ `0x7F36…be1B` |
 | Skill eval harness | Done | **64/64** · `npm run eval:skill` (Python + Foundry golden parity) |
-| MPF asset Skill spawn | Done | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) v8 · 6 diligence refs per child |
+| MPF asset Skill spawn | Done | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) v9 · 6 diligence refs per child |
 | Paper-driven Round 8–10 | Done | `#19`/`#20` · attestation · monitoring · dry-run · [`PAPER_ALIGNMENT.md`](./docs/PAPER_ALIGNMENT.md) |
-| Diligence Gate primitive + adapters | Done | [`lib/hatchfi-gate/`](./lib/hatchfi-gate/SKILL.md) · `diligence_screen`/`diligence_rate`/`diligence_gate_mint`/`diligence_get_attestation` |
-| Visible demo + judge mode | Done | `npm run web:dev` · `npm run gate:cli` · `npm run judge:package` |
-| GitHub main | Done | [`hatchfi-pharos-skill`](https://github.com/rachelzzz1921/hatchfi-pharos-skill) |
+| Diligence Gate primitive + adapters | Done | [`lib/hatchfi-gate/`](./lib/hatchfi-gate/SKILL.md) · 8 MCP tools · LangChain/Vercel · unified envelope |
+| Attestation hardening (J2) | Done in `src/` · redeploy pending | expiry + revoke + recipient-bound mint · 9 Foundry tests · [`docs/SECURITY.md`](./docs/SECURITY.md) |
+| Agent observability | Done | **Agent Run** dashboard `#/agent-run` · harness `.hatchfi/run-events.jsonl` · [`SKILL.md` Reporting Protocol](./SKILL.md) |
+| Visible demo + judge mode | Done | `npm run web:dev` · `npm run gate:cli` · `npm run judge:package` · `npm run agent:run:seed` |
+| GitHub Pages site | Done (workflow) | landing + console + deck + dashboard · enable in repo Settings → Pages |
+| GitHub · hardening branch | Done | [`agent/6h-hardening-sweep`](https://github.com/rachelzzz1921/hatchfi-pharos-skill/pull/1) · 31 commits ahead of main |
 
 ---
 
@@ -82,7 +85,8 @@ npm run gate:test            # deterministic gate unit checks
 npm run gate:cli             # narrated RED->GREEN->attest->gate flow
 npm run judge:package        # gate:test + gate:cli + mcp:probe + judge:readiness
 npm run judge:readiness:strict # strict on-chain trust-model checks — 6/6 (hardened deployment live)
-npm run web:dev              # compliance operator console (screen -> attest -> mint, audit-logged, EN/ZH)
+npm run web:dev              # operator console (#/) + Agent Run dashboard (#/agent-run)
+npm run agent:run:seed       # demo harness feed → web/public/run-events.jsonl
 ```
 
 ### Judging criteria → command → evidence
@@ -190,8 +194,9 @@ HatchFi is operated through `npm` scripts that wrap Foundry, `cast`, and the age
 | Command | What it does |
 |---|---|
 | `npm run mcp` | Start MCP stdio server for HatchFi Diligence Gate |
-| `npm run web:dev` | Start interactive React demo |
-| `npm run web:build` | Build static web demo bundle |
+| `npm run web:dev` | Start operator console (`#/`) + Agent Run dashboard (`#/agent-run`) |
+| `npm run agent:run:seed` | Seed demo harness events → `web/public/run-events.jsonl` |
+| `npm run web:build` | Build static web demo bundle (includes seeded events) |
 
 ### Diligence (sanctions + background + on-chain)
 
@@ -308,6 +313,17 @@ HatchFi is a Pharos **Skill**, not a script. The agent follows [`SKILL.md`](./SK
 - **Receipt assertions** — every write verifies `status==1` before continuing
 - **Audit memory** — `state.json` records diligence, onboarding, dividends, and history — owner-private by default
 - **Key safety** — private key via env only, never committed
+
+### Agent Run dashboard
+
+Long-running agent sessions emit structured progress to `.hatchfi/run-events.jsonl` (NDJSON). The **Agent Run** page (`#/agent-run`) mirrors that feed with a five-phase stepper, current-step hero, and expandable audit history (tx hashes, contract addresses, evidence chips).
+
+```bash
+npm run agent:run:seed   # seed demo events → web/public/run-events.jsonl
+npm run web:dev          # http://localhost:5173/#/agent-run
+```
+
+Harness scripts (`preflight`, `post-deploy`, `smoke`, `spawn_asset_skill`, `judge-readiness`) append events via `scripts/hatchfi_emit_event.py`. Chat-side reporting rules live in [`SKILL.md`](./SKILL.md) (Reporting Protocol). Architecture: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md).
 
 ---
 

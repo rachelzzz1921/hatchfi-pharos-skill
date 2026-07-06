@@ -80,6 +80,28 @@ def main() -> None:
     write_state(state)
 
     print(f"Generated {skill_rel} (private-by-default, version {meta['version']})")
+
+    import subprocess
+
+    subprocess.run(
+        [
+            "python3",
+            "scripts/hatchfi_emit_event.py",
+            "--phase",
+            "D",
+            "--step",
+            "spawn:asset",
+            "--status",
+            "ok",
+            "--summary",
+            f"Private skill {skill_rel} v{meta['version']}",
+            "--evidence",
+            skill_rel,
+        ],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+    )
     print(f"  Permission manifest: {manifest_rel}")
     print("  Evolve: npm run refine:asset  |  npm run spawn:versions  |  npm run spawn:rollback")
 

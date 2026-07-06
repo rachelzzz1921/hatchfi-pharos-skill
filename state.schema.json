@@ -289,6 +289,34 @@
         "evolution_engine": { "type": "string", "description": "进化脚本标识，如 skill_spawn_lib" }
       }
     },
+    "progress": {
+      "type": "array",
+      "description": "Agent 机构汇报轨迹 — 与 .hatchfi/run-events.jsonl harness feed 对齐；供合规官与 Agent 共读",
+      "items": {
+        "type": "object",
+        "properties": {
+          "at": { "type": "string", "description": "ISO8601 UTC" },
+          "phase": { "type": "string", "enum": ["A", "B", "C", "D", "E"] },
+          "step": { "type": "string", "description": "Harness step id，如 deploy:pharos" },
+          "status": { "type": "string", "enum": ["ok", "fail", "skip", "running", "warn"] },
+          "summary": { "type": "string", "description": "一句人读摘要" },
+          "tx": { "type": "string" },
+          "address": { "type": "string" },
+          "evidence": { "type": "string" }
+        },
+        "required": ["at", "phase", "step", "status", "summary"]
+      }
+    },
+    "run_session": {
+      "type": "object",
+      "description": "最近一次 harness 事件快照 — Agent Run 看板与断点续作",
+      "properties": {
+        "last_event_at": { "type": "string" },
+        "last_step": { "type": "string" },
+        "last_status": { "type": "string" },
+        "last_phase": { "type": "string", "enum": ["A", "B", "C", "D", "E"] }
+      }
+    },
     "last_action": { "type": "string", "description": "最近一次操作，用于断点续作" },
     "history": {
       "type": "array",

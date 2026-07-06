@@ -143,3 +143,6 @@ if report.exists():
 PY
 
 echo "Status: OK"
+python3 scripts/hatchfi_emit_event.py --phase B --step smoke:pharos --status ok \
+  --summary "Smoke passed · registerIdentity + mint · receipt status==1" \
+  --tx "$TX2" --address "$TOKEN" 2>/dev/null || true

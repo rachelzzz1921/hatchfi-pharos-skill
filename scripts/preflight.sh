@@ -12,10 +12,15 @@ RPC_SOURCE="${PHAROS_RPC_SOURCE:-unknown}"
 echo "== Pharos Atlantic Preflight =="
 
 # 1. PRIVATE_KEY
+_emit_preflight_fail() {
+  python3 scripts/hatchfi_emit_event.py --phase B --step preflight:pharos --status fail --summary "$1" 2>/dev/null || true
+}
+
 if [ -z "${PRIVATE_KEY:-}" ]; then
   echo "Status: FAIL"
   echo "Reason: PRIVATE_KEY 未设置"
   echo "Fix: export PRIVATE_KEY=0x...  （不要写入文件或提交 git）"
+  _emit_preflight_fail "PRIVATE_KEY not set"
   exit 1
 fi
 
@@ -69,6 +74,7 @@ echo "Deploy Need: $REQUIRED_ETH PHRS"
 echo ""
 
 if [ "$BALANCE_WEI" = "0" ]; then
+  _emit_preflight_fail "Wallet balance is zero"
   echo "Status: FAIL"
   echo "Reason: 余额为 0，无法部署"
   echo "Fix: 去 faucet 领 PHRS（只填钱包地址，不要输入私钥）："
@@ -79,6 +85,7 @@ if [ "$BALANCE_WEI" = "0" ]; then
 fi
 
 if [ "$BALANCE_WEI" -lt "$REQUIRED_WEI" ]; then
+  _emit_preflight_fail "Insufficient PHRS for deploy (need ${REQUIRED_ETH}, have ${BALANCE_ETH})"
   echo "Status: FAIL"
   echo "Reason: 余额不足以覆盖部署预估成本"
   echo "Need:   $REQUIRED_ETH PHRS (limit=$DEPLOY_GAS_LIMIT, gas=$DEPLOY_GAS_PRICE_WEI wei)"
@@ -90,3 +97,5 @@ if [ "$BALANCE_WEI" -lt "$REQUIRED_WEI" ]; then
 fi
 
 echo "Status: OK"
+python3 scripts/hatchfi_emit_event.py --phase B --step preflight:pharos --status ok \
+  --summary "Atlantic preflight OK · wallet ${WALLET} · balance ${BALANCE_ETH} PHRS" 2>/dev/null || true

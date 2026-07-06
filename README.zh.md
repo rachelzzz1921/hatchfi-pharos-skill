@@ -18,9 +18,9 @@
 [![inspector](https://img.shields.io/badge/Skill_Inspector-0_critical%2F0_high-3dd68c?style=flat-square)](./docs/SKILL_SECURITY_REPORT.md)
 [![standard](https://img.shields.io/badge/ERC--3643-style-0b3d2e?style=flat-square)](./src/CompliantRWAToken.sol)
 
-**[English](./README.md)  ·  [Pitch Deck 中文版](./docs/deck/index.zh.html)**  ·  **中文**  ·  [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)
+**[English](./README.md)  ·  [Pitch Deck 中文版](./docs/deck/index.zh.html)**  ·  **中文**  ·  [Live Dashboard](https://htmlpreview.github.io/?https://github.com/rachelzzz1921/hatchfi-pharos-skill/blob/main/SUBMISSION_DASHBOARD.html)  ·  [Agent Run `#/agent-run`](./web/) *(本地: `npm run web:dev`)*
 
-基于 [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide) 构建 · 运行于 Pharos Atlantic 测试网
+基于 [Pharos Skill Engine](https://docs.pharos.xyz/tooling-and-infrastructure/pharos-skill-engine-guide) 构建 · 运行于 Pharos Atlantic 测试网 · **[PR #1 — 6h 硬化 sweep](https://github.com/rachelzzz1921/hatchfi-pharos-skill/pull/1)**
 
 
 <img src="./docs/assets/operator-console.gif" alt="HatchFi 合规操作员控制台" width="720" />
@@ -66,11 +66,14 @@ Agent 编排 RWA 代币化是活跃研究方向（[Borjigin 等，2025 — arXiv
 | OFAC denylist 同步 | 已完成 | 93 个 ETH 地址 · `npm run diligence:sync` · 快照 2026-06-18 |
 | Mock OFAC 预言机（Atlantic） | 已完成 | [`0x4FD3…F400`](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400) · 演示 RED @ `0x7F36…be1B` |
 | Skill eval 套件 | 已完成 | **64/64** · `npm run eval:skill`（Python + Foundry golden 对齐） |
-| MPF 资产 Skill spawn | 已完成 | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) v8 · 子 Skill 含 6 份 diligence ref |
+| MPF 资产 Skill spawn | 已完成 | [`skills/MPF-asset/`](./skills/MPF-asset/SKILL.md) v9 · 子 Skill 含 6 份 diligence ref |
 | 论文驱动 Round 8–10 | 已完成 | `#19`/`#20` · 存证 · 发行后监控 · dry-run · [`PAPER_ALIGNMENT.md`](./docs/PAPER_ALIGNMENT.md) |
-| Diligence Gate primitive + 适配器 | 已完成 | [`lib/hatchfi-gate/`](./lib/hatchfi-gate/SKILL.md) · 4 个工具 |
-| 可视化 Demo + 评委模式 | 已完成 | `npm run web:dev` · `npm run gate:cli` · `npm run judge:package` |
-| GitHub main | 已完成 | [`hatchfi-pharos-skill`](https://github.com/rachelzzz1921/hatchfi-pharos-skill) |
+| Diligence Gate primitive + 适配器 | 已完成 | [`lib/hatchfi-gate/`](./lib/hatchfi-gate/SKILL.md) · 8 个 MCP 工具 · LangChain/Vercel · 统一 envelope |
+| Attestation 硬化 (J2) | `src/` 已完成 · 重部署待充值 | 过期 + 撤销 + recipient 绑定 mint · 9 项 Foundry 测试 · [`docs/SECURITY.md`](./docs/SECURITY.md) |
+| Agent 可观测性 | 已完成 | **Agent Run** 看板 `#/agent-run` · harness `.hatchfi/run-events.jsonl` · [`SKILL.md` 汇报协议](./SKILL.md) |
+| 可视化 Demo + 评委模式 | 已完成 | `npm run web:dev` · `npm run gate:cli` · `npm run judge:package` · `npm run agent:run:seed` |
+| GitHub Pages 站点 | 已完成（workflow） | landing + console + deck + dashboard · 在仓库 Settings → Pages 启用 |
+| GitHub · 硬化分支 | 已完成 | [`agent/6h-hardening-sweep`](https://github.com/rachelzzz1921/hatchfi-pharos-skill/pull/1) · 领先 main 31 commits |
 
 ---
 
@@ -82,7 +85,8 @@ npm run gate:test
 npm run gate:cli
 npm run judge:package
 npm run judge:readiness:strict   # 链上信任模型严格检查 — 6/6（hardened 部署已上线）
-npm run web:dev                  # 合规操作员控制台（筛查 → 存证 → mint，审计留痕，中英双语）
+npm run web:dev                  # 操作员控制台 (#/) + Agent Run 看板 (#/agent-run)
+npm run agent:run:seed           # 演示 harness 事件 → web/public/run-events.jsonl
 ```
 
 ### 评审标准 → 命令 → 证据
@@ -159,8 +163,9 @@ HatchFi 通过 `npm` 脚本封装 Foundry、`cast` 与 Agent 工具链，按用�
 | 命令 | 作用 |
 |---|---|
 | `npm run mcp` | 启动 HatchFi Diligence Gate MCP（stdio） |
-| `npm run web:dev` | 启动交互式 Web Demo |
-| `npm run web:build` | 构建静态 Demo |
+| `npm run web:dev` | 启动操作员控制台 (#/) + Agent Run 看板 (#/agent-run) |
+| `npm run agent:run:seed` | 演示 harness 事件 → `web/public/run-events.jsonl` |
+| `npm run web:build` | 构建静态 Demo（含 seed 事件） |
 
 ### Spawn 与 Skill 进化
 
@@ -299,6 +304,17 @@ HatchFi 是 Pharos **Skill**，不是脚本。Agent 遵循 [`SKILL.md`](./SKILL.
 - **Receipt 断言** —— 每笔写操作验证 `status==1` 才继续
 - **审计记忆** —— `state.json` 记录尽调、准入、派息与历史——默认私有
 - **私钥安全** —— 仅环境变量，绝不入库
+
+### Agent Run 看板
+
+长跑 Agent 会话通过 `.hatchfi/run-events.jsonl`（NDJSON）输出结构化进度。**Agent Run** 页面（`#/agent-run`）以五阶段步骤条、当前步骤卡片和可展开审计历史（tx、合约地址、evidence 芯片）实时镜像该 feed。
+
+```bash
+npm run agent:run:seed   # 演示事件 → web/public/run-events.jsonl
+npm run web:dev          # http://localhost:5173/#/agent-run
+```
+
+Harness 脚本（`preflight`、`post-deploy`、`smoke`、`spawn_asset_skill`、`judge-readiness`）经 `scripts/hatchfi_emit_event.py` 追加事件。Chat 侧汇报规则见 [`SKILL.md`](./SKILL.md)（Reporting Protocol）。架构说明：[`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)。
 
 ---
 

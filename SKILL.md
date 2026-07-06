@@ -179,6 +179,56 @@ Gate rule: `critical` / `high` block upload/publish; reports must redact secrets
 5. **Post-tx assertion**: after every `cast send`, `cast receipt` with `status==1` before continuing; on failure stop and report.
 6. **Full audit trail**: every write updates `state.json` (whitelist/dividends/history); high-risk records `confirmed_by_human`.
 7. **Key hygiene**: private key only via `$PRIVATE_KEY`, explicit `--private-key $PK` per command; never write to files or commit.
+8. **Institutional reporting**: after every phase transition, emit the structured progress block below **and** rely on harness events in `.hatchfi/run-events.jsonl` (see Agent Run dashboard at `#/agent-run`).
+
+---
+
+## Agent Reporting Protocol (institutional operators)
+
+Compliance officers and agent operators must see the **same audit trail**. The agent reports in two layers:
+
+| Layer | Who writes | Where it lands | Purpose |
+|---|---|---|---|
+| **Harness** | `scripts/*` after each gated step | `.hatchfi/run-events.jsonl` | Machine feed for dashboards · no LLM drift |
+| **Agent (prompt)** | You, after each phase | `state.progress[]` + chat summary | Human-readable narrative for the issuer |
+
+### Phase map (fixed — do not rename)
+
+| Phase | Scope | Example steps |
+|---|---|---|
+| **A** | Diligence gate | `diligence:screen` · `diligence:attest` |
+| **B** | Compliant issuance | `preflight:pharos` · `deploy:pharos` · `smoke:pharos` |
+| **C** | Lifecycle ops | `lifecycle:register` · `lifecycle:dividend` · `lifecycle:recovery` |
+| **D** | Skill hatch | `spawn:asset` · `refine:asset` |
+| **E** | Security gate | `eval:skill` · `inspect:skill` · `judge:readiness` |
+
+### Required chat block (after every phase or blocked step)
+
+```markdown
+## HatchFi Progress · Phase {A|B|C|D|E}
+
+- **Step**: `{step_id}` (e.g. deploy:pharos)
+- **Status**: `{ok|fail|skip|warn}` — one sentence for the issuer
+- **Evidence**: tx hash / contract address / eval score (never private keys)
+- **Next**: exactly one recommended action, or STOP if fail
+
+Operator dashboard: `npm run web:dev` → `#/agent-run` (polls harness feed)
+Demo feed (no chain): `npm run agent:run:seed`
+```
+
+### Rules
+
+1. **Harness events are source of truth** for on-chain facts — do not contradict a `fail` event in prose.
+2. **Mirror to state**: append the same summary to `state.progress[]` when `state.json` exists.
+3. **Fail closed**: on `fail` or RED diligence, stop the pipeline and report; do not silently retry writes.
+4. **No secrets in events**: never put `$PRIVATE_KEY`, raw PII, or full investor records in progress or NDJSON.
+
+Harness emit helper (called automatically by scripts; agents may invoke after manual steps):
+
+```bash
+python3 scripts/hatchfi_emit_event.py --phase B --step manual:mint --status ok \
+  --summary "Mint 1000 MPF to whitelisted investor" --tx 0x...
+```
 
 ---
 

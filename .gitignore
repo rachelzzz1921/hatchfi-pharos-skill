@@ -31,5 +31,6 @@ scripts/__pycache__/
 # Local dev notes (planning, internal prompts, demo scripts) — never published
 .dev/
 
-# ui-e2e local audit trail
-.ui-e2e-log.ndjson
+# Local agent run feed (harness NDJSON — may contain tx hashes, never keys)
+.hatchfi/*
+!.hatchfi/run-events.example.jsonl

@@ -91,6 +91,7 @@ const T: Record<Lang, Record<string, string>> = {
     intro:
       "You are the issuer's compliance operator. Before any MPF shares can be minted, the counterparty must pass this diligence gate — screen them, attest the evidence, then attempt the mint. The gate, not you, decides.",
     liveChip: "Live on Pharos Atlantic · strict 6/6",
+    agentRunChip: "Agent Run · see what it's doing",
     step1: "Choose a counterparty",
     step2: "Operate the gate",
     step2Hint:
@@ -168,6 +169,7 @@ const T: Record<Lang, Record<string, string>> = {
     intro:
       "你是发行方的合规操作员。任何 MPF 份额 mint 之前，交易对手必须先过这道尽调闸门——先筛查、再存证、然后尝试 mint。做决定的是闸门，不是你。",
     liveChip: "已上线 Pharos Atlantic · strict 6/6",
+    agentRunChip: "Agent 运行 · 一眼看清进度",
     step1: "选择交易对手",
     step2: "操作闸门",
     step2Hint:
@@ -403,12 +405,19 @@ export default function App() {
           </button>
         </div>
         <p className="intro">{t.intro}</p>
-        <a className="live-chip" href={EXPLORER} target="_blank" rel="noreferrer">
-          <span className="live-dot" />
-          {t.liveChip}
-          <span className="live-addr">{TOKEN_ADDRESS.slice(0, 6)}…{TOKEN_ADDRESS.slice(-4)}</span>
-          <span aria-hidden="true">↗</span>
-        </a>
+        <div className="hero-chips">
+          <a className="live-chip" href={EXPLORER} target="_blank" rel="noreferrer">
+            <span className="live-dot" />
+            {t.liveChip}
+            <span className="live-addr">{TOKEN_ADDRESS.slice(0, 6)}…{TOKEN_ADDRESS.slice(-4)}</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+          <a className="live-chip live-chip-agent" href="#/agent-run">
+            <span className="live-dot live-dot-gold" />
+            {t.agentRunChip}
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
       </header>
 
       {/* STEP 1 · counterparty */}
@@ -573,6 +582,7 @@ export default function App() {
 
       <footer className="footer">
         <span>{t.footer}</span>
+        <a href="#/agent-run">Agent Run ↗</a>
         <code>npm run gate:cli</code>
         <code>npm run mcp:probe</code>
         <code>npm run judge:package</code>

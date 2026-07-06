@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import { createPublicClient, http } from "viem";
 
 const cwd = process.cwd();
@@ -165,4 +166,26 @@ if (warnings.length > 0) {
     console.log(`- ${warning}`);
   }
 }
-process.exit(passed === total ? 0 : 1);
+
+const readinessOk = passed === total;
+spawnSync(
+  "python3",
+  [
+    "scripts/hatchfi_emit_event.py",
+    "--phase",
+    "E",
+    "--step",
+    strictReadiness ? "judge:readiness:strict" : "judge:readiness",
+    "--status",
+    readinessOk ? "ok" : "fail",
+    "--summary",
+    readinessOk
+      ? `Atlantic readiness ${passed}/${total} checks passed`
+      : `Readiness ${passed}/${total} — see log above`,
+    "--extra",
+    JSON.stringify({ passed, total, token: tokenAddress }),
+  ],
+  { cwd, stdio: "ignore" }
+);
+
+process.exit(readinessOk ? 0 : 1);

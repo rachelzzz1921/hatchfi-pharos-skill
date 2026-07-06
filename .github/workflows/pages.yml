@@ -36,6 +36,7 @@ jobs:
           cp web/landing.html site/index.html
           cp web/public/favicon.png site/favicon.png
           cp SUBMISSION_DASHBOARD.html site/dashboard.html
+          cp web/public/run-events.jsonl site/console/run-events.jsonl 2>/dev/null || true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

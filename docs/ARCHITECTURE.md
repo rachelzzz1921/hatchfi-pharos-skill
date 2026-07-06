@@ -89,7 +89,30 @@ npm run refs:check       # contract surface drift
 npm run eval:skill       # 52 deterministic behavior checks
 npm run inspect:skill    # static security gate
 npm run check            # build + tests + package checks + inspector
+npm run agent:run:seed   # institutional demo feed → web/public/run-events.jsonl
 ```
+
+## Agent observability (institutional)
+
+HatchFi is one agent with **three control surfaces** that must stay aligned:
+
+| Surface | Artifact | Audience |
+|---|---|---|
+| Prompt layer | `SKILL.md` Reporting Protocol + chat progress blocks | Issuer / compliance officer |
+| Harness layer | `.hatchfi/run-events.jsonl` via `scripts/hatchfi_emit_event.py` | Dashboards · CI · auditors |
+| Memory layer | `state.progress[]` + `state.run_session` in `state.json` | Agent continuity · private ledger |
+
+```mermaid
+flowchart LR
+  H[Harness scripts] -->|NDJSON append| E[.hatchfi/run-events.jsonl]
+  E --> W[Web Agent Run #/agent-run]
+  H -->|mirror if state.json| S[state.progress]
+  A[Agent prompt] -->|phase block| S
+  A -->|narrative| U[Issuer / institution]
+  W --> U
+```
+
+Operator console: `npm run web:dev` → `#/` (gate demo) · `#/agent-run` (pipeline feed, polls every 3s).
 
 Current release evidence:
 
