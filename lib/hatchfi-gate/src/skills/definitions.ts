@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { DiligenceGate } from "../gate";
 import { DiligenceInputSchema, MintGateInputSchema } from "../types";
+import { envelope } from "./envelope";
 
 export interface SkillDefinition<TInput = unknown, TOutput = unknown> {
   name: string;
@@ -15,7 +16,7 @@ export function createDiligenceSkills(gate: DiligenceGate): SkillDefinition[] {
     description:
       "Run deterministic diligence checks and return RED/YELLOW/GREEN with check-level reasons.",
     schema: DiligenceInputSchema,
-    execute: async (input) => gate.screen(input as z.infer<typeof DiligenceInputSchema>),
+    execute: async (input) => envelope(await gate.screen(input as z.infer<typeof DiligenceInputSchema>)),
   };
 
   const diligenceRate: SkillDefinition = {
@@ -23,7 +24,7 @@ export function createDiligenceSkills(gate: DiligenceGate): SkillDefinition[] {
     description:
       "Compute deterministic diligence rating from supplied flags (no side effects, reproducible).",
     schema: DiligenceInputSchema,
-    execute: async (input) => gate.rate(input as z.infer<typeof DiligenceInputSchema>),
+    execute: async (input) => envelope(await gate.rate(input as z.infer<typeof DiligenceInputSchema>)),
   };
 
   const diligenceAttest: SkillDefinition = {
@@ -31,7 +32,7 @@ export function createDiligenceSkills(gate: DiligenceGate): SkillDefinition[] {
     description:
       "Persist a deterministic diligence attestation record for a given evidence hash and subject.",
     schema: DiligenceInputSchema,
-    execute: async (input) => gate.attest(input as z.infer<typeof DiligenceInputSchema>),
+    execute: async (input) => envelope(await gate.attest(input as z.infer<typeof DiligenceInputSchema>)),
   };
 
   const diligenceGateMint: SkillDefinition = {
@@ -39,7 +40,7 @@ export function createDiligenceSkills(gate: DiligenceGate): SkillDefinition[] {
     description:
       "Gate mint decision by combining deterministic rating and attestation existence/pass status.",
     schema: MintGateInputSchema,
-    execute: async (input) => gate.gateMint(input as z.infer<typeof MintGateInputSchema>),
+    execute: async (input) => envelope(await gate.gateMint(input as z.infer<typeof MintGateInputSchema>)),
   };
 
   const diligenceGetAttestation: SkillDefinition = {
@@ -49,7 +50,7 @@ export function createDiligenceSkills(gate: DiligenceGate): SkillDefinition[] {
       evidenceHash: z.string().min(1),
     }),
     execute: async (input) =>
-      gate.getAttestation((input as { evidenceHash: string }).evidenceHash),
+      envelope(await gate.getAttestation((input as { evidenceHash: string }).evidenceHash)),
   };
 
   return [diligenceScreen, diligenceRate, diligenceAttest, diligenceGateMint, diligenceGetAttestation];

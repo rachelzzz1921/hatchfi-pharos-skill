@@ -1,4 +1,4 @@
-import { DiligenceGate, InMemoryAttestationRegistry } from "../src";
+import { DiligenceGate, InMemoryAttestationRegistry, envelope } from "../src";
 
 async function main() {
   const registry = new InMemoryAttestationRegistry();
@@ -44,18 +44,13 @@ async function main() {
     flags: greenCase.flags,
   });
 
-  const envelope = {
-    success: true,
-    skill: "hatchfi-diligence-gate",
-    version: "1.0.0",
-    data: {
-      redCase: redDecision,
-      greenCase: greenDecision,
-      mintGate: mintDecision,
-    },
-  };
+  const out = envelope({
+    redCase: redDecision,
+    greenCase: greenDecision,
+    mintGate: mintDecision,
+  });
 
-  console.log(JSON.stringify(envelope, null, 2));
+  console.log(JSON.stringify(out, null, 2));
 }
 
 main().catch((error) => {

@@ -1,4 +1,4 @@
-import { DiligenceGate, InMemoryAttestationRegistry } from "../src";
+import { DiligenceGate, InMemoryAttestationRegistry, envelope } from "../src";
 
 function divider(title: string) {
   console.log(`\n=== ${title} ===`);
@@ -78,21 +78,16 @@ async function main() {
   });
   printStep("diligence_gate_mint(post-attest, sanctions=true)", revokedByPolicy);
 
-  const envelope = {
-    success: true,
-    skill: "hatchfi-diligence-gate",
-    version: "1.1.0",
-    data: {
-      redScenario: redDecision,
-      greenScenario: greenDecision,
-      attestation,
-      mintAllowed,
-      revokedByPolicy,
-    },
-  };
+  const out = envelope({
+    redScenario: redDecision,
+    greenScenario: greenDecision,
+    attestation,
+    mintAllowed,
+    revokedByPolicy,
+  });
 
   divider("Final envelope");
-  console.log(JSON.stringify(envelope, null, 2));
+  console.log(JSON.stringify(out, null, 2));
 }
 
 main().catch((error) => {

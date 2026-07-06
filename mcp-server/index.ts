@@ -8,6 +8,7 @@ import {
   createDiligenceSkills,
   toMcpTools,
   callMcpTool,
+  envelope,
 } from "../lib/hatchfi-gate/src";
 import { onChainTools, isOnChainTool, callOnChainTool } from "./onchain-tools";
 
@@ -47,8 +48,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const name = request.params.name;
   const args = request.params.arguments ?? {};
   try {
+    // Gate skills already return the unified envelope; wrap on-chain reads too
+    // so every MCP response carries { success, skill, version, data }.
     const result = isOnChainTool(name)
-      ? await callOnChainTool(name, args as Record<string, unknown>)
+      ? envelope(await callOnChainTool(name, args as Record<string, unknown>))
       : await callMcpTool(skills, name, args);
     return json(result);
   } catch (error) {

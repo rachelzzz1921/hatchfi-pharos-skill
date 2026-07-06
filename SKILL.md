@@ -53,6 +53,8 @@ HatchFi now exposes a reusable deterministic gate module under `lib/hatchfi-gate
 - `diligence_get_attestation`
 - `diligence_attest`
 
+Every skill-surface response (MCP · LangChain · Vercel AI · web playground · CLI demos) carries a **unified envelope** `{ success, skill, version, data }` — agents route on it without caring which surface answered.
+
 The MCP server also ships **read-only on-chain tools** (no key / no funds — `cast call` equivalents over the live deployed token):
 
 - `rwa_token_metadata` — name / symbol / totalSupply / holderCount / caps
