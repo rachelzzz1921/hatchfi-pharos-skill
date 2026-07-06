@@ -137,7 +137,7 @@
       "category": "pharos-web3",
       "rule": "declared_write_capability",
       "path": "SKILL.md",
-      "line": 190,
+      "line": 240,
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "| Balance / token query / send PHRS / generic verify | cast balance / cast call / cast send / forge verify | 🟢/🔴 | pharos-base-ops |",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."
@@ -527,7 +527,7 @@
       "category": "pharos-web3",
       "rule": "declared_write_capability",
       "path": "package.json",
-      "line": 31,
+      "line": 32,
       "message": "On-chain write capability is present and declared in SKILL.md.",
       "evidence": "\"deploy:attestation\": \"bash scripts/preflight.sh && forge script script/DeployAttestation.s.sol:DeployAttestation --rpc-url ${PHAROS_RPC_URL:-https://atlantic.dplabs-internal.com} --private-key $PRIVATE_KEY --broadcast -",
       "recommendation": "Keep preflight, human-confirm, and receipt assertions mandatory."

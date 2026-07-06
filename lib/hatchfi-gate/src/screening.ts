@@ -1,16 +1,11 @@
 import { OFAC_DENYLIST_SET, OFAC_DENYLIST_SIZE } from "./denylist";
+import type { ScreeningResult } from "./types";
+
+export type { ScreeningResult };
 
 // Real sanctions screening — a set-membership check against the shipped OFAC
 // snapshot (and, optionally, the live on-chain oracle). This is what turns
 // diligence_screen from "format the caller's flag" into "perform the check".
-export type ScreeningResult = {
-  subject: string;
-  sanctioned: boolean;
-  source: "ofac-snapshot" | "ofac-snapshot+onchain-oracle";
-  matched: boolean; // the snapshot/oracle actually flagged this address
-  listSize: number;
-  checkedAt: number;
-};
 
 /** Synchronous, offline screening against the shipped OFAC snapshot. */
 export function screenAddress(subject: string): ScreeningResult {

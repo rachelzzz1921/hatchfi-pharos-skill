@@ -41,6 +41,7 @@ export const ScreeningResultSchema = z.object({
   listSize: z.number().int().nonnegative(),
   checkedAt: z.number().int().nonnegative(),
 });
+export type ScreeningResult = z.infer<typeof ScreeningResultSchema>;
 
 export const GateDecisionSchema = z.object({
   rating: RatingSchema,

@@ -34,3 +34,6 @@ scripts/__pycache__/
 # Local agent run feed (harness NDJSON — may contain tx hashes, never keys)
 .hatchfi/*
 !.hatchfi/run-events.example.jsonl
+
+# ui-e2e local audit trail
+.ui-e2e-log.ndjson

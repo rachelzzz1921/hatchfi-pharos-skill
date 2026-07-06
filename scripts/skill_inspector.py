@@ -53,6 +53,7 @@ SKIP_DIRS = {
     ".dev",
     "cache",
     "out",
+    "dist-web",
     "broadcast",
     # Vendored Foundry libs (not ours) — but DO scan our own lib/hatchfi-gate primitive.
     "forge-std",

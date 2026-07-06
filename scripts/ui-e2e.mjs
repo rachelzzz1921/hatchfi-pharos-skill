@@ -68,7 +68,8 @@ try {
   await page.goto(demoUrl, { waitUntil: "networkidle", timeout: 30000 });
 
   // Hero: brand + live on-chain chip pointing at the hardened token
-  const chipHref = await page.locator(".live-chip").getAttribute("href");
+  // (the hero now has multiple chips; target the on-chain one, not the agent-run chip)
+  const chipHref = await page.locator(".live-chip:not(.live-chip-agent)").first().getAttribute("href");
   if (chipHref?.includes("pharosscan.xyz/address/0x975704")) {
     pass("HERO", "e2e:hero", "Live chip links to hardened token", { chipHref });
   } else {
