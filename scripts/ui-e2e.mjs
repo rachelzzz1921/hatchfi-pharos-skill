@@ -33,6 +33,36 @@ function pass(h, loc, msg, data) {
   log(h, loc, msg, { ...data, pass: true });
 }
 
+// Self-contained: if no external DEMO_URL is given, serve the built dist-web
+// (build it first if missing) so `npm run ui:e2e` needs no manually-started server.
+let consoleServer = null;
+let resolvedDemoUrl = process.env.DEMO_URL || null;
+if (!resolvedDemoUrl) {
+  const dist = path.join(cwd, "dist-web");
+  if (!fs.existsSync(path.join(dist, "index.html"))) {
+    console.log("dist-web missing — building web app…");
+    const { spawnSync } = await import("node:child_process");
+    spawnSync("npm", ["run", "web:build"], { cwd, stdio: "inherit" });
+  }
+  const consolePort = Number(process.env.CONSOLE_PORT || 8790);
+  consoleServer = http.createServer((req, res) => {
+    let rel = (req.url || "/").split("?")[0].split("#")[0];
+    let filePath = path.join(dist, rel.replace(/^\//, ""));
+    // SPA fallback: unknown non-asset paths serve index.html (hash routing).
+    if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+      filePath = path.join(dist, "index.html");
+    }
+    const ext = path.extname(filePath);
+    const types = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".png": "image/png", ".json": "application/json", ".svg": "image/svg+xml", ".jsonl": "application/json" };
+    res.writeHead(200, { "Content-Type": types[ext] || "application/octet-stream" });
+    fs.createReadStream(filePath).pipe(res);
+  });
+  await new Promise((resolve) => consoleServer.listen(consolePort, "127.0.0.1", resolve));
+  resolvedDemoUrl = `http://127.0.0.1:${consolePort}`;
+  console.log(`serving built console at ${resolvedDemoUrl}`);
+}
+const demoUrlFinal = resolvedDemoUrl;
+
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
 
@@ -65,7 +95,7 @@ async function noHorizontalOverflow(label) {
 
 try {
   // --- React Demo App (3-step choreography) ---
-  await page.goto(demoUrl, { waitUntil: "networkidle", timeout: 30000 });
+  await page.goto(demoUrlFinal, { waitUntil: "networkidle", timeout: 30000 });
 
   // Hero: brand + live on-chain chip pointing at the hardened token
   // (the hero now has multiple chips; target the on-chain one, not the agent-run chip)
@@ -185,6 +215,19 @@ try {
   await page.locator(".lang-toggle").click();
   await page.waitForTimeout(200);
 
+  // --- Agent Run dashboard (institution-facing audit trail) ---
+  await page.goto(`${demoUrlFinal}/#/agent-run`, { waitUntil: "networkidle", timeout: 30000 });
+  await page.waitForTimeout(600);
+  const agentText = await page.evaluate(() => document.body.innerText);
+  const hasStepper = /phase|diligence|issuance|verify/i.test(agentText);
+  const hasHistory = /step history|history/i.test(agentText);
+  if (hasStepper && hasHistory) {
+    pass("AGENTRUN", "e2e:agent-run", "Agent Run shows phase stepper + step history", {});
+  } else {
+    fail("AGENTRUN", "e2e:agent-run", "Agent Run missing stepper/history", { snippet: agentText.slice(0, 160) });
+  }
+  await noHorizontalOverflow("agent-run");
+
   // --- SUBMISSION_DASHBOARD ---
   await page.goto(dashboardUrl, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(500);
@@ -248,6 +291,7 @@ try {
 } finally {
   await browser.close();
   dashboardServer.close();
+  if (consoleServer) consoleServer.close();
 }
 
 console.log(`\nE2E complete: ${failures} failure(s)`);
