@@ -31,7 +31,7 @@ Agent B, C, … : import MPF-asset skill
 ## Evidence judges can verify in 60 seconds
 
 1. Open [`atlantic.pharosscan.xyz/address/0x9757…`](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3) — live contract
-2. Run `forge test` locally — 36 passed
+2. Run `forge test` locally — 45 passed
 3. Open `skills/MPF-asset/SKILL.md` — spawned child skill with hardcoded `TOKEN=0x9757…`
 4. Read `COMPLETED_VALIDATION.md` — full local + on-chain record
 

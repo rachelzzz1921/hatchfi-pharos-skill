@@ -41,5 +41,5 @@ jobs:
           forge install foundry-rs/forge-std --no-commit || forge install foundry-rs/forge-std
       - name: forge build (zero warnings)
         run: forge build
-      - name: forge test (expect 36 passing)
+      - name: forge test (expect 45 passing)
         run: forge test -vvv

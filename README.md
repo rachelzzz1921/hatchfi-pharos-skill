@@ -10,7 +10,7 @@ Issue a compliant RWA on Pharos with an AI agent — and keep a private operatin
 
 Now includes a **reusable primitive**: `HatchFi Diligence Gate` (`lib/hatchfi-gate`) with MCP/LangChain/Vercel adapters, a web demo (`web/`), and one-command readiness checks (`npm run judge:readiness`).
 
-[![tests](https://img.shields.io/badge/Foundry-36_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
+[![tests](https://img.shields.io/badge/Foundry-45_passed-3dd68c?style=flat-square)](./docs/COMPLETED_VALIDATION.md)
 [![eval](https://img.shields.io/badge/skill_eval-64%2F64-3dd68c?style=flat-square)](./eval/skill_behavior_cases.json)
 [![live](https://img.shields.io/badge/Pharos_Atlantic_Testnet-deployed-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3)
 [![oracle](https://img.shields.io/badge/Mock_OFAC_Oracle-live-2dd4bf?style=flat-square)](https://atlantic.pharosscan.xyz/address/0x4FD317Ec868fdbd6e95c56f157DDf86d7b97F400)
@@ -90,7 +90,7 @@ npm run web:dev              # compliance operator console (screen -> attest -> 
 | Criterion | Run this | Evidence you'll see |
 |---|---|---|
 | **Pharos vision fit** — RWA · protocol-native compliance · agentic | read [`SKILL.md`](./SKILL.md) pipeline | 3-stage diligence → issuance → spawn; ERC-3643 two checks; MPF live on Atlantic |
-| **Technical completeness** | `npm run build && npm run test` | 36 Foundry tests (roles · two-phase recovery · attestation-gated mint · pro-rata dividends) |
+| **Technical completeness** | `npm run build && npm run test` | 45 Foundry tests (roles · two-phase recovery · attestation-gated mint · pro-rata dividends) |
 | **Verifiable in minutes, no wallet** | `npm run judge:package` | `gate:test` PASS · narrated RED→GREEN · `TOOLS 8` · readiness |
 | **Composability / agent integration** | `npm run mcp:probe` | 8 MCP tools (5 gate + 3 live on-chain reads) + LangChain/Vercel adapters |
 | **Security posture** | `npm run inspect:skill` | 0 critical / 0 high — the Skill scans itself before publish |
@@ -107,7 +107,7 @@ curl -L https://foundry.paradigm.xyz | bash && foundryup
 forge install OpenZeppelin/openzeppelin-contracts@v5.1.0 && forge install foundry-rs/forge-std
 
 # 2 · build + verify locally (no wallet needed)
-npm run build && npm run test       # 36 Foundry tests
+npm run build && npm run test       # 45 Foundry tests
 npm run eval:skill                  # 64 deterministic skill checks
 npm run inspect:skill               # static security scan
 npm run check                       # full local gate (build · test · refs · eval · inspector)
@@ -209,13 +209,13 @@ HatchFi is operated through `npm` scripts that wrap Foundry, `cast`, and the age
 Phase A  Diligence Gate     →  Phase B  Compliant Issuance  →  Phase C  Lifecycle Ops     →  Phase D  Skill Hatch        →  Phase E  Security Gate
          3-stage evidence          deploy ERC-3643 token            whitelist / freeze / mint     spawn skills/MPF-asset/     static-only inspector
          sanctions+onchain+        identity·compliance·freeze       dividends / recovery / audit  4 diligence refs · private  prompt/secret/Web3/Solidity
-         offchain → GREEN/         36 tests + audit trail           cast logs (18 events)         refine · version · rollback block critical/high
+         offchain → GREEN/         45 tests + audit trail           cast logs (18 events)         refine · version · rollback block critical/high
          YELLOW/RED · RED blocks
 ```
 
 **10 agent playbooks** in `references/`: `onchain-diligence` · `offchain-diligence` · `sanctions-screening` · `compliance-knowledge` · `rwa-issuance` · `rwa-dividend` · `spawn-asset-skill` · `pharos-base-ops` · `pharos-deploy-runbook` · `pharos-verification`
 
-**Auto-generated contract surface** (`npm run refs:generate`): 44 callable entries (external/public functions + public getters) · 18 ERC-3643-aligned events · 14 typed errors · 36 Foundry tests including a fuzz invariant.
+**Auto-generated contract surface** (`npm run refs:generate`): 44 callable entries (external/public functions + public getters) · 18 ERC-3643-aligned events · 14 typed errors · 45 Foundry tests including a fuzz invariant.
 
 ---
 
@@ -317,7 +317,7 @@ Before release, HatchFi went through a layered review loop. Issues found were fi
 
 | Review gate | Outcome |
 |---|---|
-| **TDD test suite** | 36 Foundry tests, 0 failed, including a fuzz invariant proving dividends can't over-distribute (`claimable + dust ≤ deposit`) |
+| **TDD test suite** | 45 Foundry tests, 0 failed, including a fuzz invariant proving dividends can't over-distribute (`claimable + dust ≤ deposit`) |
 | **Skill eval suite** | `npm run eval:skill` — 64/64 deterministic checks on gates, risk tiers, consent, and spawn structure |
 | **Security review** ([`docs/SECURITY.md`](./docs/SECURITY.md)) | Findings documented; fixes pinned by named regression tests |
 | **Compliance review** | Found and closed a compliance-critical gap (`mint` bypassing holder/balance caps) — issuance now enforces the same `canTransfer` rules as transfers |
@@ -348,7 +348,7 @@ HatchFi is deployed and smoke-tested on **Pharos Atlantic Testnet**.
 
 Smoke path: `registerIdentity` is skipped when the deployer is already verified; **mint + receipt assert** is the executed write path recorded below.
 
-Anyone can verify independently in ~2 minutes: `git clone` → `npm run build && npm run test` (36 passed) → `npm run eval:skill` (64/64) → open the contract on PharosScan (Atlantic Testnet).
+Anyone can verify independently in ~2 minutes: `git clone` → `npm run build && npm run test` (45 passed) → `npm run eval:skill` (64/64) → open the contract on PharosScan (Atlantic Testnet).
 
 ---
 
@@ -359,7 +359,7 @@ Anyone can verify independently in ~2 minutes: `git clone` → `npm run build &&
 - A deterministic spawn → refine → version pipeline that leaves the issuer a private, evolving operating Skill
 - An auto-generated contract-surface reference kept in sync with the Solidity source
 - A 64-check eval harness and a static Skill Inspector security gate
-- 36 Foundry tests, a security review with all findings addressed, and data sovereignty with opt-in sharing
+- 45 Foundry tests, a security review with all findings addressed, and data sovereignty with opt-in sharing
 
 ---
 

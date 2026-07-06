@@ -40,10 +40,14 @@ flowchart TD
 
 ## Guarantees
 
-1. **Fail-closed mint.** `mint` reverts `DiligenceAttestationRegistryNotSet` if no registry
-   is wired, and `DiligenceNotAttested(evidenceHash)` unless `isPassable` returns true.
-   A RED rating is never `isPassable`, so a sanctioned/expired-KYC subject can never be minted
-   to — even if an operator tries.
+1. **Fail-closed, recipient-bound mint.** `mint` reverts `DiligenceAttestationRegistryNotSet`
+   if no registry is wired, and `DiligenceNotAttested(evidenceHash)` unless
+   `isPassableFor(evidenceHash, to)` returns true — i.e. the attestation exists, is **not
+   revoked**, is **within its validity window**, passed the gate (not RED), **and is bound to the
+   recipient** `to`. So a hash cleared for one address cannot mint to another, a stale hash
+   expires, and a re-screen can `revoke` it. (The live Atlantic deployment predates this
+   hardening — see "Known limitations" in `docs/SECURITY.md`; the fix ships in `src/` with tests
+   and takes effect on redeploy.)
 2. **No PII on chain.** Only `evidenceHash` and `assetFingerprint` (both `bytes32`) are stored.
    The evidence itself stays in the issuer's private `state.json`.
 3. **Cross-language reproducibility.** `evidence_hash()` (Python, via `cast keccak`) equals the
@@ -58,7 +62,9 @@ flowchart TD
 | Tooling | `evidence_hash(evidence)` | `keccak256` of the canonical JSON |
 | Tooling | `asset_fingerprint(id, jur, wrapper)` | `keccak256(abi.encode(...))` |
 | Registry | `attest(evidenceHash, target, rating, assetFingerprint)` | Registrar records a conclusion |
-| Registry | `isPassable(evidenceHash)` | attested AND `rating != RED` |
+| Registry | `isPassable(evidenceHash)` | live (non-revoked, non-expired) AND `rating != RED` |
+| Registry | `isPassableFor(evidenceHash, target)` | `isPassable` AND bound to `target` — the mint gate |
+| Registry | `revoke(evidenceHash)` / `validityWindow` | registrar revocation · time-boxed validity |
 | Registry | `isGreen` / `attestationByHash` / `latestAttestation` | Read-only lookups |
 | Token | `mint(to, amount, evidenceHash)` | Reverts unless `isPassable(evidenceHash)` |
 

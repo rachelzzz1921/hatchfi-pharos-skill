@@ -38,7 +38,9 @@ contract CompliantRWATokenTest is Test {
     }
 
     function _mintTo(address to, uint256 amount) internal {
-        token.mint(to, amount, EVIDENCE_HASH);
+        bytes32 ev = keccak256(abi.encodePacked(EVIDENCE_HASH, to));
+        attestation.attest(ev, to, attestation.RATING_GREEN(), ASSET_FP);
+        token.mint(to, amount, ev);
     }
 
     function setUp() public {
@@ -47,7 +49,6 @@ contract CompliantRWATokenTest is Test {
         attestation = new DiligenceAttestationRegistry();
 
         token.setDiligenceAttestationRegistry(address(attestation));
-        attestation.attest(EVIDENCE_HASH, address(token), attestation.RATING_GREEN(), ASSET_FP);
     }
 
     // ───────────── attestation mint gate ─────────────
@@ -68,9 +69,40 @@ contract CompliantRWATokenTest is Test {
         token.mint(alice, 1e18, unknownEvidence);
     }
 
+    /// @dev The auditor's exploit: a hash attested for one recipient must not mint to another.
+    function test_MintRejectsAttestationBoundToOther() public {
+        _register(alice, US);
+        attestation.attest(EVIDENCE_HASH, bob, attestation.RATING_GREEN(), ASSET_FP);
+        vm.expectRevert(
+            abi.encodeWithSelector(CompliantRWAToken.DiligenceNotAttested.selector, EVIDENCE_HASH)
+        );
+        token.mint(alice, 1e18, EVIDENCE_HASH);
+    }
+
+    function test_MintRejectsRevokedAttestation() public {
+        _register(alice, US);
+        attestation.attest(EVIDENCE_HASH, alice, attestation.RATING_GREEN(), ASSET_FP);
+        attestation.revoke(EVIDENCE_HASH);
+        vm.expectRevert(
+            abi.encodeWithSelector(CompliantRWAToken.DiligenceNotAttested.selector, EVIDENCE_HASH)
+        );
+        token.mint(alice, 1e18, EVIDENCE_HASH);
+    }
+
+    function test_MintRejectsExpiredAttestation() public {
+        _register(alice, US);
+        attestation.attest(EVIDENCE_HASH, alice, attestation.RATING_GREEN(), ASSET_FP);
+        vm.warp(block.timestamp + attestation.validityWindow() + 1);
+        vm.expectRevert(
+            abi.encodeWithSelector(CompliantRWAToken.DiligenceNotAttested.selector, EVIDENCE_HASH)
+        );
+        token.mint(alice, 1e18, EVIDENCE_HASH);
+    }
+
     // ───────────── 身份验证 ─────────────
 
     function test_MintRequiresVerifiedRecipient() public {
+        attestation.attest(EVIDENCE_HASH, alice, attestation.RATING_GREEN(), ASSET_FP);
         vm.expectRevert(abi.encodeWithSelector(CompliantRWAToken.NotVerified.selector, alice));
         token.mint(alice, 100e18, EVIDENCE_HASH);
 
@@ -303,6 +335,7 @@ contract CompliantRWATokenTest is Test {
 
     function test_MintEnforcesMaxBalancePerInvestor() public {
         _register(alice, US);
+        attestation.attest(EVIDENCE_HASH, alice, attestation.RATING_GREEN(), ASSET_FP);
         vm.expectRevert(
             abi.encodeWithSelector(CompliantRWAToken.ComplianceFailure.selector, "exceeds max balance per investor")
         );
@@ -317,6 +350,7 @@ contract CompliantRWATokenTest is Test {
         _mintTo(alice, 10e18);
         _mintTo(bob, 10e18);
         _mintTo(carol, 10e18);
+        attestation.attest(EVIDENCE_HASH, dave, attestation.RATING_GREEN(), ASSET_FP);
         vm.expectRevert(
             abi.encodeWithSelector(CompliantRWAToken.ComplianceFailure.selector, "exceeds max holder count")
         );

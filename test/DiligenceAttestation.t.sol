@@ -44,6 +44,55 @@ contract DiligenceAttestationTest is Test {
         attestation.attest(EVIDENCE_HASH, issuer, 0, ASSET_FP);
     }
 
+    // ───────────── lifecycle: revoke · expiry · target binding ─────────────
+
+    function test_RevokeMakesNotPassable() public {
+        attestation.attest(EVIDENCE_HASH, issuer, attestation.RATING_GREEN(), ASSET_FP);
+        assertTrue(attestation.isPassable(EVIDENCE_HASH));
+        attestation.revoke(EVIDENCE_HASH);
+        assertTrue(attestation.isRevoked(EVIDENCE_HASH));
+        assertFalse(attestation.isPassable(EVIDENCE_HASH));
+        assertFalse(attestation.isGreen(EVIDENCE_HASH));
+        assertFalse(attestation.isPassableFor(EVIDENCE_HASH, issuer));
+    }
+
+    function test_RevokeUnknownReverts() public {
+        vm.expectRevert(DiligenceAttestationRegistry.UnknownAttestation.selector);
+        attestation.revoke(keccak256("never-attested"));
+    }
+
+    function test_ReattestClearsRevocation() public {
+        attestation.attest(EVIDENCE_HASH, issuer, attestation.RATING_GREEN(), ASSET_FP);
+        attestation.revoke(EVIDENCE_HASH);
+        assertFalse(attestation.isPassable(EVIDENCE_HASH));
+        attestation.attest(EVIDENCE_HASH, issuer, attestation.RATING_GREEN(), ASSET_FP);
+        assertFalse(attestation.isRevoked(EVIDENCE_HASH));
+        assertTrue(attestation.isPassable(EVIDENCE_HASH));
+    }
+
+    function test_ExpiryMakesNotPassable() public {
+        attestation.attest(EVIDENCE_HASH, issuer, attestation.RATING_GREEN(), ASSET_FP);
+        assertTrue(attestation.isPassable(EVIDENCE_HASH));
+        vm.warp(block.timestamp + attestation.validityWindow() + 1);
+        assertFalse(attestation.isPassable(EVIDENCE_HASH));
+        assertFalse(attestation.isPassableFor(EVIDENCE_HASH, issuer));
+    }
+
+    function test_SetValidityWindow() public {
+        attestation.setValidityWindow(1 days);
+        assertEq(attestation.validityWindow(), 1 days);
+        attestation.attest(EVIDENCE_HASH, issuer, attestation.RATING_GREEN(), ASSET_FP);
+        vm.warp(block.timestamp + 1 days + 1);
+        assertFalse(attestation.isPassable(EVIDENCE_HASH));
+    }
+
+    function test_IsPassableForBindsTarget() public {
+        attestation.attest(EVIDENCE_HASH, issuer, attestation.RATING_GREEN(), ASSET_FP);
+        assertTrue(attestation.isPassableFor(EVIDENCE_HASH, issuer));
+        // The same hash cleared for `issuer` must NOT gate a mint to anyone else.
+        assertFalse(attestation.isPassableFor(EVIDENCE_HASH, tokenA));
+    }
+
     function test_NonRegistrarCannotAttest() public {
         vm.prank(issuer);
         vm.expectRevert(DiligenceAttestationRegistry.NotRegistrar.selector);

@@ -298,7 +298,9 @@ contract CompliantRWAToken is ERC20, Ownable, Pausable, AccessControl {
         if (address(diligenceAttestationRegistry) == address(0)) {
             revert DiligenceAttestationRegistryNotSet();
         }
-        if (!diligenceAttestationRegistry.isPassable(evidenceHash)) {
+        // The attestation must be live (non-revoked, non-expired), passable, AND
+        // bound to `to` — a hash cleared for one recipient can't mint to another.
+        if (!diligenceAttestationRegistry.isPassableFor(evidenceHash, to)) {
             revert DiligenceNotAttested(evidenceHash);
         }
         _mint(to, amount);
