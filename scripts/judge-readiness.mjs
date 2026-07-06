@@ -143,6 +143,11 @@ await check("Mock OFAC RED demo address", async () => {
 
 console.log(`\n${passed}/${total} readiness checks passed`);
 console.log(
+  strictReadiness
+    ? "Mode: STRICT — RPC rate limits and a legacy contract surface (missing recoveryDelay / diligenceAttestationRegistry) FAIL the run; no compat downgrade."
+    : "Mode: COMPAT — RPC rate limits and legacy surface downgrade to warnings (set STRICT_READINESS=1 to enforce)."
+);
+console.log(
   "Contracts:",
   JSON.stringify(
     {

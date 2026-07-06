@@ -5,8 +5,8 @@
 ## 设计姿态
 
 - **合规优先的转账**：所有余额变动统一走 OpenZeppelin v5 的 `_update`。普通转账同时强制身份（`isVerified(to)`）与模块化合规（`maxHolders`、`maxBalancePerInvestor`）；mint 发行强制身份**与**同样的合规上限；burn 放行。
-- **最小权限角色**：`onlyOwner` 管治理（合规规则、agent、派息、dust 回收）；`onlyAgent` 管运营动作（注册、冻结、mint、burn、强制转移、恢复、暂停）。
-- **可审计**：12 个对齐 ERC-3643 的事件；链下 `state.json` 历史记录每个写操作的风险档与人确认标记。
+- **最小权限角色（AccessControl）**：`DEFAULT_ADMIN_ROLE`/`onlyOwner` 管治理；`COMPLIANCE_ROLE`（注册/冻结/强制转移/暂停）、`MINTER_ROLE`（mint/burn）、`RECOVERY_ROLE`（两阶段钱包恢复）三类运营角色分离，可分别授予不同地址。
+- **可审计**：18 个对齐 ERC-3643 的事件；链下 `state.json` 历史记录每个写操作的风险档与人确认标记。
 - **私钥不入代码**：私钥仅来自环境变量；`.env`、`state.json`、`cache/`、`broadcast/`、`out/` 全部 git 忽略。
 
 ## 审计发现与处置
@@ -35,7 +35,9 @@
 | 动作 | 守卫 |
 |------|------|
 | setComplianceRules、addAgent/removeAgent、depositDividend、sweepUndistributedDividend | `onlyOwner` |
-| registerIdentity、batchRegisterIdentity、removeIdentity、mint、burn、setAddressFrozen、freeze/unfreezePartialTokens、forcedTransfer、executeRecoveryAddress、pause/unpause | `onlyAgent` |
+| registerIdentity、batchRegisterIdentity、removeIdentity、setAddressFrozen、freeze/unfreezePartialTokens、forcedTransfer、pause/unpause | `COMPLIANCE_ROLE`（onlyAgent） |
+| mint、burn | `MINTER_ROLE`（onlyMinter） |
+| proposeRecoveryAddress、executeRecoveryAddress、cancelRecoveryAddress、setRecoveryDelay | `RECOVERY_ROLE`（onlyRecoveryOperator） |
 | transfer / transferFrom | `_update` 内身份 + 合规 + 冻结检查 |
 | claimDividend | 仅调用者本人（结算并支付调用者） |
 | view/getter、`dividendOf`、`canTransfer`、事件读取 | 无限制（只读） |
@@ -48,3 +50,14 @@ forge test          # 36 passed; 0 failed
 ```
 
 agent 侧的运营守卫（写操作预检、尽调闸门、按风险档的人确认）见 `SKILL.md` 与 `references/`。
+
+---
+
+## 已知限制与残余风险（诚实披露）
+
+对抗式评审（5 人格评委团，2026-07-06）确认的、当前**尚未在链上完全消除**的点，据实记录：
+
+1. **当前测试网部署是"一把私钥四顶帽子"**。`0xA54A…2bc4` 同时持有 token 的 `DEFAULT_ADMIN_ROLE` / `COMPLIANCE_ROLE` / `MINTER_ROLE` / `RECOVERY_ROLE`，并且是 attestation registry 的 owner + registrar——即**铸币方给自己的尽调背书**。合约层的角色分离已实现（可授予不同地址），但演示部署未行使分权。生产部署应把四类角色分授独立密钥/多签。
+2. **链上 attestation 语义弱于文档叙事**。当前已部署的 `DiligenceAttestationRegistry` 的 attestation **无过期、不可撤销、且未绑定 recipient/amount**——任何历史 GREEN 证据哈希可被复用来门禁未来的 mint。因此"受制裁地址永远无法被 mint"仅在**从未对其存过 GREEN 证据**时成立。修复（`revoke` + `validUntil` + `mint` 绑定 `attestation.target == to`）已在 `src/` 实现并有 Foundry 测试覆盖，**需重新部署方能在链上生效**（见 DEPLOYMENT 说明）。
+3. **`claimDividend` 未阻止已冻结地址领取**——冻结冻的是转账与部分余额，不冻结已结算分红的领取。若监管场景要求冻结即停止一切价值流出，应在 `claimDividend` 加 `require(!_frozen[msg.sender])`；当前为刻意保留的取舍。
+4. **ERC-3643 是"精神对齐"而非完整 T-REX**：身份为布尔白名单 + bytes32 id，未实现 ONCHAINID / claim topics / trusted issuers registry。设计取舍见 `DECISIONS.md`。

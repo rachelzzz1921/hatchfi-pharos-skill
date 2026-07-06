@@ -54,9 +54,13 @@ SKIP_DIRS = {
     "cache",
     "out",
     "broadcast",
-    "lib",
+    # Vendored Foundry libs (not ours) — but DO scan our own lib/hatchfi-gate primitive.
+    "forge-std",
+    "openzeppelin-contracts",
     "node_modules",
     "__pycache__",
+    # Immutable historical spawn snapshots — scanned once when created, not re-audited.
+    "versions",
 }
 SKIP_FILES = {
     "scripts/skill_inspector.py",  # avoid matching our own detector strings

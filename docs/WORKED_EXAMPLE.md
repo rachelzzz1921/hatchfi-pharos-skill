@@ -69,13 +69,26 @@ npm run deploy:pharos
 # Tx:     0xd00bcc18e78f85eaa9f62ee907a6adac13c9a45f6f7266699e57487beb61a023
 ```
 
-## Step 3 · Smoke (register + mint)
+## Step 3 · Smoke (register → attest → mint)
+
+The hardened contract takes **3-arg** `registerIdentity` / `mint`, and `mint`
+reverts unless the evidence hash is attested and passable. The tested one-command
+path is `npm run smoke:pharos`; the explicit calls it makes are:
 
 ```bash
 export TOKEN=0x975704ca2182b3fc64fd82ad2c01d8ec5be0b5c3
+export REGISTRY=0x0d21aED2e3d4c64B2e0Df556C7514b80CC4AB94F
 export INV=$DEPLOYER
-cast send $TOKEN "registerIdentity(address,uint16)" $INV 840 --rpc-url $RPC --private-key $PK
-cast send $TOKEN "mint(address,uint256)" $INV 1000000000000000000000 --rpc-url $RPC --private-key $PK
+export ID=$(cast keccak "$INV")                  # any bytes32 identity id
+export EVID=$(cast keccak "mpf-green-evidence")   # evidence hash
+export FP=$(cast keccak "MPF-US-permissioned")    # asset fingerprint
+
+# 1 · register identity (3-arg: + bytes32 identityId)
+cast send $TOKEN "registerIdentity(address,uint16,bytes32)" $INV 840 $ID --rpc-url $RPC --private-key $PK
+# 2 · attest a passable (GREEN=2) diligence conclusion for the evidence hash
+cast send $REGISTRY "attest(bytes32,address,uint8,bytes32)" $EVID $INV 2 $FP --rpc-url $RPC --private-key $PK
+# 3 · mint (3-arg: + evidenceHash) — reverts DiligenceNotAttested if not passable
+cast send $TOKEN "mint(address,uint256,bytes32)" $INV 1000000000000000000000 $EVID --rpc-url $RPC --private-key $PK
 cast call $TOKEN "isVerified(address)(bool)" $INV --rpc-url $RPC
 ```
 
