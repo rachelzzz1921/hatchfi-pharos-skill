@@ -1,12 +1,25 @@
 # How to record the HatchFi demo video — smooth, in one take
 
-Two reference recordings are already generated at `~/Desktop/hatchfi-demo/`:
-- `hatchfi-console-tour.mp4` — the operator console, full flow (~30 s)
-- `hatchfi-agentrun-fill.mp4` — the Agent Run dashboard filling in live (~26 s)
+## Option 0 — one command, fully narrated (easiest)
 
-Watch those first: they *are* the smooth flow. You can either (A) narrate over them as
-B-roll, or (B) film your own take using the steps below. The storyboard with shot timing
-and narration is `docs/VIDEO_STORYBOARD.md`.
+```bash
+npm run web:build && npm run web:dev          # dev server in one tab
+SILICONFLOW_API_KEY=sk-... npm run demo:video  # neural voice; omit the key to use macOS `say`
+```
+
+This produces `~/Desktop/hatchfi-demo/hatchfi-demo-film.mp4` (~82 s): the whole console
+flow — OFAC block → RED mint-denied → clean GREEN → mint allowed → audit log →
+personalization flywheel → Agent Run 5/5 100% — with **English narration** (SiliconFlow
+CosyVoice2) and **branded captions burned in**. A matching `.srt` is written alongside.
+It's a finished film you can upload as-is, or use as B-roll to narrate over. Tune the voice
+with `SF_TTS_VOICE=FunAudioLLM/CosyVoice2-0.5B:anna` (also alex/bella/benjamin/charles/claire/diana).
+
+The reference clips are also at `~/Desktop/hatchfi-demo/`:
+- `hatchfi-console-tour.mp4` — the operator console, full flow (~30 s, no audio)
+- `hatchfi-agentrun-fill.mp4` — the Agent Run dashboard filling in live (~26 s, no audio)
+
+Prefer to film it yourself for authenticity? Use the steps below. The storyboard with shot
+timing and narration is `docs/VIDEO_STORYBOARD.md`.
 
 ## Once, before recording
 

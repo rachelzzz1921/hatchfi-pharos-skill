@@ -1,7 +1,7 @@
 {
   "name": "pharos-rwa-skill",
   "private": true,
-  "description": "Compliant RWA Issuance Agent \u2014 Foundry + Pharos Atlantic deploy scripts",
+  "description": "Compliant RWA Issuance Agent — Foundry + Pharos Atlantic deploy scripts",
   "scripts": {
     "build": "forge build",
     "test": "forge test -vvv",
@@ -56,7 +56,8 @@
     "web:preview": "vite preview --config web/vite.config.ts",
     "agent:run:seed": "python3 scripts/agent_run_seed.py --sync-web",
     "agent:emit": "python3 scripts/hatchfi_emit_event.py",
-    "setup": "bash setup.sh"
+    "setup": "bash setup.sh",
+    "demo:video": "node scripts/make_demo_video.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
