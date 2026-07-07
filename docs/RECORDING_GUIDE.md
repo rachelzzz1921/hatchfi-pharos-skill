@@ -7,12 +7,16 @@ npm run web:build && npm run web:dev          # dev server in one tab
 SILICONFLOW_API_KEY=sk-... npm run demo:video  # neural voice; omit the key to use macOS `say`
 ```
 
-This produces `~/Desktop/hatchfi-demo/hatchfi-demo-film.mp4` (~82 s): the whole console
-flow — OFAC block → RED mint-denied → clean GREEN → mint allowed → audit log →
-personalization flywheel → Agent Run 5/5 100% — with **English narration** (SiliconFlow
-CosyVoice2) and **branded captions burned in**. A matching `.srt` is written alongside.
-It's a finished film you can upload as-is, or use as B-roll to narrate over. Tune the voice
-with `SF_TTS_VOICE=FunAudioLLM/CosyVoice2-0.5B:anna` (also alex/bella/benjamin/charles/claire/diana).
+This produces `~/Desktop/hatchfi-demo/hatchfi-demo-film.mp4` (~86 s): a branded **intro
+card** → the whole console flow — OFAC block → RED mint-denied → clean GREEN → mint
+allowed → audit log → personalization flywheel → Agent Run 5/5 100% → a branded **outro
+card** (on-chain link + `judge:package`), with **English narration** (SiliconFlow
+CosyVoice2) and **captions burned in**. A matching `.srt` is written alongside. It's a
+finished film you can upload as-is, or use as B-roll to narrate over.
+
+- Voice: `SF_TTS_VOICE=FunAudioLLM/CosyVoice2-0.5B:anna` (also alex/bella/benjamin/charles/claire/diana).
+- A/V sync auto-aligns to the measured page load; fine-tune with `SYNC_OFFSET=0.15` (later) / `-0.15` (earlier).
+- `REUSE_TTS=1` reuses cached voice clips in `.build/` for fast re-renders (no API calls).
 
 The reference clips are also at `~/Desktop/hatchfi-demo/`:
 - `hatchfi-console-tour.mp4` — the operator console, full flow (~30 s, no audio)
